@@ -6,7 +6,18 @@ dependencies {
   api "com.github.MrStahlfelge.gdx-websockets:core:$websocketVersion"
   api "com.github.lyze237:gdx-FlexBox:$flexBoxVersion"
 
-  if(enableGraalNative == 'true') {
+  if (enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
+  }
+
+  testImplementation(platform('org.junit:junit-bom:5.10.2'))
+  testImplementation('org.junit.jupiter:junit-jupiter')
+  testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+
+  test {
+    useJUnitPlatform()
+    testLogging {
+      events "passed", "skipped", "failed"
+    }
   }
 }
