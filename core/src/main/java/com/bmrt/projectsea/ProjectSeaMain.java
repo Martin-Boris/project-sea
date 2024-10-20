@@ -4,9 +4,13 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
@@ -46,8 +50,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         camera = new GameCamera((w / h) * 10, 10, seaMap.getWidth(), seaMap.getHeight());
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
-        stateTime = 0f;
         Gdx.input.setInputProcessor(this);
+        stateTime = 0f;
 
     }
 

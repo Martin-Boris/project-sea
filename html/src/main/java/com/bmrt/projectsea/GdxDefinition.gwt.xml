@@ -19,6 +19,7 @@
   <inherits name="com.github.czyzby.websocket.GdxWebSocket" />
   <inherits name="com.github.czyzby.websocket.GdxWebSocketGwt" />
   <inherits name="dev.lyze.flexbox" />
+  <inherits name="space.earlygrey.shapedrawer"/>
 
   <!-- You must change this if you rename packages later, or rename GwtLauncher. -->
   <entry-point class="com.bmrt.projectsea.gwt.GwtLauncher" />

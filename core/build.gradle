@@ -6,6 +6,8 @@ dependencies {
   api "com.github.MrStahlfelge.gdx-websockets:core:$websocketVersion"
   api "com.github.lyze237:gdx-FlexBox:$flexBoxVersion"
 
+  implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
+
   if (enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
