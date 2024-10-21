@@ -3,20 +3,22 @@ package com.bmrt.projectsea;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.Vector;
 import com.bmrt.projectsea.render.GameCamera;
-import com.bmrt.projectsea.render.ShipRender;
+import com.bmrt.projectsea.render.ShipActor;
+import com.bmrt.projectsea.render.TargetActor;
 import com.bmrt.projectsea.render.TiledMap;
 
 /**
@@ -24,35 +26,53 @@ import com.bmrt.projectsea.render.TiledMap;
  */
 public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor {
 
+    /* CONSTANTS */
     public static final float UNIT = 1 / 32f;
-
     public static final float GAME_TICK = 1 / 60f;
+
+    /* TEXTURES */
+    private Texture targetTexture;
+
+    /* ACTORS */
+    private ShipActor shipActor;
+    private TargetActor targetActor;
+    private ShipActor targetedActor;
+
+
     private float accumulator = 0f;
     private SeaMap seaMap;
     private Ship myShip;
     private GameCamera camera;
     private TiledMap tiledMap;
-    private ShipRender shipRender;
     private OrthogonalTiledMapRenderer renderer;
     private float stateTime;
+    private Stage gameStage;
 
     @Override
     public void create() {
         seaMap = new SeaMap(25, 25);
-        myShip = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT);
-
+        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT);
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
         tiledMap = new TiledMap(seaMap);
-        shipRender = new ShipRender();
 
-        camera = new GameCamera((w / h) * 10, 10, seaMap.getWidth(), seaMap.getHeight());
+        float width = (w / h) * 10;
+        int height = 10;
+        camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
-        Gdx.input.setInputProcessor(this);
+        gameStage = new Stage(new FitViewport(width, height, camera));
+        targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
+        targetActor = new TargetActor(targetTexture);
+        shipActor = new ShipActor(myShip, targetActor);
+        gameStage.addActor(targetActor);
+        gameStage.addActor(shipActor);
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(gameStage);
+        multiplexer.addProcessor(this);
+        Gdx.input.setInputProcessor(multiplexer);
         stateTime = 0f;
-
     }
 
     @Override
@@ -68,21 +88,25 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer.setView(camera);
         renderer.render();
-        Batch orthoBatch = renderer.getBatch();
-        orthoBatch.begin();
-        shipRender.draw(stateTime, orthoBatch, myShip.getPosition(), myShip.getDirection());
-        orthoBatch.end();
+        gameStage.act(deltaTime);
+        gameStage.draw();
     }
 
     @Override
     public void dispose() {
         tiledMap.dispose();
         renderer.dispose();
-        shipRender.dispose();
+        shipActor.dispose();
+        gameStage.dispose();
+        targetTexture.dispose();
     }
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE && targetedActor != null) {
+            targetedActor.setTarget(false);
+            targetActor.setVisible(false);
+        }
         if (keycode == Input.Keys.LEFT) {
             myShip.updateDirection(GAME_TICK, Direction.LEFT);
         }
@@ -117,6 +141,13 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector2 vector2 = gameStage.screenToStageCoordinates(new Vector2(screenX, screenY));
+        Actor actor = gameStage.hit(vector2.x, vector2.y, false);
+        if (actor != null) {
+            targetActor.setVisible(true);
+            targetedActor = ((ShipActor) actor);
+            targetedActor.setTarget(true);
+        }
         return false;
     }
 
