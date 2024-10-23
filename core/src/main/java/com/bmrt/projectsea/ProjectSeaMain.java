@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -37,6 +38,9 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     /* TEXTURES */
     private Texture targetTexture;
 
+    /* FONT */
+    private BitmapFont nameFont;
+
     /* ACTORS */
     private ShipActor myShipActor;
     private List<ShipActor> otherShipActors;
@@ -57,10 +61,10 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     @Override
     public void create() {
         seaMap = new SeaMap(25, 25);
-        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT);
+        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred");
         otherShips = Arrays.asList(
-            new Ship(new Vector(10, 5), Vector.ZERO, Direction.BOT),
-            new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP));
+            new Ship(new Vector(10, 5), Vector.ZERO, Direction.BOT, "Pirate"),
+            new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP, "Corsair"));
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
@@ -72,21 +76,26 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
         gameStage = new Stage(new FitViewport(width, height, camera));
+
+        nameFont = new BitmapFont();
+        nameFont.getData().setScale(2 * nameFont.getScaleY() / nameFont.getLineHeight());
+
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         targetActor = new TargetActor(targetTexture);
-        myShipActor = new ShipActor(myShip, targetActor);
+        myShipActor = new ShipActor(myShip, targetActor, nameFont);
         gameStage.addActor(targetActor);
-        gameStage.addActor(myShipActor);
         otherShipActors = new ArrayList<>();
         for (Ship otherShip : otherShips) {
-            ShipActor shipActor = new ShipActor(otherShip, targetActor);
+            ShipActor shipActor = new ShipActor(otherShip, targetActor, nameFont);
             otherShipActors.add(shipActor);
             gameStage.addActor(shipActor);
         }
+        gameStage.addActor(myShipActor);
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(gameStage);
         multiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(multiplexer);
+
         stateTime = 0f;
     }
 

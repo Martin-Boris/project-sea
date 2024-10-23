@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.bmrt.projectsea.domain.Direction;
@@ -25,12 +26,14 @@ public class ShipActor extends Actor {
     private final Texture shipTexture;
     private final Animation<TextureRegion> cruiseAnimation;
     private final TargetActor targetActor;
+    private final BitmapFont nameFont;
     private boolean target = false;
     private float stateTime = 0;
 
-    public ShipActor(Ship ship, TargetActor targetActor) {
+    public ShipActor(Ship ship, TargetActor targetActor, BitmapFont nameFont) {
         this.ship = ship;
         this.targetActor = targetActor;
+        this.nameFont = nameFont;
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
         TextureRegion[][] ships = TextureRegion.split(shipTexture, SHIP_PIXEL_WIDTH, SHIP_PIXEL_HEIGHT);
         TextureRegion[] shipCruiseSheet = new TextureRegion[]{
@@ -53,6 +56,7 @@ public class ShipActor extends Actor {
         batch.draw(cruiseAnimation.getKeyFrame(stateTime, true), getX(), getY(), getOriginX(), getOriginY(),
             getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation()
         );
+        nameFont.draw(batch, ship.getName(), getX(), getY());
     }
 
     @Override
