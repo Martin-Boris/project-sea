@@ -21,6 +21,10 @@ import com.bmrt.projectsea.render.ShipActor;
 import com.bmrt.projectsea.render.TargetActor;
 import com.bmrt.projectsea.render.TiledMap;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
@@ -34,7 +38,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     private Texture targetTexture;
 
     /* ACTORS */
-    private ShipActor shipActor;
+    private ShipActor myShipActor;
+    private List<ShipActor> otherShipActors;
     private TargetActor targetActor;
     private ShipActor targetedActor;
 
@@ -42,6 +47,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     private float accumulator = 0f;
     private SeaMap seaMap;
     private Ship myShip;
+    private List<Ship> otherShips;
     private GameCamera camera;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
@@ -52,6 +58,9 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     public void create() {
         seaMap = new SeaMap(25, 25);
         myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT);
+        otherShips = Arrays.asList(
+            new Ship(new Vector(10, 5), Vector.ZERO, Direction.BOT),
+            new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP));
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
@@ -65,9 +74,15 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         gameStage = new Stage(new FitViewport(width, height, camera));
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         targetActor = new TargetActor(targetTexture);
-        shipActor = new ShipActor(myShip, targetActor);
+        myShipActor = new ShipActor(myShip, targetActor);
         gameStage.addActor(targetActor);
-        gameStage.addActor(shipActor);
+        gameStage.addActor(myShipActor);
+        otherShipActors = new ArrayList<>();
+        for (Ship otherShip : otherShips) {
+            ShipActor shipActor = new ShipActor(otherShip, targetActor);
+            otherShipActors.add(shipActor);
+            gameStage.addActor(shipActor);
+        }
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(gameStage);
         multiplexer.addProcessor(this);
@@ -84,6 +99,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         while (accumulator >= GAME_TICK) {
             accumulator -= GAME_TICK;
             myShip.update(seaMap);
+            otherShips.forEach(ship -> ship.update(seaMap));
         }
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer.setView(camera);
@@ -96,7 +112,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     public void dispose() {
         tiledMap.dispose();
         renderer.dispose();
-        shipActor.dispose();
+        myShipActor.dispose();
         gameStage.dispose();
         targetTexture.dispose();
     }
@@ -143,8 +159,11 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 vector2 = gameStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         Actor actor = gameStage.hit(vector2.x, vector2.y, false);
-        if (actor != null) {
+        if (actor != null && !actor.equals(myShipActor)) {
             targetActor.setVisible(true);
+            if (targetedActor != null) {
+                targetedActor.setTarget(false);
+            }
             targetedActor = ((ShipActor) actor);
             targetedActor.setTarget(true);
         }
