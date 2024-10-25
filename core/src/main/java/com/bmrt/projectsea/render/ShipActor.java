@@ -1,6 +1,5 @@
 package com.bmrt.projectsea.render;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -22,16 +21,15 @@ public class ShipActor extends Actor {
 
 
     private final Ship ship;
-    private final Texture shipTexture;
     private final Animation<TextureRegion> cruiseAnimation;
     private final TargetActor targetActor;
     private boolean target = false;
     private float stateTime = 0;
 
-    public ShipActor(Ship ship, TargetActor targetActor) {
+    public ShipActor(Ship ship, TargetActor targetActor, Texture shipTexture) {
         this.ship = ship;
         this.targetActor = targetActor;
-        shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
+        shipTexture = shipTexture;
         TextureRegion[][] ships = TextureRegion.split(shipTexture, SHIP_PIXEL_WIDTH, SHIP_PIXEL_HEIGHT);
         TextureRegion[] shipCruiseSheet = new TextureRegion[]{
             ships[0][0], ships[0][1], ships[0][2]
@@ -42,10 +40,6 @@ public class ShipActor extends Actor {
 
     public void setTarget(boolean target) {
         this.target = target;
-    }
-
-    public void dispose() {
-        shipTexture.dispose();
     }
 
     @Override

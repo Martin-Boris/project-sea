@@ -38,6 +38,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     /* TEXTURES */
     private Texture targetTexture;
+    private Texture shipTexture;
+    private Texture healthBarTexture;
 
     /* FONT */
     private BitmapFont font;
@@ -66,7 +68,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     @Override
     public void create() {
         seaMap = new SeaMap(25, 25);
-        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred", Ship.MAX_HP);
+        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred", 5000);
         otherShips = Arrays.asList(
             new Ship(new Vector(10, 5), Vector.ZERO, Direction.RIGHT, "Pirate", Ship.MAX_HP),
             new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP, "Corsair", Ship.MAX_HP));
@@ -86,23 +88,25 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
 
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
+        shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
         targetActor = new TargetActor(targetTexture);
-        myShipActor = new ShipActor(myShip, targetActor);
+        myShipActor = new ShipActor(myShip, targetActor, shipTexture);
         gameStage.addActor(targetActor);
         otherShipActors = new ArrayList<>();
         for (Ship otherShip : otherShips) {
-            ShipActor shipActor = new ShipActor(otherShip, targetActor);
+            ShipActor shipActor = new ShipActor(otherShip, targetActor, shipTexture);
             otherShipActors.add(shipActor);
             gameStage.addActor(shipActor);
         }
         gameStage.addActor(myShipActor);
 
         /* UI VIEW */
+        healthBarTexture = new Texture(Gdx.files.internal("ui/healthbar.png"));
         uiStage = new Stage();
         font = new BitmapFont();
-        myShipUIActor = new ShipUIActor(myShip, gameStage.getViewport(), font);
+        myShipUIActor = new ShipUIActor(myShip, gameStage.getViewport(), font, healthBarTexture);
         for (Ship otherShip : otherShips) {
-            ShipUIActor shipUIActor = new ShipUIActor(otherShip, gameStage.getViewport(), font);
+            ShipUIActor shipUIActor = new ShipUIActor(otherShip, gameStage.getViewport(), font, healthBarTexture);
             uiStage.addActor(shipUIActor);
         }
         uiStage.addActor(myShipUIActor);
@@ -138,10 +142,12 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     public void dispose() {
         tiledMap.dispose();
         renderer.dispose();
-        myShipActor.dispose();
-        gameStage.dispose();
+        shipTexture.dispose();
         targetTexture.dispose();
+        healthBarTexture.dispose();
         font.dispose();
+        gameStage.dispose();
+        uiStage.dispose();
     }
 
     @Override
