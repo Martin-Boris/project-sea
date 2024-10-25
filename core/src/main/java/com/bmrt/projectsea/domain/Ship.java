@@ -3,14 +3,16 @@ package com.bmrt.projectsea.domain;
 public class Ship {
 
     private static final float SPEED_TILE_PER_SEC = 4;
+    private final String name;
     private Vector position;
     private Vector speed;
     private Direction direction;
 
-    public Ship(Vector position, Vector speed, Direction direction) {
+    public Ship(Vector position, Vector speed, Direction direction, String name) {
         this.position = position;
         this.speed = speed;
         this.direction = direction;
+        this.name = name;
     }
 
     public void updateDirection(float dt, Direction direction) {
@@ -53,5 +55,9 @@ public class Ship {
 
     public void stop() {
         speed = Vector.ZERO;
+    }
+
+    public String getName() {
+        return name;
     }
 }
