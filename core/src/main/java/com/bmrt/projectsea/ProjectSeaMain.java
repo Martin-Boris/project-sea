@@ -19,6 +19,7 @@ import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.Vector;
 import com.bmrt.projectsea.render.GameCamera;
 import com.bmrt.projectsea.render.ShipActor;
+import com.bmrt.projectsea.render.ShipUIActor;
 import com.bmrt.projectsea.render.TargetActor;
 import com.bmrt.projectsea.render.TiledMap;
 
@@ -39,13 +40,18 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     private Texture targetTexture;
 
     /* FONT */
-    private BitmapFont nameFont;
+    private BitmapFont font;
 
     /* ACTORS */
     private ShipActor myShipActor;
     private List<ShipActor> otherShipActors;
     private TargetActor targetActor;
     private ShipActor targetedActor;
+    private ShipUIActor myShipUIActor;
+
+    /* STAGE */
+    private Stage gameStage;
+    private Stage uiStage;
 
 
     private float accumulator = 0f;
@@ -56,20 +62,21 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
     private float stateTime;
-    private Stage gameStage;
 
     @Override
     public void create() {
         seaMap = new SeaMap(25, 25);
         myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred");
         otherShips = Arrays.asList(
-            new Ship(new Vector(10, 5), Vector.ZERO, Direction.BOT, "Pirate"),
+            new Ship(new Vector(10, 5), Vector.ZERO, Direction.RIGHT, "Pirate"),
             new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP, "Corsair"));
+
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
         tiledMap = new TiledMap(seaMap);
 
+        /* GAME VIEW */
         float width = (w / h) * 10;
         int height = 10;
         camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
@@ -77,20 +84,29 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
         gameStage = new Stage(new FitViewport(width, height, camera));
 
-        nameFont = new BitmapFont();
-        nameFont.getData().setScale(2 * nameFont.getScaleY() / nameFont.getLineHeight());
 
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         targetActor = new TargetActor(targetTexture);
-        myShipActor = new ShipActor(myShip, targetActor, nameFont);
+        myShipActor = new ShipActor(myShip, targetActor);
         gameStage.addActor(targetActor);
         otherShipActors = new ArrayList<>();
         for (Ship otherShip : otherShips) {
-            ShipActor shipActor = new ShipActor(otherShip, targetActor, nameFont);
+            ShipActor shipActor = new ShipActor(otherShip, targetActor);
             otherShipActors.add(shipActor);
             gameStage.addActor(shipActor);
         }
         gameStage.addActor(myShipActor);
+
+        /* UI VIEW */
+        uiStage = new Stage();
+        font = new BitmapFont();
+        myShipUIActor = new ShipUIActor(myShip, gameStage.getViewport(), font);
+        for (Ship otherShip : otherShips) {
+            ShipUIActor shipUIActor = new ShipUIActor(otherShip, gameStage.getViewport(), font);
+            uiStage.addActor(shipUIActor);
+        }
+        uiStage.addActor(myShipUIActor);
+
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(gameStage);
         multiplexer.addProcessor(this);
@@ -115,6 +131,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         renderer.render();
         gameStage.act(deltaTime);
         gameStage.draw();
+        uiStage.draw();
     }
 
     @Override
@@ -124,6 +141,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         myShipActor.dispose();
         gameStage.dispose();
         targetTexture.dispose();
+        font.dispose();
     }
 
     @Override
