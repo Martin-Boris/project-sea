@@ -66,10 +66,10 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     @Override
     public void create() {
         seaMap = new SeaMap(25, 25);
-        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred");
+        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred", Ship.MAX_HP);
         otherShips = Arrays.asList(
-            new Ship(new Vector(10, 5), Vector.ZERO, Direction.RIGHT, "Pirate"),
-            new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP, "Corsair"));
+            new Ship(new Vector(10, 5), Vector.ZERO, Direction.RIGHT, "Pirate", Ship.MAX_HP),
+            new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP, "Corsair", Ship.MAX_HP));
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
