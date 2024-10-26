@@ -29,7 +29,6 @@ public class ShipActor extends Actor {
     public ShipActor(Ship ship, TargetActor targetActor, Texture shipTexture) {
         this.ship = ship;
         this.targetActor = targetActor;
-        shipTexture = shipTexture;
         TextureRegion[][] ships = TextureRegion.split(shipTexture, SHIP_PIXEL_WIDTH, SHIP_PIXEL_HEIGHT);
         TextureRegion[] shipCruiseSheet = new TextureRegion[]{
             ships[0][0], ships[0][1], ships[0][2]

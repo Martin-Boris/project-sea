@@ -84,9 +84,9 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
+
+        /* GAME VIEW */
         gameStage = new Stage(new FitViewport(width, height, camera));
-
-
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
         targetActor = new TargetActor(targetTexture);
