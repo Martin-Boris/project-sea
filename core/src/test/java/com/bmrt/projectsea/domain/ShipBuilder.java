@@ -26,7 +26,7 @@ public class ShipBuilder {
     }
 
     public Ship build() {
-        return new Ship(position, speed, direction, "");
+        return new Ship(position, speed, direction, "", Ship.MAX_HP);
     }
 
 

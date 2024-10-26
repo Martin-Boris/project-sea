@@ -2,17 +2,23 @@ package com.bmrt.projectsea.domain;
 
 public class Ship {
 
+    /* CONSTANT */
+    public static final float MAX_HP = 10000;
     private static final float SPEED_TILE_PER_SEC = 4;
+
+
     private final String name;
+    private final float healthPoint;
     private Vector position;
     private Vector speed;
     private Direction direction;
 
-    public Ship(Vector position, Vector speed, Direction direction, String name) {
+    public Ship(Vector position, Vector speed, Direction direction, String name, float healthPoint) {
         this.position = position;
         this.speed = speed;
         this.direction = direction;
         this.name = name;
+        this.healthPoint = healthPoint;
     }
 
     public void updateDirection(float dt, Direction direction) {
@@ -59,5 +65,9 @@ public class Ship {
 
     public String getName() {
         return name;
+    }
+
+    public float getHealthPoint() {
+        return healthPoint;
     }
 }
