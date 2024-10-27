@@ -53,6 +53,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     private TargetActor targetActor;
     private ShipActor targetedActor;
     private SpellBarUI spellBarUI;
+    private Actor tmpShipActor;
 
     /* STAGE */
     private Stage gameStage;
@@ -114,7 +115,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             uiStage.addActor(shipUIActor);
         }
         uiStage.addActor(myShipUIActor);
-        spellBarUI = new SpellBarUI(canonShotTexture, font);
+        spellBarUI = new SpellBarUI(canonShotTexture, font, myShipActor);
         spellBarUI.setPosition(2, 2);
         uiStage.addActor(spellBarUI);
 
@@ -202,16 +203,18 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 vector2 = gameStage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        Actor actor = gameStage.hit(vector2.x, vector2.y, false);
-        if (actor != null && !actor.equals(myShipActor)) {
+        tmpShipActor = gameStage.hit(vector2.x, vector2.y, true);
+        if (tmpShipActor != null && !tmpShipActor.equals(myShipActor)) {
             targetActor.setVisible(true);
             if (targetedActor != null) {
                 targetedActor.setTarget(false);
             }
-            targetedActor = ((ShipActor) actor);
+            targetedActor = ((ShipActor) tmpShipActor);
             targetedActor.setTarget(true);
             spellBarUI.activateSpell();
+            return false;
         }
+
         return false;
     }
 

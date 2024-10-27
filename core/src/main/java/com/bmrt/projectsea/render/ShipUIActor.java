@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
@@ -27,6 +28,7 @@ public class ShipUIActor extends Actor {
         this.viewport = viewport;
         this.glyphLayout = new GlyphLayout(font, ship.getName());
         this.healthBar = new NinePatch(healthBarTexture, 0, 0, 4, 4);
+        setTouchable(Touchable.disabled);
     }
 
     @Override

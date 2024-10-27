@@ -3,6 +3,7 @@ package com.bmrt.projectsea.render;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 import static com.bmrt.projectsea.ProjectSeaMain.UNIT;
 
@@ -22,6 +23,7 @@ public class TargetActor extends Actor {
     public TargetActor(Texture targetTexture) {
         this.targetTexture = targetTexture;
         this.visible = false;
+        setTouchable(Touchable.disabled);
     }
 
     @Override
