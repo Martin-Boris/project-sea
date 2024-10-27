@@ -4,13 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.bmrt.projectsea.GameTime;
-import com.bmrt.projectsea.render.ShipActor;
+import com.bmrt.projectsea.domain.ActionType;
 
 import java.util.ArrayList;
 
@@ -21,13 +19,9 @@ public class SpellBarUI extends Table {
 
     private final ArrayList<SpellButton> spells;
 
-    private final ShipActor myShipActor;
-
-
-    public SpellBarUI(Texture canonSpell, BitmapFont font, ShipActor myShipActor) {
+    public SpellBarUI(Texture canonSpell, BitmapFont font) {
         super();
         this.spells = new ArrayList<>();
-        this.myShipActor = myShipActor;
         TextureRegion[][] spellsIcons = TextureRegion.split(canonSpell, SPELl_SPRITE_WIDTH, SPELL_SPRITE_HEIGHT);
         TextureRegion canonSpellPort = spellsIcons[0][0];
         TextureRegion canonSpellStarboard = spellsIcons[0][1];
@@ -41,19 +35,10 @@ public class SpellBarUI extends Table {
         portStyle.imageDown = new TextureRegionDrawable(canonSpellPortDisable);
         portStyle.imageDisabled = new TextureRegionDrawable(canonSpellPortDisable);
         SpellButton canonShootPortButton = new SpellButton(portStyle, 2, "Q", font, SPELl_SPRITE_WIDTH,
-            SPELL_SPRITE_HEIGHT, (float) Gdx.graphics.getWidth() / 2 - SPELl_SPRITE_WIDTH - 1, 2, true);
+            SPELL_SPRITE_HEIGHT, (float) Gdx.graphics.getWidth() / 2 - SPELl_SPRITE_WIDTH - 1, 2, true,
+            ActionType.PORT_SHOOT);
         this.spells.add(canonShootPortButton);
         addActor(canonShootPortButton);
-
-        canonShootPortButton.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!((SpellButton) actor).isOnCooldown()) {
-                    //TODO trigger action on domain
-                    ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
-                    myShipActor.triggerPortShoot();
-                }
-            }
-        });
 
         /* STARBOARD CANON SHOOT SPELL BUTTON */
         ImageButton.ImageButtonStyle starboardStyle = new ImageButton.ImageButtonStyle();
@@ -61,18 +46,9 @@ public class SpellBarUI extends Table {
         starboardStyle.imageDown = new TextureRegionDrawable(canonSpellStarboardDisable);
         starboardStyle.imageDisabled = new TextureRegionDrawable(canonSpellStarboardDisable);
         SpellButton canonShootStarboardButton = new SpellButton(starboardStyle, 2, "E", font, SPELl_SPRITE_WIDTH,
-            SPELL_SPRITE_HEIGHT, (float) Gdx.graphics.getWidth() / 2 + 1, 2, true);
+            SPELL_SPRITE_HEIGHT, (float) Gdx.graphics.getWidth() / 2 + 1, 2, true, ActionType.STARBOARD_SHOOT);
         this.spells.add(canonShootStarboardButton);
         addActor(canonShootStarboardButton);
-        canonShootStarboardButton.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!((SpellButton) actor).isOnCooldown()) {
-                    //TODO trigger action on domain
-                    ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
-                    myShipActor.triggerStarboardShoot();
-                }
-            }
-        });
     }
 
     public void update() {
@@ -88,12 +64,10 @@ public class SpellBarUI extends Table {
     }
 
     public void triggerPortShoot() {
-        spells.get(0).setCooldownTriggerTime(GameTime.getCurrentTime());
-        myShipActor.triggerPortShoot();
+        spells.get(0).fire(new ChangeListener.ChangeEvent());
     }
 
     public void triggerStarboardShoot() {
-        spells.get(1).setCooldownTriggerTime(GameTime.getCurrentTime());
-        myShipActor.triggerStarboardShoot();
+        spells.get(1).fire(new ChangeListener.ChangeEvent());
     }
 }

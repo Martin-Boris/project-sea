@@ -11,8 +11,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
@@ -23,6 +25,7 @@ import com.bmrt.projectsea.render.ShipUIActor;
 import com.bmrt.projectsea.render.TargetActor;
 import com.bmrt.projectsea.render.TiledMap;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
+import com.bmrt.projectsea.render.spell.SpellButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,9 +117,21 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             uiStage.addActor(shipUIActor);
         }
         uiStage.addActor(myShipUIActor);
-        spellBarUI = new SpellBarUI(canonShotTexture, font, myShipActor);
-        spellBarUI.setPosition(2, 2);
+        spellBarUI = new SpellBarUI(canonShotTexture, font);
+        spellBarUI.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!((SpellButton) actor).isOnCooldown()) {
+                    ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
+                    if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
+                        myShipActor.triggerPortShoot();
+                    } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
+                        myShipActor.triggerStarboardShoot();
+                    }
+                }
+            }
+        });
         uiStage.addActor(spellBarUI);
+
 
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(gameStage);
