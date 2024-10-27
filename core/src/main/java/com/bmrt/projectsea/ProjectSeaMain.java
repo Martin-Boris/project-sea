@@ -166,6 +166,12 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             targetActor.removeTarget();
             spellBarUI.disableSpell();
         }
+        if (keycode == Input.Keys.Q) {
+            spellBarUI.triggerPortShoot();
+        }
+        if (keycode == Input.Keys.E) {
+            spellBarUI.triggerStarboardShoot();
+        }
         if (keycode == Input.Keys.LEFT) {
             myShip.updateDirection(GAME_TICK, Direction.LEFT);
         }

@@ -21,10 +21,13 @@ public class SpellBarUI extends Table {
 
     private final ArrayList<SpellButton> spells;
 
+    private final ShipActor myShipActor;
+
 
     public SpellBarUI(Texture canonSpell, BitmapFont font, ShipActor myShipActor) {
         super();
         this.spells = new ArrayList<>();
+        this.myShipActor = myShipActor;
         TextureRegion[][] spellsIcons = TextureRegion.split(canonSpell, SPELl_SPRITE_WIDTH, SPELL_SPRITE_HEIGHT);
         TextureRegion canonSpellPort = spellsIcons[0][0];
         TextureRegion canonSpellStarboard = spellsIcons[0][1];
@@ -82,5 +85,15 @@ public class SpellBarUI extends Table {
 
     public void disableSpell() {
         spells.forEach(spellButton -> spellButton.setDisabled(true));
+    }
+
+    public void triggerPortShoot() {
+        spells.get(0).setCooldownTriggerTime(GameTime.getCurrentTime());
+        myShipActor.triggerPortShoot();
+    }
+
+    public void triggerStarboardShoot() {
+        spells.get(1).setCooldownTriggerTime(GameTime.getCurrentTime());
+        myShipActor.triggerStarboardShoot();
     }
 }
