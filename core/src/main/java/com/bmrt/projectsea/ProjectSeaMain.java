@@ -11,8 +11,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
@@ -23,6 +25,7 @@ import com.bmrt.projectsea.render.ShipUIActor;
 import com.bmrt.projectsea.render.TargetActor;
 import com.bmrt.projectsea.render.TiledMap;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
+import com.bmrt.projectsea.render.spell.SpellButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,8 +54,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     /* ACTORS */
     private ShipActor myShipActor;
     private TargetActor targetActor;
-    private ShipActor targetedActor;
     private SpellBarUI spellBarUI;
+    private Actor tmpShipActor;
 
     /* STAGE */
     private Stage gameStage;
@@ -92,12 +95,12 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         gameStage = new Stage(new FitViewport(width, height, camera));
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
-        targetActor = new TargetActor(targetTexture);
-        myShipActor = new ShipActor(myShip, targetActor, shipTexture);
+        targetActor = new TargetActor(targetTexture, null);
+        myShipActor = new ShipActor(myShip, shipTexture);
         gameStage.addActor(targetActor);
         List<ShipActor> otherShipActors = new ArrayList<>();
         for (Ship otherShip : otherShips) {
-            ShipActor shipActor = new ShipActor(otherShip, targetActor, shipTexture);
+            ShipActor shipActor = new ShipActor(otherShip, shipTexture);
             otherShipActors.add(shipActor);
             gameStage.addActor(shipActor);
         }
@@ -115,8 +118,21 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         }
         uiStage.addActor(myShipUIActor);
         spellBarUI = new SpellBarUI(canonShotTexture, font);
-        spellBarUI.setPosition(2, 2);
+        spellBarUI.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                if (!((SpellButton) actor).isOnCooldown()) {
+                    ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
+                    if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
+                        myShipActor.triggerPortShoot();
+                    } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
+                        myShipActor.triggerStarboardShoot();
+                    }
+                    myShip.shoot(targetActor.getShip());
+                }
+            }
+        });
         uiStage.addActor(spellBarUI);
+
 
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(gameStage);
@@ -162,10 +178,15 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE && targetedActor != null) {
-            targetedActor.setTarget(false);
-            targetActor.setVisible(false);
+        if (keycode == Input.Keys.ESCAPE) {
+            targetActor.removeTarget();
             spellBarUI.disableSpell();
+        }
+        if (keycode == Input.Keys.Q) {
+            spellBarUI.triggerPortShoot();
+        }
+        if (keycode == Input.Keys.E) {
+            spellBarUI.triggerStarboardShoot();
         }
         if (keycode == Input.Keys.LEFT) {
             myShip.updateDirection(GAME_TICK, Direction.LEFT);
@@ -202,16 +223,13 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 vector2 = gameStage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        Actor actor = gameStage.hit(vector2.x, vector2.y, false);
-        if (actor != null && !actor.equals(myShipActor)) {
+        tmpShipActor = gameStage.hit(vector2.x, vector2.y, true);
+        if (tmpShipActor != null && !tmpShipActor.equals(myShipActor)) {
             targetActor.setVisible(true);
-            if (targetedActor != null) {
-                targetedActor.setTarget(false);
-            }
-            targetedActor = ((ShipActor) actor);
-            targetedActor.setTarget(true);
+            targetActor.setTarget(((ShipActor) tmpShipActor).getShip());
             spellBarUI.activateSpell();
         }
+
         return false;
     }
 
