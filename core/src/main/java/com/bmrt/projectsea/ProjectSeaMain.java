@@ -127,6 +127,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
                     } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
                         myShipActor.triggerStarboardShoot();
                     }
+                    myShip.shoot(targetActor.getShip());
                 }
             }
         });

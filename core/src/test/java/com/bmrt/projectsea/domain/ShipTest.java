@@ -1,5 +1,6 @@
 package com.bmrt.projectsea.domain;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +21,8 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.LEFT);
             assertEquals(ship.getDirection(), Direction.LEFT);
-            assertEquals(ship.getPosition(), new Vector(9.9f, 10));
-            assertEquals(ship.getSpeed(), new Vector(-0.1f, 0));
+            assertEquals(ship.getPosition(), new Vector(9.6f, 10));
+            assertEquals(ship.getSpeed(), new Vector(-0.4f, 0));
         }
 
         @Test
@@ -34,8 +35,8 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.RIGHT);
             assertEquals(ship.getDirection(), Direction.RIGHT);
-            assertEquals(ship.getPosition(), new Vector(10.1f, 10));
-            assertEquals(ship.getSpeed(), new Vector(0.1f, 0));
+            assertEquals(ship.getPosition(), new Vector(10.4f, 10));
+            assertEquals(ship.getSpeed(), new Vector(0.4f, 0));
         }
 
         @Test
@@ -48,8 +49,8 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.TOP);
             assertEquals(ship.getDirection(), Direction.TOP);
-            assertEquals(ship.getPosition(), new Vector(10f, 10.1f));
-            assertEquals(ship.getSpeed(), new Vector(0f, 0.1f));
+            assertEquals(ship.getPosition(), new Vector(10f, 10.4f));
+            assertEquals(ship.getSpeed(), new Vector(0f, 0.4f));
         }
 
         @Test
@@ -62,8 +63,8 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.BOT);
             assertEquals(ship.getDirection(), Direction.BOT);
-            assertEquals(ship.getPosition(), new Vector(10f, 9.9f));
-            assertEquals(ship.getSpeed(), new Vector(0f, -0.1f));
+            assertEquals(ship.getPosition(), new Vector(10f, 9.6f));
+            assertEquals(ship.getSpeed(), new Vector(0f, -0.4f));
         }
     }
 
@@ -119,6 +120,38 @@ class ShipTest {
             ship.update(new SeaMap(10, 10));
             assertEquals(ship.getPosition(), new Vector(10, 10));
         }
+    }
+
+    @Nested
+    class shoot {
+        @Test
+        void caseShootTarget() {
+            Ship myShip = ShipBuilder
+                .newShip()
+                .build();
+
+            Ship target = ShipBuilder
+                .newShip()
+                .withHealthPoint(10000)
+                .build();
+            myShip.shoot(target);
+            Assertions.assertEquals(target.getHealthPoint(), 7500);
+        }
+
+        @Test
+        void caseShootTargetWithoutHP() {
+            Ship myShip = ShipBuilder
+                .newShip()
+                .build();
+
+            Ship target = ShipBuilder
+                .newShip()
+                .withHealthPoint(0)
+                .build();
+            myShip.shoot(target);
+            Assertions.assertEquals(target.getHealthPoint(), 0);
+        }
+
     }
 
 }

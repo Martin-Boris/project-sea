@@ -6,6 +6,8 @@ public class ShipBuilder {
     private Vector speed;
     private Direction direction;
 
+    private int healthPoint;
+
     public static ShipBuilder newShip() {
         return new ShipBuilder();
     }
@@ -25,8 +27,13 @@ public class ShipBuilder {
         return this;
     }
 
+    public ShipBuilder withHealthPoint(int hp) {
+        this.healthPoint = hp;
+        return this;
+    }
+
     public Ship build() {
-        return new Ship(position, speed, direction, "", Ship.MAX_HP);
+        return new Ship(position, speed, direction, "", healthPoint);
     }
 
 

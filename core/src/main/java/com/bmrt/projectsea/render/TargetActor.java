@@ -62,4 +62,8 @@ public class TargetActor extends Actor {
         this.visible = false;
         this.ship = null;
     }
+
+    public Ship getShip() {
+        return ship;
+    }
 }

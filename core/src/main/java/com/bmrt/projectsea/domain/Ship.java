@@ -4,11 +4,13 @@ public class Ship {
 
     /* CONSTANT */
     public static final float MAX_HP = 10000;
+
+    public static final float DAMAGE = 2500;
     private static final float SPEED_TILE_PER_SEC = 4;
 
 
     private final String name;
-    private final float healthPoint;
+    private float healthPoint;
     private Vector position;
     private Vector speed;
     private Direction direction;
@@ -69,5 +71,17 @@ public class Ship {
 
     public float getHealthPoint() {
         return healthPoint;
+    }
+
+    public void shoot(Ship target) {
+        target.applyDamage(DAMAGE);
+    }
+
+    private void applyDamage(float damageAmount) {
+        if (healthPoint - damageAmount < 0) {
+            healthPoint = 0;
+        } else {
+            healthPoint -= damageAmount;
+        }
     }
 }
