@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.bmrt.projectsea.domain.Ship;
 
 import static com.bmrt.projectsea.ProjectSeaMain.UNIT;
 
@@ -18,11 +19,15 @@ public class TargetActor extends Actor {
 
     private final Texture targetTexture;
 
+    private Ship ship;
+
     private boolean visible;
 
-    public TargetActor(Texture targetTexture) {
+    public TargetActor(Texture targetTexture, Ship ship) {
         this.targetTexture = targetTexture;
         this.visible = false;
+        this.ship = ship;
+        setSize(SHIP_TILES_WIDTH, SHIP_TILES_HEIGHT);
         setTouchable(Touchable.disabled);
     }
 
@@ -34,7 +39,27 @@ public class TargetActor extends Actor {
     }
 
     @Override
+    public void act(float delta) {
+        if (visible) {
+            setPosition(
+                ship.getPosition().getX() - OFF_SET_X,
+                ship.getPosition().getY() - OFF_SET_Y
+            );
+        }
+    }
+
+    @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public void setTarget(Ship ship) {
+        this.visible = true;
+        this.ship = ship;
+    }
+
+    public void removeTarget() {
+        this.visible = false;
+        this.ship = null;
     }
 }

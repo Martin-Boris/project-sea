@@ -51,7 +51,6 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     /* ACTORS */
     private ShipActor myShipActor;
     private TargetActor targetActor;
-    private ShipActor targetedActor;
     private SpellBarUI spellBarUI;
     private Actor tmpShipActor;
 
@@ -93,12 +92,12 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         gameStage = new Stage(new FitViewport(width, height, camera));
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
-        targetActor = new TargetActor(targetTexture);
-        myShipActor = new ShipActor(myShip, targetActor, shipTexture);
+        targetActor = new TargetActor(targetTexture, null);
+        myShipActor = new ShipActor(myShip, shipTexture);
         gameStage.addActor(targetActor);
         List<ShipActor> otherShipActors = new ArrayList<>();
         for (Ship otherShip : otherShips) {
-            ShipActor shipActor = new ShipActor(otherShip, targetActor, shipTexture);
+            ShipActor shipActor = new ShipActor(otherShip, shipTexture);
             otherShipActors.add(shipActor);
             gameStage.addActor(shipActor);
         }
@@ -163,9 +162,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE && targetedActor != null) {
-            targetedActor.setTarget(false);
-            targetActor.setVisible(false);
+        if (keycode == Input.Keys.ESCAPE) {
+            targetActor.removeTarget();
             spellBarUI.disableSpell();
         }
         if (keycode == Input.Keys.LEFT) {
@@ -206,11 +204,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         tmpShipActor = gameStage.hit(vector2.x, vector2.y, true);
         if (tmpShipActor != null && !tmpShipActor.equals(myShipActor)) {
             targetActor.setVisible(true);
-            if (targetedActor != null) {
-                targetedActor.setTarget(false);
-            }
-            targetedActor = ((ShipActor) tmpShipActor);
-            targetedActor.setTarget(true);
+            targetActor.setTarget(((ShipActor) tmpShipActor).getShip());
             spellBarUI.activateSpell();
             return false;
         }

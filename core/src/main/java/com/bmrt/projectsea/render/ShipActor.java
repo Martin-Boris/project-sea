@@ -25,12 +25,9 @@ public class ShipActor extends Actor {
     private final Animation<TextureRegion> cruiseAnimation;
     private final ShootRendering portShootingRendering;
     private final ShootRendering starboardShootingRendering;
-    private final TargetActor targetActor;
-    private boolean target = false;
 
-    public ShipActor(Ship ship, TargetActor targetActor, Texture shipTexture) {
+    public ShipActor(Ship ship, Texture shipTexture) {
         this.ship = ship;
-        this.targetActor = targetActor;
         setOrigin(OFF_SET_X, OFF_SET_Y);
         setWidth(SHIP_TILES_WIDTH);
         setHeight(SHIP_TILES_HEIGHT);
@@ -54,10 +51,6 @@ public class ShipActor extends Actor {
         starboardShootingRendering = new ShootRendering(false, 0, new Animation<>(0.1f, starboardShootingSheet));
     }
 
-    public void setTarget(boolean target) {
-        this.target = target;
-    }
-
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (portShootingRendering.isRunning()) {
@@ -77,13 +70,6 @@ public class ShipActor extends Actor {
     @Override
     public void act(float delta) {
         super.act(delta);
-        if (target) {
-            targetActor.setPosition(
-                ship.getPosition().getX() - TargetActor.OFF_SET_X,
-                ship.getPosition().getY() - TargetActor.OFF_SET_Y
-            );
-            targetActor.setSize(TargetActor.SHIP_TILES_WIDTH, TargetActor.SHIP_TILES_HEIGHT);
-        }
         setPosition(ship.getPosition().getX() - OFF_SET_X, ship.getPosition().getY() - OFF_SET_Y);
         setRotation(getSpriteRotation(ship.getDirection()));
         portShootingRendering.update(delta);
@@ -109,5 +95,9 @@ public class ShipActor extends Actor {
 
     public void triggerStarboardShoot() {
         starboardShootingRendering.start();
+    }
+
+    public Ship getShip() {
+        return ship;
     }
 }
