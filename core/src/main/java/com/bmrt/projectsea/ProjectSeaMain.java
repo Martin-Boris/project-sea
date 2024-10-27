@@ -228,7 +228,6 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             targetActor.setVisible(true);
             targetActor.setTarget(((ShipActor) tmpShipActor).getShip());
             spellBarUI.activateSpell();
-            return false;
         }
 
         return false;
