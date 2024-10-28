@@ -29,6 +29,14 @@ public class Vector {
         return y;
     }
 
+    public boolean inRange(Vector v, float range) {
+        return (v.x - x) * (v.x - x) + (v.y - y) * (v.y - y) <= range * range;
+    }
+
+    public double distance(Vector v) {
+        return Math.sqrt((v.x - x) * (v.x - x) + (v.y - y) * (v.y - y));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

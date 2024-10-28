@@ -154,4 +154,29 @@ class ShipTest {
 
     }
 
+    @Nested
+    class canShoot {
+        @Test
+        void caseTrue() {
+            Ship ship = ShipBuilder.newShip()
+                .withPosition(10, 10)
+                .build();
+            Ship target = ShipBuilder.newShip()
+                .withPosition(11, 10)
+                .build();
+            Assertions.assertTrue(ship.canShoot(target));
+        }
+
+        @Test
+        void caseFalse() {
+            Ship ship = ShipBuilder.newShip()
+                .withPosition(10, 10)
+                .build();
+            Ship target = ShipBuilder.newShip()
+                .withPosition(20, 10)
+                .build();
+            Assertions.assertFalse(ship.canShoot(target));
+        }
+    }
+
 }

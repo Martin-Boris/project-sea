@@ -4,9 +4,9 @@ public class Ship {
 
     /* CONSTANT */
     public static final float MAX_HP = 10000;
-
     public static final float DAMAGE = 2500;
     private static final float SPEED_TILE_PER_SEC = 4;
+    private static final float RANGE = 8;
 
 
     private final String name;
@@ -83,5 +83,9 @@ public class Ship {
         } else {
             healthPoint -= damageAmount;
         }
+    }
+
+    public boolean canShoot(Ship target) {
+        return position.inRange(target.getPosition(), RANGE);
     }
 }

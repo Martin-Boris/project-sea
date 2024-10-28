@@ -158,7 +158,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         gameStage.act(deltaTime);
         gameStage.draw();
 
-        spellBarUI.update();
+        spellBarUI.update(myShip, targetActor.getShip());
         uiStage.act();
         uiStage.draw();
     }
@@ -180,7 +180,6 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
             targetActor.removeTarget();
-            spellBarUI.disableSpell();
         }
         if (keycode == Input.Keys.Q) {
             spellBarUI.triggerPortShoot();
@@ -227,7 +226,6 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         if (tmpShipActor != null && !tmpShipActor.equals(myShipActor)) {
             targetActor.setVisible(true);
             targetActor.setTarget(((ShipActor) tmpShipActor).getShip());
-            spellBarUI.activateSpell();
         }
 
         return false;
