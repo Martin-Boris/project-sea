@@ -88,4 +88,8 @@ public class Ship {
     public boolean canShoot(Ship target) {
         return position.inRange(target.getPosition(), RANGE);
     }
+
+    public boolean isSunk() {
+        return healthPoint <= 0;
+    }
 }

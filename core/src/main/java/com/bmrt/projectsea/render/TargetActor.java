@@ -45,6 +45,10 @@ public class TargetActor extends Actor {
                 ship.getPosition().getX() - OFF_SET_X,
                 ship.getPosition().getY() - OFF_SET_Y
             );
+            if (ship.isSunk()) {
+                visible = false;
+                ship = null;
+            }
         }
     }
 

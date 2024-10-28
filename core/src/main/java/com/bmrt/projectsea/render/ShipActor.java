@@ -53,6 +53,9 @@ public class ShipActor extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (ship.isSunk()) {
+            return;
+        }
         if (portShootingRendering.isRunning()) {
             batch.draw(portShootingRendering.getFrame(), getX(), getY(), getOriginX(), getOriginY(), getWidth(),
                 getHeight(), getScaleX(), getScaleY(), getRotation());

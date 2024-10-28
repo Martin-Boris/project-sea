@@ -120,7 +120,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         spellBarUI = new SpellBarUI(canonShotTexture, font);
         spellBarUI.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                if (!((SpellButton) actor).isOnCooldown()) {
+                if (!((SpellButton) actor).isOnCooldown() && !((SpellButton) actor).isDisabled()) {
                     ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
                     if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
                         myShipActor.triggerPortShoot();

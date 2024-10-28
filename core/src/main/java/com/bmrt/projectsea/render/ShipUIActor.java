@@ -33,6 +33,9 @@ public class ShipUIActor extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (ship.isSunk()) {
+            return;
+        }
         tmp.x = ship.getPosition().getX();
         tmp.y = ship.getPosition().getY();
         viewport.project(tmp);
