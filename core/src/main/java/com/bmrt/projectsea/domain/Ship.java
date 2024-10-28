@@ -10,17 +10,20 @@ public class Ship {
 
 
     private final String name;
+    private final float maxHealthPoint;
     private float healthPoint;
     private Vector position;
     private Vector speed;
     private Direction direction;
 
-    public Ship(Vector position, Vector speed, Direction direction, String name, float healthPoint) {
+    public Ship(Vector position, Vector speed, Direction direction, String name, float healthPoint,
+                float maxHealthPoint) {
         this.position = position;
         this.speed = speed;
         this.direction = direction;
         this.name = name;
         this.healthPoint = healthPoint;
+        this.maxHealthPoint = maxHealthPoint;
     }
 
     public void updateDirection(float dt, Direction direction) {
@@ -91,5 +94,9 @@ public class Ship {
 
     public boolean isSunk() {
         return healthPoint <= 0;
+    }
+
+    public float getPercentHp() {
+        return healthPoint / maxHealthPoint;
     }
 }
