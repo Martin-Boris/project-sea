@@ -8,14 +8,12 @@ import com.github.czyzby.websocket.WebSockets;
 public class WebsocketController {
 
     private final WebSocket socket;
-    private final Ship myShip;
 
     public WebsocketController(Ship myShip) {
         socket = WebSockets.newSocket(WebSockets.toWebSocketUrl("127.0.0.1", 8080));
         socket.setSendGracefully(true);
         socket.addListener(new WebSocketAdapter(myShip));
         socket.connect();
-        this.myShip = myShip;
     }
 
     public void updateDirection(Direction direction) {

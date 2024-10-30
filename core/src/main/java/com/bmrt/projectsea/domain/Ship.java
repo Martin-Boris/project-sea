@@ -30,8 +30,7 @@ public class Ship {
 
     public void updateDirection(float dt, Direction direction) {
         this.direction = direction;
-        speed = getAcceleration(direction).mult(dt);
-        position = position.add(speed);
+        this.speed = getAcceleration(direction).mult(dt);
     }
 
     public Vector getPosition() {
@@ -81,7 +80,7 @@ public class Ship {
     }
 
     public void stop() {
-        speed = Vector.ZERO;
+        speed = new Vector(0, 0);
     }
 
     public String getName() {

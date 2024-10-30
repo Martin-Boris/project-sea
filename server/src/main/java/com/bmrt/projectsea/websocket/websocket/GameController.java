@@ -4,6 +4,7 @@ import com.bmrt.projectsea.application.GameInstanceService;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.websocket.websocket.mapper.MessageMapper;
+import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;
 import io.quarkus.websockets.next.OnTextMessage;
 import io.quarkus.websockets.next.WebSocket;
@@ -22,6 +23,11 @@ public class GameController {
     @OnOpen()
     public void onOpen() {
         gameInstanceService.startGame();
+    }
+
+    @OnClose()
+    public void onClose() {
+        gameInstanceService.stopGame();
     }
 
     @OnTextMessage(broadcast = true)

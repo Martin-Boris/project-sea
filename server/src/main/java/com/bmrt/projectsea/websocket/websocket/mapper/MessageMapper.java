@@ -8,7 +8,7 @@ public class MessageMapper {
         return ship.getPosition().getX() + ";"
             + ship.getPosition().getY() + ";"
             + ship.getSpeed().getX() + ";"
-            + ship.getPosition().getY() + ";"
+            + ship.getSpeed().getY() + ";"
             + ship.getDirection() + ";"
             + ship.getName() + ";"
             + ship.getHealthPoint() + ";"

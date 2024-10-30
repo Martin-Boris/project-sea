@@ -7,8 +7,6 @@ import com.bmrt.projectsea.domain.Ship;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.time.Clock;
-
 @ApplicationScoped
 public class GameInstanceService implements GameActionApi {
 
@@ -16,7 +14,7 @@ public class GameInstanceService implements GameActionApi {
 
     @Inject
     public void initDependencies() {
-        gameInstance = new GameInstance(Clock.systemDefaultZone());
+        gameInstance = new GameInstance();
     }
 
     @Override
@@ -31,6 +29,11 @@ public class GameInstanceService implements GameActionApi {
 
     public Ship stop() {
         return gameInstance.stop();
+    }
+
+    @Override
+    public void stopGame() {
+        gameInstance.stopGame();
     }
 
     @Override

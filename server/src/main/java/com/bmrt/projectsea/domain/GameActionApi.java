@@ -8,5 +8,7 @@ public interface GameActionApi {
 
     Ship stop();
 
+    void stopGame();
+
     void startGame();
 }

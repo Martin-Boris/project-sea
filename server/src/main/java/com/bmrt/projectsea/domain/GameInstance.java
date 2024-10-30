@@ -1,40 +1,36 @@
 package com.bmrt.projectsea.domain;
 
-import java.time.Clock;
 import java.util.ArrayList;
 
 public class GameInstance implements GameActionApi {
 
     public static final float GAME_TICK = 1 / 60f;
+
+    public static final float GAME_TICK_NANO = 1 / 60f * 1000000000;
     private final ArrayList<Ship> ships;
     private final SeaMap map;
-    private final Clock clock;
     private boolean running;
 
 
-    public GameInstance(Clock clock) {
+    public GameInstance() {
         this.running = true;
         this.ships = new ArrayList<>();
         this.map = new SeaMap(20, 20);
-        this.clock = clock;
     }
 
     private void processGameLoop() {
         long currentTime;
         long dt;
-        long previousTickTime = clock.instant().getEpochSecond();
-        //long previousTickTime = System.nanoTime();
+        long previousTickTime = System.nanoTime();
         float accumulator = 0;
         while (running) {
-            currentTime = clock.instant().getEpochSecond();
-            //currentTime = System.nanoTime();
-            //dt = (currentTime - previousTickTime) / 1000000000;
-            dt = currentTime - previousTickTime;
+            currentTime = System.nanoTime();
+            dt = (currentTime - previousTickTime);
             previousTickTime = currentTime;
             accumulator += dt;
-            if (accumulator >= GAME_TICK) {
+            if (accumulator >= GAME_TICK_NANO) {
+                accumulator -= GAME_TICK_NANO;
                 ships.forEach(ship -> ship.update(map));
-                accumulator -= GAME_TICK;
             }
         }
 

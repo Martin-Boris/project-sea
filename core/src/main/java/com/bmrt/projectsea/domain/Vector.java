@@ -4,8 +4,6 @@ import java.util.Objects;
 
 public class Vector {
 
-    public static final Vector ZERO = new Vector(0, 0);
-
     public float x, y;
 
     public Vector(float x, float y) {

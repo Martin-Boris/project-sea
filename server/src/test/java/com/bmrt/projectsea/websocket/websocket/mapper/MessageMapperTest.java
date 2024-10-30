@@ -11,16 +11,16 @@ class MessageMapperTest {
     @Test
     void caseToMessage() {
         Ship ship = ShipBuilder
-            .newShip()
-            .withName("Test")
-            .withDirection(Direction.BOT)
-            .withPosition(10, 10)
-            .withSpeed(0, 0)
-            .withHealthPoint(10000)
-            .withMaxHealthPoint(10000)
-            .build();
+                .newShip()
+                .withName("Test")
+                .withDirection(Direction.BOT)
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withHealthPoint(10000)
+                .withMaxHealthPoint(10000)
+                .build();
         String message = new MessageMapper().toMessage(ship);
-        Assertions.assertEquals(message, "10.0;10.0;0.0;10.0;BOT;Test;10000.0;10000.0");
+        Assertions.assertEquals(message, "10.0;10.0;0.0;0.0;BOT;Test;10000.0;10000.0");
     }
 
 }
