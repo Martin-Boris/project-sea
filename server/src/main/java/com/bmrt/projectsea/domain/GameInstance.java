@@ -22,19 +22,26 @@ public class GameInstance implements GameActionApi {
     private void processGameLoop() {
         long currentTime;
         long dt;
-        long previousTickTime = clock.millis();
+        long previousTickTime = clock.instant().getEpochSecond();
+        //long previousTickTime = System.nanoTime();
+        float accumulator = 0;
         while (running) {
-            currentTime = clock.millis();
-            dt = (currentTime - previousTickTime) / 1000;
-            if (dt >= GAME_TICK) {
-                previousTickTime = currentTime;
+            currentTime = clock.instant().getEpochSecond();
+            //currentTime = System.nanoTime();
+            //dt = (currentTime - previousTickTime) / 1000000000;
+            dt = currentTime - previousTickTime;
+            previousTickTime = currentTime;
+            accumulator += dt;
+            if (accumulator >= GAME_TICK) {
                 ships.forEach(ship -> ship.update(map));
+                accumulator -= GAME_TICK;
             }
         }
 
     }
 
-    public void start() {
+    @Override
+    public void startGame() {
         Thread gameInstanceThread = new Thread(this::processGameLoop);
         gameInstanceThread.start();
     }
@@ -45,9 +52,6 @@ public class GameInstance implements GameActionApi {
 
     @Override
     public Ship join(String shipId, String name) {
-        if (ships.isEmpty()) {
-            start();
-        }
         Ship ship = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.add(ship);
         return ship;

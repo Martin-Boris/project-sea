@@ -21,6 +21,7 @@ public class GameController {
 
     @OnOpen()
     public void onOpen() {
+        gameInstanceService.startGame();
     }
 
     @OnTextMessage(broadcast = true)
@@ -29,8 +30,7 @@ public class GameController {
         Ship ship;
         if (action[0].equals(Action.JOIN.name())) {
             ship = gameInstanceService.join("1", action[1]);
-        }
-        if (action[0].equals(Action.TURN.name())) {
+        } else if (action[0].equals(Action.TURN.name())) {
             ship = gameInstanceService.updateDirection(Direction.valueOf(action[1]));
         } else {
             ship = gameInstanceService.stop();

@@ -32,4 +32,10 @@ public class GameInstanceService implements GameActionApi {
     public Ship stop() {
         return gameInstance.stop();
     }
+
+    @Override
+    public void startGame() {
+        gameInstance.startGame();
+    }
+
 }

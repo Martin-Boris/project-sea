@@ -3,6 +3,8 @@ package com.bmrt.projectsea.domain;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ShipTest {
@@ -111,11 +113,15 @@ public class ShipTest {
         }
 
         @Test
-        void caseOutSeaMapOnTop() {
+        void caseOutSeaMapOnTop() throws InterruptedException {
             Ship ship = ShipBuilder.newShip()
                 .withSpeed(0, 1)
                 .withPosition(10, 10)
                 .build();
+            long before = System.nanoTime();
+            Thread.sleep(1000);
+            long after = System.nanoTime();
+            long dt = (after - before) / 1000000000;
             ship.update(new SeaMap(10, 10));
             assertEquals(ship.getPosition(), new Vector(10, 10));
         }

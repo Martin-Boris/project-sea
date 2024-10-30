@@ -7,4 +7,6 @@ public interface GameActionApi {
     Ship updateDirection(Direction direction);
 
     Ship stop();
+
+    void startGame();
 }
