@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class GameInstance implements GameActionApi {
 
-    public static final float GAME_TICK = 1 / 60f * 1000f;
+    public static final float GAME_TICK = 1 / 60f;
     private final ArrayList<Ship> ships;
     private final SeaMap map;
     private final Clock clock;
@@ -25,8 +25,9 @@ public class GameInstance implements GameActionApi {
         long previousTickTime = clock.millis();
         while (running) {
             currentTime = clock.millis();
-            dt = currentTime - previousTickTime;
+            dt = (currentTime - previousTickTime) / 1000;
             if (dt >= GAME_TICK) {
+                previousTickTime = currentTime;
                 ships.forEach(ship -> ship.update(map));
             }
         }
@@ -38,7 +39,7 @@ public class GameInstance implements GameActionApi {
         gameInstanceThread.start();
     }
 
-    public void stop() {
+    public void stopGame() {
         running = false;
     }
 
@@ -50,5 +51,15 @@ public class GameInstance implements GameActionApi {
         Ship ship = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.add(ship);
         return ship;
+    }
+
+    @Override
+    public Ship updateDirection(Direction direction) {
+        return ships.get(0).updateDirection(GAME_TICK, direction);
+    }
+
+    @Override
+    public Ship stop() {
+        return ships.get(0).stop();
     }
 }

@@ -26,10 +26,10 @@ public class Ship {
         this.maxHealthPoint = maxHealthPoint;
     }
 
-    public void updateDirection(float dt, Direction direction) {
+    public Ship updateDirection(float dt, Direction direction) {
         this.direction = direction;
-        speed = getAcceleration(direction).mult(dt);
-        position = position.add(speed);
+        this.speed = getAcceleration(direction).mult(dt);
+        return this;
     }
 
     public Vector getPosition() {
@@ -64,8 +64,9 @@ public class Ship {
         }
     }
 
-    public void stop() {
+    public Ship stop() {
         speed = Vector.ZERO;
+        return this;
     }
 
     public String getName() {

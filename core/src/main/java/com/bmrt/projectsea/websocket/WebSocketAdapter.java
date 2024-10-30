@@ -7,14 +7,17 @@ import com.github.czyzby.websocket.WebSocketListener;
 public class WebSocketAdapter implements WebSocketListener {
 
     private final Ship myShip;
+    private final ShipMapper shipMapper;
 
     public WebSocketAdapter(Ship myShip) {
         this.myShip = myShip;
+        this.shipMapper = new ShipMapper();
     }
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        return false;
+        webSocket.send(Action.JOIN + ";" + "Torred");
+        return FULLY_HANDLED;
     }
 
     @Override
@@ -24,8 +27,8 @@ public class WebSocketAdapter implements WebSocketListener {
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-
-        return false;
+        shipMapper.updateShip(packet, myShip);
+        return FULLY_HANDLED;
     }
 
     @Override
