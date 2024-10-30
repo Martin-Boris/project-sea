@@ -26,6 +26,7 @@ import com.bmrt.projectsea.render.TargetActor;
 import com.bmrt.projectsea.render.TiledMap;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
 import com.bmrt.projectsea.render.spell.SpellButton;
+import com.bmrt.projectsea.websocket.WebsocketController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,14 +71,16 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
     private float deltaTime;
+    private WebsocketController websocketController;
 
     @Override
     public void create() {
         seaMap = new SeaMap(25, 25);
-        myShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "Torred", 5000, 10000);
+        myShip = new Ship(new Vector(5, 5), new Vector(0, 0), Direction.BOT, "Torred", 10000, 10000);
         otherShips = Arrays.asList(
-            new Ship(new Vector(10, 5), Vector.ZERO, Direction.RIGHT, "Pirate", Ship.MAX_HP, Ship.MAX_HP),
-            new Ship(new Vector(5, 10), Vector.ZERO, Direction.TOP, "Corsair", Ship.MAX_HP, Ship.MAX_HP));
+            new Ship(new Vector(10, 5), new Vector(0, 0), Direction.RIGHT, "Pirate", Ship.MAX_HP, Ship.MAX_HP),
+            new Ship(new Vector(5, 10), new Vector(0, 0), Direction.TOP, "Corsair", Ship.MAX_HP, Ship.MAX_HP));
+        websocketController = new WebsocketController(myShip);
 
         float graphicsWidth = Gdx.graphics.getWidth();
         float graphicsHeight = Gdx.graphics.getHeight();
@@ -152,6 +155,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             myShip.update(seaMap);
             otherShips.forEach(ship -> ship.update(seaMap));
         }
+
         camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
         renderer.setView(camera);
         renderer.render();
@@ -174,6 +178,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         font.dispose();
         gameStage.dispose();
         uiStage.dispose();
+        websocketController.closeConnection();
     }
 
     @Override
@@ -188,16 +193,16 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             spellBarUI.triggerStarboardShoot();
         }
         if (keycode == Input.Keys.LEFT) {
-            myShip.updateDirection(GAME_TICK, Direction.LEFT);
+            websocketController.updateDirection(Direction.LEFT);
         }
         if (keycode == Input.Keys.RIGHT) {
-            myShip.updateDirection(GAME_TICK, Direction.RIGHT);
+            websocketController.updateDirection(Direction.RIGHT);
         }
         if (keycode == Input.Keys.UP) {
-            myShip.updateDirection(GAME_TICK, Direction.TOP);
+            websocketController.updateDirection(Direction.TOP);
         }
         if (keycode == Input.Keys.DOWN) {
-            myShip.updateDirection(GAME_TICK, Direction.BOT);
+            websocketController.updateDirection(Direction.BOT);
         }
         return false;
     }
@@ -209,7 +214,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             && !Gdx.input.isKeyPressed(Input.Keys.UP)
             && !Gdx.input.isKeyPressed(Input.Keys.DOWN);
         if (noDirectionKeyPressed) {
-            myShip.stop();
+            websocketController.stop();
         }
         return false;
     }

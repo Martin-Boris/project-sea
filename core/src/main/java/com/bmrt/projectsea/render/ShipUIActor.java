@@ -70,4 +70,5 @@ public class ShipUIActor extends Actor {
         }
         return healthBarRed;
     }
+
 }

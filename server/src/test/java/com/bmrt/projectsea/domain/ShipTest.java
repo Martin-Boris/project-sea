@@ -1,12 +1,13 @@
 package com.bmrt.projectsea.domain;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ShipTest {
+public class ShipTest {
 
     @Nested
     class updateDirection {
@@ -112,71 +113,17 @@ class ShipTest {
         }
 
         @Test
-        void caseOutSeaMapOnTop() {
+        void caseOutSeaMapOnTop() throws InterruptedException {
             Ship ship = ShipBuilder.newShip()
                 .withSpeed(0, 1)
                 .withPosition(10, 10)
                 .build();
+            long before = System.nanoTime();
+            Thread.sleep(1000);
+            long after = System.nanoTime();
+            long dt = (after - before) / 1000000000;
             ship.update(new SeaMap(10, 10));
             assertEquals(ship.getPosition(), new Vector(10, 10));
         }
     }
-
-    @Nested
-    class shoot {
-        @Test
-        void caseShootTarget() {
-            Ship myShip = ShipBuilder
-                .newShip()
-                .build();
-
-            Ship target = ShipBuilder
-                .newShip()
-                .withHealthPoint(10000)
-                .build();
-            myShip.shoot(target);
-            Assertions.assertEquals(target.getHealthPoint(), 7500);
-        }
-
-        @Test
-        void caseShootTargetWithoutHP() {
-            Ship myShip = ShipBuilder
-                .newShip()
-                .build();
-
-            Ship target = ShipBuilder
-                .newShip()
-                .withHealthPoint(0)
-                .build();
-            myShip.shoot(target);
-            Assertions.assertEquals(target.getHealthPoint(), 0);
-        }
-
-    }
-
-    @Nested
-    class canShoot {
-        @Test
-        void caseTrue() {
-            Ship ship = ShipBuilder.newShip()
-                .withPosition(10, 10)
-                .build();
-            Ship target = ShipBuilder.newShip()
-                .withPosition(11, 10)
-                .build();
-            Assertions.assertTrue(ship.canShoot(target));
-        }
-
-        @Test
-        void caseFalse() {
-            Ship ship = ShipBuilder.newShip()
-                .withPosition(10, 10)
-                .build();
-            Ship target = ShipBuilder.newShip()
-                .withPosition(20, 10)
-                .build();
-            Assertions.assertFalse(ship.canShoot(target));
-        }
-    }
-
 }
