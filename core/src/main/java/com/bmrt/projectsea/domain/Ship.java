@@ -79,10 +79,6 @@ public class Ship {
         }
     }
 
-    public void stop() {
-        speed = new Vector(0, 0);
-    }
-
     public String getName() {
         return name;
     }

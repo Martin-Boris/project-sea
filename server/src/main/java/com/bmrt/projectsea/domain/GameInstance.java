@@ -5,8 +5,9 @@ import java.util.ArrayList;
 public class GameInstance implements GameActionApi {
 
     public static final float GAME_TICK = 1 / 60f;
-
     public static final float GAME_TICK_NANO = 1 / 60f * 1000000000;
+
+
     private final ArrayList<Ship> ships;
     private final SeaMap map;
     private boolean running;

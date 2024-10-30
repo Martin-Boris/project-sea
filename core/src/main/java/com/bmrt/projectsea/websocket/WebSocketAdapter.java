@@ -16,7 +16,7 @@ public class WebSocketAdapter implements WebSocketListener {
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        webSocket.send(Action.JOIN + ";" + "Torred");
+        webSocket.send(Action.JOIN + ";" + myShip.getName());
         return FULLY_HANDLED;
     }
 

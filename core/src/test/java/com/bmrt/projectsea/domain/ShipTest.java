@@ -21,7 +21,7 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.LEFT);
             assertEquals(ship.getDirection(), Direction.LEFT);
-            assertEquals(ship.getPosition(), new Vector(9.6f, 10));
+            assertEquals(ship.getPosition(), new Vector(10f, 10));
             assertEquals(ship.getSpeed(), new Vector(-0.4f, 0));
         }
 
@@ -35,7 +35,7 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.RIGHT);
             assertEquals(ship.getDirection(), Direction.RIGHT);
-            assertEquals(ship.getPosition(), new Vector(10.4f, 10));
+            assertEquals(ship.getPosition(), new Vector(10f, 10));
             assertEquals(ship.getSpeed(), new Vector(0.4f, 0));
         }
 
@@ -49,7 +49,7 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.TOP);
             assertEquals(ship.getDirection(), Direction.TOP);
-            assertEquals(ship.getPosition(), new Vector(10f, 10.4f));
+            assertEquals(ship.getPosition(), new Vector(10f, 10f));
             assertEquals(ship.getSpeed(), new Vector(0f, 0.4f));
         }
 
@@ -63,7 +63,7 @@ class ShipTest {
                 .build();
             ship.updateDirection(0.1f, Direction.BOT);
             assertEquals(ship.getDirection(), Direction.BOT);
-            assertEquals(ship.getPosition(), new Vector(10f, 9.6f));
+            assertEquals(ship.getPosition(), new Vector(10f, 10f));
             assertEquals(ship.getSpeed(), new Vector(0f, -0.4f));
         }
     }
