@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.bmrt.projectsea.domain.Ship;
 
-import static com.bmrt.projectsea.ProjectSeaMain.UNIT;
+import static com.bmrt.projectsea.render.RenderAdapter.UNIT;
 
 public class TargetActor extends Actor {
 

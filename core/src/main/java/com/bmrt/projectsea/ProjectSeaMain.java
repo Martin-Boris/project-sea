@@ -5,33 +5,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameInstance;
 import com.bmrt.projectsea.domain.SeaMap;
-import com.bmrt.projectsea.domain.Ship;
-import com.bmrt.projectsea.domain.Vector;
-import com.bmrt.projectsea.render.GameCamera;
+import com.bmrt.projectsea.render.RenderAdapter;
 import com.bmrt.projectsea.render.ShipActor;
-import com.bmrt.projectsea.render.ShipUIActor;
-import com.bmrt.projectsea.render.TargetActor;
-import com.bmrt.projectsea.render.TiledMap;
-import com.bmrt.projectsea.render.spell.SpellBarUI;
-import com.bmrt.projectsea.render.spell.SpellButton;
 import com.bmrt.projectsea.websocket.WebsocketController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -40,114 +23,36 @@ import java.util.UUID;
 public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor {
 
     /* CONSTANTS */
-    public static final float UNIT = 1 / 32f;
     public static final float GAME_TICK = 1 / 60f;
 
     public static final float EPSILON = 0.00001f;
 
-    /* TEXTURES */
-    private Texture canonShotTexture;
-    private Texture targetTexture;
-    private Texture shipTexture;
-    private Texture healthBarTexture;
-
-    /* FONT */
-    private BitmapFont font;
-
-    /* ACTORS */
-    private ShipActor myShipActor;
-    private TargetActor targetActor;
-    private SpellBarUI spellBarUI;
     private Actor tmpShipActor;
-
-    /* STAGE */
-    private Stage gameStage;
-    private Stage uiStage;
-
 
     private float accumulator = 0f;
     private SeaMap seaMap;
-    private List<Ship> otherShips;
     private GameInstance gameInstance;
 
+    private RenderAdapter renderAdapter;
 
-    private GameCamera camera;
-    private TiledMap tiledMap;
-    private OrthogonalTiledMapRenderer renderer;
     private float deltaTime;
     private WebsocketController websocketController;
 
     @Override
     public void create() {
-        this.gameInstance = new GameInstance(UUID.randomUUID().toString());
+        this.renderAdapter = new RenderAdapter();
+        String myShipName = UUID.randomUUID().toString();
+        this.websocketController = new WebsocketController(myShipName);
+        this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController);
         seaMap = new SeaMap(25, 25);
-        otherShips = Arrays.asList(
-            new Ship(new Vector(10, 5), new Vector(0, 0), Direction.RIGHT, "Pirate", Ship.MAX_HP, Ship.MAX_HP),
-            new Ship(new Vector(5, 10), new Vector(0, 0), Direction.TOP, "Corsair", Ship.MAX_HP, Ship.MAX_HP));
-        websocketController = new WebsocketController(gameInstance);
-
-        float graphicsWidth = Gdx.graphics.getWidth();
-        float graphicsHeight = Gdx.graphics.getHeight();
-
-        tiledMap = new TiledMap(seaMap);
-
-        /* GAME VIEW */
-        float width = (graphicsWidth / graphicsHeight) * 10;
-        int height = 10;
-        camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
-        camera.update(gameInstance.getMyShip().getPosition().getX(),
-            gameInstance.getMyShip().getPosition().getY());
-        renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
-
-        /* GAME VIEW */
-        gameStage = new Stage(new FitViewport(width, height, camera));
-        targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
-        shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
-        targetActor = new TargetActor(targetTexture, null);
-        myShipActor = new ShipActor(gameInstance.getMyShip(), shipTexture);
-        gameStage.addActor(targetActor);
-        List<ShipActor> otherShipActors = new ArrayList<>();
-        for (Ship otherShip : otherShips) {
-            ShipActor shipActor = new ShipActor(otherShip, shipTexture);
-            otherShipActors.add(shipActor);
-            gameStage.addActor(shipActor);
-        }
-        gameStage.addActor(myShipActor);
-
-        /* UI VIEW */
-        healthBarTexture = new Texture(Gdx.files.internal("ui/healthbar.png"));
-        canonShotTexture = new Texture(Gdx.files.internal("sprite/canonShoots.png"));
-        uiStage = new Stage();
-        font = new BitmapFont();
-        ShipUIActor myShipUIActor = new ShipUIActor(gameInstance.getMyShip(), gameStage.getViewport(), font,
-            healthBarTexture);
-        for (Ship otherShip : otherShips) {
-            ShipUIActor shipUIActor = new ShipUIActor(otherShip, gameStage.getViewport(), font, healthBarTexture);
-            uiStage.addActor(shipUIActor);
-        }
-        uiStage.addActor(myShipUIActor);
-        spellBarUI = new SpellBarUI(canonShotTexture, font);
-        spellBarUI.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!((SpellButton) actor).isOnCooldown() && !((SpellButton) actor).isDisabled()) {
-                    ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
-                    if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
-                        myShipActor.triggerPortShoot();
-                    } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
-                        myShipActor.triggerStarboardShoot();
-                    }
-                    gameInstance.getMyShip().shoot(targetActor.getShip());
-                }
-            }
-        });
-        uiStage.addActor(spellBarUI);
-
+        this.gameInstance.initView(seaMap);
 
         InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(gameStage);
-        multiplexer.addProcessor(uiStage);
+        multiplexer.addProcessor(renderAdapter.getGameStage());
+        multiplexer.addProcessor(renderAdapter.getUiStage());
         multiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(multiplexer);
+
     }
 
     @Override
@@ -158,58 +63,39 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         accumulator += deltaTime;
         while (accumulator >= GAME_TICK) {
             accumulator -= GAME_TICK;
-            gameInstance.getMyShip().update(seaMap);
-            otherShips.forEach(ship -> ship.update(seaMap));
+            gameInstance.update(seaMap);
         }
-
-        camera.update(gameInstance.getMyShip().getPosition().getX(),
-            gameInstance.getMyShip().getPosition().getY());
-        renderer.setView(camera);
-        renderer.render();
-        gameStage.act(deltaTime);
-        gameStage.draw();
-
-        spellBarUI.update(gameInstance.getMyShip(), targetActor.getShip());
-        uiStage.act();
-        uiStage.draw();
+        gameInstance.updateView(deltaTime);
     }
 
     @Override
     public void dispose() {
-        tiledMap.dispose();
-        renderer.dispose();
-        shipTexture.dispose();
-        targetTexture.dispose();
-        healthBarTexture.dispose();
-        canonShotTexture.dispose();
-        font.dispose();
-        gameStage.dispose();
-        uiStage.dispose();
+        renderAdapter.dispose();
         websocketController.closeConnection();
     }
 
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
-            targetActor.removeTarget();
+            gameInstance.removeTarget();
         }
         if (keycode == Input.Keys.Q) {
-            spellBarUI.triggerPortShoot();
+            gameInstance.triggerPortShoot();
         }
         if (keycode == Input.Keys.E) {
-            spellBarUI.triggerStarboardShoot();
+            gameInstance.triggerStarboardShoot();
         }
         if (keycode == Input.Keys.LEFT) {
-            websocketController.updateDirection(Direction.LEFT);
+            gameInstance.updateDirection(Direction.LEFT);
         }
         if (keycode == Input.Keys.RIGHT) {
-            websocketController.updateDirection(Direction.RIGHT);
+            gameInstance.updateDirection(Direction.RIGHT);
         }
         if (keycode == Input.Keys.UP) {
-            websocketController.updateDirection(Direction.TOP);
+            gameInstance.updateDirection(Direction.TOP);
         }
         if (keycode == Input.Keys.DOWN) {
-            websocketController.updateDirection(Direction.BOT);
+            gameInstance.updateDirection(Direction.BOT);
         }
         return false;
     }
@@ -221,7 +107,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             && !Gdx.input.isKeyPressed(Input.Keys.UP)
             && !Gdx.input.isKeyPressed(Input.Keys.DOWN);
         if (noDirectionKeyPressed) {
-            websocketController.stop();
+            gameInstance.stop();
         }
         return false;
     }
@@ -233,13 +119,11 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector2 vector2 = gameStage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        tmpShipActor = gameStage.hit(vector2.x, vector2.y, true);
-        if (tmpShipActor != null && !tmpShipActor.equals(myShipActor)) {
-            targetActor.setVisible(true);
-            targetActor.setTarget(((ShipActor) tmpShipActor).getShip());
+        Vector2 vector2 = renderAdapter.getGameStage().screenToStageCoordinates(new Vector2(screenX, screenY));
+        tmpShipActor = renderAdapter.getGameStage().hit(vector2.x, vector2.y, true);
+        if (tmpShipActor != null) {
+            gameInstance.setTarget(((ShipActor) tmpShipActor).getShip());
         }
-
         return false;
     }
 

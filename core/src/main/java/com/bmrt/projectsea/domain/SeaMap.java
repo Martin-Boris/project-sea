@@ -2,6 +2,7 @@ package com.bmrt.projectsea.domain;
 
 public class SeaMap {
 
+    public static final float UNIT = 1 / 32f;
     private final int width;
     private final int height;
 

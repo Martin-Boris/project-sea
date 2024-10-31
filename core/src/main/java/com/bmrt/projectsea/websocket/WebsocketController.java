@@ -2,33 +2,45 @@ package com.bmrt.projectsea.websocket;
 
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameInstance;
+import com.bmrt.projectsea.domain.WebSocketPort;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSockets;
 
-public class WebsocketController {
+public class WebsocketController implements WebSocketPort {
 
+    private final String shipName;
     private final WebSocket socket;
 
-    private final GameInstance gameInstance;
 
-    public WebsocketController(GameInstance gameInstance) {
-        this.gameInstance = gameInstance;
+    public WebsocketController(String shipName) {
+        this.shipName = shipName;
         socket = WebSockets.newSocket(WebSockets.toWebSocketUrl("127.0.0.1", 8080));
-        socket.setSendGracefully(true);
-        socket.addListener(new WebSocketAdapter(gameInstance));
-        socket.connect();
     }
 
+    @Override
     public void updateDirection(Direction direction) {
-        socket.send(Action.TURN + ";" + direction + ";" + gameInstance.getMyShip().getName());
+        socket.send(Action.TURN + ";" + direction + ";" + shipName);
     }
 
 
+    @Override
     public void stop() {
-        socket.send(Action.STOP + ";" + gameInstance.getMyShip().getName());
+        socket.send(Action.STOP + ";" + shipName);
     }
 
     public void closeConnection() {
         WebSockets.closeGracefully(socket);
     }
+
+    @Override
+    public void addListener(GameInstance gameInstance) {
+        socket.addListener(new WebSocketListenerAdapter(gameInstance));
+    }
+
+    @Override
+    public void startConnection() {
+        socket.setSendGracefully(true);
+        socket.connect();
+    }
+
 }

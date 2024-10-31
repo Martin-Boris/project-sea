@@ -9,7 +9,8 @@ import com.bmrt.projectsea.GameTime;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 
-import static com.bmrt.projectsea.ProjectSeaMain.UNIT;
+import static com.bmrt.projectsea.render.RenderAdapter.UNIT;
+
 
 public class ShipActor extends Actor {
 
