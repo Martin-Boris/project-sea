@@ -18,17 +18,17 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship join(String shipId, String name) {
-        return gameInstance.join(shipId, name);
+    public Ship join(String name) {
+        return gameInstance.join(name);
     }
 
     @Override
-    public Ship updateDirection(Direction direction) {
-        return gameInstance.updateDirection(direction);
+    public Ship updateDirection(Direction direction, String name) {
+        return gameInstance.updateDirection(direction, name);
     }
 
-    public Ship stop() {
-        return gameInstance.stop();
+    public Ship stop(String name) {
+        return gameInstance.stop(name);
     }
 
     @Override
@@ -39,6 +39,11 @@ public class GameInstanceService implements GameActionApi {
     @Override
     public void startGame() {
         gameInstance.startGame();
+    }
+
+    @Override
+    public Ship leave(String name) {
+        return gameInstance.leave(name);
     }
 
 }

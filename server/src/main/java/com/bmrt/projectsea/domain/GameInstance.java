@@ -1,6 +1,6 @@
 package com.bmrt.projectsea.domain;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameInstance implements GameActionApi {
 
@@ -8,14 +8,14 @@ public class GameInstance implements GameActionApi {
     public static final float GAME_TICK_NANO = 1 / 60f * 1000000000;
 
 
-    private final ArrayList<Ship> ships;
+    private final HashMap<String, Ship> ships;
     private final SeaMap map;
     private boolean running;
 
 
     public GameInstance() {
-        this.running = true;
-        this.ships = new ArrayList<>();
+        this.running = false;
+        this.ships = new HashMap<>();
         this.map = new SeaMap(20, 20);
     }
 
@@ -31,7 +31,7 @@ public class GameInstance implements GameActionApi {
             accumulator += dt;
             if (accumulator >= GAME_TICK_NANO) {
                 accumulator -= GAME_TICK_NANO;
-                ships.forEach(ship -> ship.update(map));
+                ships.values().forEach(ship -> ship.update(map));
             }
         }
 
@@ -39,8 +39,20 @@ public class GameInstance implements GameActionApi {
 
     @Override
     public void startGame() {
-        Thread gameInstanceThread = new Thread(this::processGameLoop);
-        gameInstanceThread.start();
+        if (!this.running) {
+            this.running = true;
+            Thread gameInstanceThread = new Thread(this::processGameLoop);
+            gameInstanceThread.start();
+        }
+    }
+
+    @Override
+    public Ship leave(String name) {
+        Ship ship = ships.remove(name);
+        if (this.running && ships.isEmpty()) {
+            running = false;
+        }
+        return ship;
     }
 
     public void stopGame() {
@@ -48,19 +60,23 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship join(String shipId, String name) {
+    public Ship join(String name) {
         Ship ship = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT, name, 10000, 10000);
-        this.ships.add(ship);
+        this.ships.put(ship.getName(), ship);
         return ship;
     }
 
     @Override
-    public Ship updateDirection(Direction direction) {
-        return ships.get(0).updateDirection(GAME_TICK, direction);
+    public Ship updateDirection(Direction direction, String name) {
+        return ships.get(name).updateDirection(GAME_TICK, direction);
     }
 
     @Override
-    public Ship stop() {
-        return ships.get(0).stop();
+    public Ship stop(String name) {
+        return ships.get(name).stop();
+    }
+
+    public boolean contains(Ship ship) {
+        return ships.containsValue(ship);
     }
 }
