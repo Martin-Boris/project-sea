@@ -1,5 +1,7 @@
 package com.bmrt.projectsea.domain;
 
+import java.util.Objects;
+
 public class Ship {
 
     /* CONSTANT */
@@ -105,4 +107,29 @@ public class Ship {
         return maxHealthPoint;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ship ship = (Ship) o;
+        return Float.compare(maxHealthPoint, ship.maxHealthPoint) == 0 && Float.compare(healthPoint,
+            ship.healthPoint) == 0 && Objects.equals(name, ship.name) && Objects.equals(position, ship.position) && Objects.equals(speed, ship.speed) && direction == ship.direction;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, maxHealthPoint, healthPoint, position, speed, direction);
+    }
+
+    @Override
+    public String toString() {
+        return "Ship{" +
+            "name='" + name + '\'' +
+            ", maxHealthPoint=" + maxHealthPoint +
+            ", healthPoint=" + healthPoint +
+            ", position=" + position +
+            ", speed=" + speed +
+            ", direction=" + direction +
+            '}';
+    }
 }

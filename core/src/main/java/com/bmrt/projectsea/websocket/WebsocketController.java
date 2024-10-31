@@ -9,7 +9,10 @@ public class WebsocketController {
 
     private final WebSocket socket;
 
+    private final GameInstance gameInstance;
+
     public WebsocketController(GameInstance gameInstance) {
+        this.gameInstance = gameInstance;
         socket = WebSockets.newSocket(WebSockets.toWebSocketUrl("127.0.0.1", 8080));
         socket.setSendGracefully(true);
         socket.addListener(new WebSocketAdapter(gameInstance));
@@ -17,15 +20,15 @@ public class WebsocketController {
     }
 
     public void updateDirection(Direction direction) {
-        socket.send(Action.TURN + ";" + direction);
+        socket.send(Action.TURN + ";" + direction + ";" + gameInstance.getMyShip().getName());
     }
 
+
+    public void stop() {
+        socket.send(Action.STOP + ";" + gameInstance.getMyShip().getName());
+    }
 
     public void closeConnection() {
         WebSockets.closeGracefully(socket);
-    }
-
-    public void stop() {
-        socket.send(Action.STOP + ";");
     }
 }

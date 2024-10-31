@@ -16,18 +16,20 @@ public class WebSocketAdapter implements WebSocketListener {
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        webSocket.send(Action.JOIN + ";" + gameInstance.getMyShip());
+        webSocket.send(Action.JOIN + ";" + gameInstance.getMyShip().getName());
         return FULLY_HANDLED;
     }
 
     @Override
     public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
+        webSocket.send(Action.LEAVE + ";" + gameInstance.getMyShip().getName());
         return false;
     }
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-        shipMapper.updateShip(packet, gameInstance.getMyShip());
+        String[] data = packet.split(";");
+        shipMapper.updateShip(data, gameInstance.get(data[5]));
         return FULLY_HANDLED;
     }
 
