@@ -4,12 +4,12 @@ import com.bmrt.projectsea.domain.GameInstance;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketListener;
 
-public class WebSocketAdapter implements WebSocketListener {
+public class WebSocketListenerAdapter implements WebSocketListener {
 
     private final GameInstance gameInstance;
     private final ShipMapper shipMapper;
 
-    public WebSocketAdapter(GameInstance gameInstance) {
+    public WebSocketListenerAdapter(GameInstance gameInstance) {
         this.gameInstance = gameInstance;
         this.shipMapper = new ShipMapper();
     }
@@ -29,7 +29,11 @@ public class WebSocketAdapter implements WebSocketListener {
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
         String[] data = packet.split(";");
-        shipMapper.updateShip(data, gameInstance.get(data[5]));
+        if (gameInstance.contains(data[5])) {
+            shipMapper.updateShip(data, gameInstance.get(data[5]));
+        } else {
+            gameInstance.add(shipMapper.createShip(data));
+        }
         return FULLY_HANDLED;
     }
 

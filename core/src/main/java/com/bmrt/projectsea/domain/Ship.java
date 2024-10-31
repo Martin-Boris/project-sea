@@ -9,13 +9,11 @@ public class Ship {
     public static final float DAMAGE = 2500;
     private static final float SPEED_TILE_PER_SEC = 4;
     private static final float RANGE = 8;
-
-
+    private final Vector speed;
     private String name;
     private float maxHealthPoint;
     private float healthPoint;
     private Vector position;
-    private Vector speed;
     private Direction direction;
 
     public Ship(Vector position, Vector speed, Direction direction, String name, float healthPoint,
@@ -28,11 +26,6 @@ public class Ship {
         this.maxHealthPoint = maxHealthPoint;
     }
 
-    public void updateDirection(float dt, Direction direction) {
-        this.direction = direction;
-        this.speed = getAcceleration(direction).mult(dt);
-    }
-
     public Vector getPosition() {
         return position;
     }
@@ -40,10 +33,6 @@ public class Ship {
     public void setPosition(float x, float y) {
         this.position.x = x;
         this.position.y = y;
-    }
-
-    public Vector getSpeed() {
-        return speed;
     }
 
     public void setSpeed(float x, float y) {
@@ -63,19 +52,6 @@ public class Ship {
         Vector newPosition = position.add(speed);
         if (!seaMap.isOut(newPosition)) {
             position = newPosition;
-        }
-    }
-
-    private Vector getAcceleration(Direction direction) {
-        switch (direction) {
-            case TOP:
-                return new Vector(0, SPEED_TILE_PER_SEC);
-            case LEFT:
-                return new Vector(-SPEED_TILE_PER_SEC, 0);
-            case RIGHT:
-                return new Vector(SPEED_TILE_PER_SEC, 0);
-            default:
-                return new Vector(0, -SPEED_TILE_PER_SEC);
         }
     }
 
