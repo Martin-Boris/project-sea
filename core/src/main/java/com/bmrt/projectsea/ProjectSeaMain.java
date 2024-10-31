@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.Direction;
+import com.bmrt.projectsea.domain.GameInstance;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.Vector;
@@ -31,6 +32,7 @@ import com.bmrt.projectsea.websocket.WebsocketController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -65,8 +67,10 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     private float accumulator = 0f;
     private SeaMap seaMap;
-    private Ship myShip;
     private List<Ship> otherShips;
+    private GameInstance gameInstance;
+
+
     private GameCamera camera;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer renderer;
@@ -75,12 +79,12 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
 
     @Override
     public void create() {
+        this.gameInstance = new GameInstance(UUID.randomUUID().toString());
         seaMap = new SeaMap(25, 25);
-        myShip = new Ship(new Vector(5, 5), new Vector(0, 0), Direction.BOT, "Torred", 10000, 10000);
         otherShips = Arrays.asList(
             new Ship(new Vector(10, 5), new Vector(0, 0), Direction.RIGHT, "Pirate", Ship.MAX_HP, Ship.MAX_HP),
             new Ship(new Vector(5, 10), new Vector(0, 0), Direction.TOP, "Corsair", Ship.MAX_HP, Ship.MAX_HP));
-        websocketController = new WebsocketController(myShip);
+        websocketController = new WebsocketController(gameInstance);
 
         float graphicsWidth = Gdx.graphics.getWidth();
         float graphicsHeight = Gdx.graphics.getHeight();
@@ -91,7 +95,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         float width = (graphicsWidth / graphicsHeight) * 10;
         int height = 10;
         camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
-        camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
+        camera.update(gameInstance.getMyShip().getPosition().getX(),
+            gameInstance.getMyShip().getPosition().getY());
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
 
         /* GAME VIEW */
@@ -99,7 +104,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
         targetActor = new TargetActor(targetTexture, null);
-        myShipActor = new ShipActor(myShip, shipTexture);
+        myShipActor = new ShipActor(gameInstance.getMyShip(), shipTexture);
         gameStage.addActor(targetActor);
         List<ShipActor> otherShipActors = new ArrayList<>();
         for (Ship otherShip : otherShips) {
@@ -114,7 +119,8 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         canonShotTexture = new Texture(Gdx.files.internal("sprite/canonShoots.png"));
         uiStage = new Stage();
         font = new BitmapFont();
-        ShipUIActor myShipUIActor = new ShipUIActor(myShip, gameStage.getViewport(), font, healthBarTexture);
+        ShipUIActor myShipUIActor = new ShipUIActor(gameInstance.getMyShip(), gameStage.getViewport(), font,
+            healthBarTexture);
         for (Ship otherShip : otherShips) {
             ShipUIActor shipUIActor = new ShipUIActor(otherShip, gameStage.getViewport(), font, healthBarTexture);
             uiStage.addActor(shipUIActor);
@@ -130,7 +136,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
                     } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
                         myShipActor.triggerStarboardShoot();
                     }
-                    myShip.shoot(targetActor.getShip());
+                    gameInstance.getMyShip().shoot(targetActor.getShip());
                 }
             }
         });
@@ -152,17 +158,18 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         accumulator += deltaTime;
         while (accumulator >= GAME_TICK) {
             accumulator -= GAME_TICK;
-            myShip.update(seaMap);
+            gameInstance.getMyShip().update(seaMap);
             otherShips.forEach(ship -> ship.update(seaMap));
         }
 
-        camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
+        camera.update(gameInstance.getMyShip().getPosition().getX(),
+            gameInstance.getMyShip().getPosition().getY());
         renderer.setView(camera);
         renderer.render();
         gameStage.act(deltaTime);
         gameStage.draw();
 
-        spellBarUI.update(myShip, targetActor.getShip());
+        spellBarUI.update(gameInstance.getMyShip(), targetActor.getShip());
         uiStage.act();
         uiStage.draw();
     }

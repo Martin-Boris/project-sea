@@ -6,8 +6,8 @@ public class ShipBuilder {
     private Vector speed;
     private String name;
     private Direction direction;
-    private int healthPoint;
-    private int maxHealthPoint;
+    private float healthPoint;
+    private float maxHealthPoint;
 
     public static ShipBuilder newShip() {
         return new ShipBuilder();
@@ -33,12 +33,12 @@ public class ShipBuilder {
         return this;
     }
 
-    public ShipBuilder withHealthPoint(int hp) {
+    public ShipBuilder withHealthPoint(float hp) {
         this.healthPoint = hp;
         return this;
     }
 
-    public ShipBuilder withMaxHealthPoint(int hp) {
+    public ShipBuilder withMaxHealthPoint(float hp) {
         this.maxHealthPoint = hp;
         return this;
     }
