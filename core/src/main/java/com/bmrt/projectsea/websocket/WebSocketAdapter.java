@@ -1,22 +1,22 @@
 package com.bmrt.projectsea.websocket;
 
-import com.bmrt.projectsea.domain.Ship;
+import com.bmrt.projectsea.domain.GameInstance;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketListener;
 
 public class WebSocketAdapter implements WebSocketListener {
 
-    private final Ship myShip;
+    private final GameInstance gameInstance;
     private final ShipMapper shipMapper;
 
-    public WebSocketAdapter(Ship myShip) {
-        this.myShip = myShip;
+    public WebSocketAdapter(GameInstance gameInstance) {
+        this.gameInstance = gameInstance;
         this.shipMapper = new ShipMapper();
     }
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        webSocket.send(Action.JOIN + ";" + myShip.getName());
+        webSocket.send(Action.JOIN + ";" + gameInstance.getMyShip());
         return FULLY_HANDLED;
     }
 
@@ -27,7 +27,7 @@ public class WebSocketAdapter implements WebSocketListener {
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-        shipMapper.updateShip(packet, myShip);
+        shipMapper.updateShip(packet, gameInstance.getMyShip());
         return FULLY_HANDLED;
     }
 
