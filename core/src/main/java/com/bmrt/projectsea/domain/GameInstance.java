@@ -8,16 +8,14 @@ public class GameInstance {
     private final String myShipName;
     private final HashMap<String, Ship> ships;
     private final RenderPort renderPort;
-
     private final WebSocketPort webSocketPort;
+    private Ship target;
 
     public GameInstance(String myShipName, RenderPort renderPort, WebSocketPort websocketPort) {
         this.ships = new HashMap<>();
         this.myShipName = myShipName;
         this.renderPort = renderPort;
         this.webSocketPort = websocketPort;
-        this.ships.put(myShipName, new Ship(new Vector(10, 5), new Vector(0, 0), Direction.TOP, myShipName,
-            Ship.MAX_HP, Ship.MAX_HP));
         webSocketPort.addListener(this);
         websocketPort.startConnection();
     }
@@ -26,11 +24,9 @@ public class GameInstance {
         return ships.get(myShipName);
     }
 
-    public void addOtherShip(Ship ship) {
-        if (!Objects.equals(ship.getName(), myShipName)) {
-            ships.put(ship.getName(), ship);
-            renderPort.add(ship);
-        }
+    public void addShip(Ship ship) {
+        ships.put(ship.getName(), ship);
+        renderPort.add(ship, Objects.equals(ship.getName(), myShipName));
     }
 
     public Ship get(String name) {
@@ -42,7 +38,7 @@ public class GameInstance {
     }
 
     public void initView(SeaMap seaMap) {
-        renderPort.initRendering(seaMap, getMyShip());
+        renderPort.initRendering(seaMap);
     }
 
     public void update(SeaMap seaMap) {
@@ -52,7 +48,11 @@ public class GameInstance {
     }
 
     public void updateView(float deltaTime) {
-        renderPort.updateView(getMyShip(), deltaTime);
+        if (ships.isEmpty()) {
+            return;
+        }
+        boolean canShoot = target != null && getMyShip().canShoot(target);
+        renderPort.updateView(getMyShip().getPosition(), deltaTime, canShoot);
     }
 
     public void triggerPortShoot() {
@@ -64,11 +64,15 @@ public class GameInstance {
     }
 
     public void removeTarget() {
+        target = null;
         renderPort.removeTarget();
     }
 
     public void setTarget(Ship ship) {
-        renderPort.setTarget(ship);
+        if (!Objects.equals(ship.getName(), myShipName)) {
+            target = ship;
+            renderPort.setTarget(ship);
+        }
     }
 
     public void updateDirection(Direction direction) {
@@ -77,5 +81,9 @@ public class GameInstance {
 
     public void stop() {
         webSocketPort.stop();
+    }
+
+    public String getMyShipName() {
+        return myShipName;
     }
 }
