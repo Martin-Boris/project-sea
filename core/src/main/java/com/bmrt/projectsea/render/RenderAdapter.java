@@ -16,8 +16,6 @@ import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
 import com.bmrt.projectsea.render.spell.SpellButton;
 
-import java.util.ArrayList;
-
 public class RenderAdapter implements RenderPort {
 
     public static final float UNIT = 1 / 32f;
@@ -30,7 +28,6 @@ public class RenderAdapter implements RenderPort {
 
     private ShipActor myShipActor;
 
-    private ArrayList<ShipActor> otherShipActors;
     private TargetActor targetActor;
     private SpellBarUI spellBarUI;
 
@@ -130,7 +127,6 @@ public class RenderAdapter implements RenderPort {
     @Override
     public void add(Ship ship) {
         ShipActor shipActor = new ShipActor(ship, shipTexture);
-        otherShipActors.add(shipActor);
         gameStage.addActor(shipActor);
         ShipUIActor shipUIActor = new ShipUIActor(ship, gameStage.getViewport(), font, healthBarTexture);
         uiStage.addActor(shipUIActor);

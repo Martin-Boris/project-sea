@@ -32,7 +32,7 @@ public class WebSocketListenerAdapter implements WebSocketListener {
         if (gameInstance.contains(data[5])) {
             shipMapper.updateShip(data, gameInstance.get(data[5]));
         } else {
-            gameInstance.add(shipMapper.createShip(data));
+            gameInstance.addOtherShip(shipMapper.createShip(data));
         }
         return FULLY_HANDLED;
     }
