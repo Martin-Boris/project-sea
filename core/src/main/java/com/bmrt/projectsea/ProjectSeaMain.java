@@ -15,8 +15,6 @@ import com.bmrt.projectsea.render.RenderAdapter;
 import com.bmrt.projectsea.render.ShipActor;
 import com.bmrt.projectsea.websocket.WebsocketController;
 
-import java.util.UUID;
-
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
@@ -41,7 +39,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     @Override
     public void create() {
         this.renderAdapter = new RenderAdapter();
-        String myShipName = UUID.randomUUID().toString();
+        String myShipName = GUID.get();
         this.websocketController = new WebsocketController(myShipName);
         this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController);
         seaMap = new SeaMap(25, 25);

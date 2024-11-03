@@ -23,7 +23,7 @@ class ShipMapperTest {
             .build();
         String[] messageSplit = message.split(";");
         new ShipMapper().updateShip(messageSplit, ship);
-        Assertions.assertEquals(ship, new Ship(new Vector(10, 10), new Vector(10, 10), Direction.BOT, "Test", 10000,
+        Assertions.assertEquals(ship, new Ship(new Vector(10, 10), new Vector(10, 10), Direction.BOT, "Toto", 10000,
             10000));
     }
 
