@@ -8,4 +8,5 @@
     <!-- You can include a full package by not including the name of a type at the end. -->
     <extend-configuration-property name="gdx.reflect.include"
                                    value="com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile"/>
+    <inherits name="com.github.czyzby.websocket.GwtWebSockets">
 </module>

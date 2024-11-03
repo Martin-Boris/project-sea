@@ -34,7 +34,6 @@ public class GameController {
 
     @OnTextMessage(broadcast = true)
     public String onMessage(String message) {
-        System.out.println(message);
         String[] action = message.split(";");
         Ship ship;
         if (action[0].equals(Action.JOIN.name())) {

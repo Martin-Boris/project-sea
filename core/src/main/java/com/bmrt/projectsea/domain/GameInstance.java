@@ -1,6 +1,7 @@
 package com.bmrt.projectsea.domain;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class GameInstance {
 
@@ -25,9 +26,11 @@ public class GameInstance {
         return ships.get(myShipName);
     }
 
-    public void add(Ship ship) {
-        ships.put(ship.getName(), ship);
-        renderPort.add(ship);
+    public void addOtherShip(Ship ship) {
+        if (!Objects.equals(ship.getName(), myShipName)) {
+            ships.put(ship.getName(), ship);
+            renderPort.add(ship);
+        }
     }
 
     public Ship get(String name) {

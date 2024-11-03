@@ -31,7 +31,7 @@ class GameInstanceTest {
             .withSpeed(0, 0)
             .build();
         GameInstance gameInstance = new GameInstance("Torred", null, null);
-        gameInstance.add(ship);
+        gameInstance.addOtherShip(ship);
         Assertions.assertEquals(gameInstance.get("Test"), ship);
     }
 
