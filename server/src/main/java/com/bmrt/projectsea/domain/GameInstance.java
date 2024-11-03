@@ -62,7 +62,7 @@ public class GameInstance implements GameActionApi {
     @Override
     public Ship join(String name) {
         Ship ship = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT, name, 10000, 10000);
-        this.ships.put(ship.getName(), ship);
+        this.ships.put(name, ship);
         return ship;
     }
 
