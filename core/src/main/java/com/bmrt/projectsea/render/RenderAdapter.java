@@ -77,7 +77,7 @@ public class RenderAdapter implements RenderPort {
         gameStage.act(deltaTime);
         gameStage.draw();
 
-        spellBarUI.update(canShootTarget);
+        spellBarUI.update(!canShootTarget);
         uiStage.act();
         uiStage.draw();
     }
