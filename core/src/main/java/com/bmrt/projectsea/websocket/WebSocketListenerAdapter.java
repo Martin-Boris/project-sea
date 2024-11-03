@@ -16,14 +16,14 @@ public class WebSocketListenerAdapter implements WebSocketListener {
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        webSocket.send(Action.JOIN + ";" + gameInstance.getMyShip().getName());
+        webSocket.send(Action.JOIN + ";" + gameInstance.getMyShipName());
         return FULLY_HANDLED;
     }
 
     @Override
     public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
-        webSocket.send(Action.LEAVE + ";" + gameInstance.getMyShip().getName());
-        return false;
+        webSocket.send(Action.LEAVE + ";" + gameInstance.getMyShipName());
+        return FULLY_HANDLED;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class WebSocketListenerAdapter implements WebSocketListener {
         if (gameInstance.contains(data[5])) {
             shipMapper.updateShip(data, gameInstance.get(data[5]));
         } else {
-            gameInstance.addOtherShip(shipMapper.createShip(data));
+            gameInstance.addShip(shipMapper.createShip(data));
         }
         return FULLY_HANDLED;
     }

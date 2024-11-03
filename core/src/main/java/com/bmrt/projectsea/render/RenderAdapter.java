@@ -13,6 +13,7 @@ import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.RenderPort;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
+import com.bmrt.projectsea.domain.Vector;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
 import com.bmrt.projectsea.render.spell.SpellButton;
 
@@ -26,8 +27,6 @@ public class RenderAdapter implements RenderPort {
     private Texture healthBarTexture;
     private BitmapFont font;
 
-    private ShipActor myShipActor;
-
     private TargetActor targetActor;
     private SpellBarUI spellBarUI;
 
@@ -39,7 +38,7 @@ public class RenderAdapter implements RenderPort {
     private Stage uiStage;
 
     @Override
-    public void initRendering(SeaMap seaMap, Ship myShip) {
+    public void initRendering(SeaMap seaMap) {
         float graphicsWidth = Gdx.graphics.getWidth();
         float graphicsHeight = Gdx.graphics.getHeight();
 
@@ -57,9 +56,7 @@ public class RenderAdapter implements RenderPort {
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
         targetActor = new TargetActor(targetTexture, null);
-        myShipActor = new ShipActor(myShip, shipTexture);
         gameStage.addActor(targetActor);
-        gameStage.addActor(myShipActor);
 
 
         /* UI VIEW */
@@ -67,36 +64,20 @@ public class RenderAdapter implements RenderPort {
         canonShotTexture = new Texture(Gdx.files.internal("sprite/canonShoots.png"));
         uiStage = new Stage();
         font = new BitmapFont();
-        ShipUIActor myShipUIActor = new ShipUIActor(myShip, gameStage.getViewport(), font,
-            healthBarTexture);
-        uiStage.addActor(myShipUIActor);
         spellBarUI = new SpellBarUI(canonShotTexture, font);
 
-        spellBarUI.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                if (!((SpellButton) actor).isOnCooldown() && !((SpellButton) actor).isDisabled()) {
-                    ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
-                    if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
-                        myShipActor.triggerPortShoot();
-                    } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
-                        myShipActor.triggerStarboardShoot();
-                    }
-                    myShip.shoot(targetActor.getShip());
-                }
-            }
-        });
         uiStage.addActor(spellBarUI);
     }
 
     @Override
-    public void updateView(Ship myShip, float deltaTime) {
-        camera.update(myShip.getPosition().getX(), myShip.getPosition().getY());
+    public void updateView(Vector myShipPosition, float deltaTime, boolean canShootTarget) {
+        camera.update(myShipPosition.getX(), myShipPosition.getY());
         renderer.setView(camera);
         renderer.render();
         gameStage.act(deltaTime);
         gameStage.draw();
 
-        spellBarUI.update(myShip, targetActor.getShip());
+        spellBarUI.update(canShootTarget);
         uiStage.act();
         uiStage.draw();
     }
@@ -118,18 +99,31 @@ public class RenderAdapter implements RenderPort {
 
     @Override
     public void setTarget(Ship ship) {
-        if (!ship.equals(myShipActor.getShip())) {
-            targetActor.setVisible(true);
-            targetActor.setTarget(ship);
-        }
+        targetActor.setVisible(true);
+        targetActor.setTarget(ship);
     }
 
     @Override
-    public void add(Ship ship) {
+    public void add(Ship ship, boolean myShip) {
         ShipActor shipActor = new ShipActor(ship, shipTexture);
         gameStage.addActor(shipActor);
         ShipUIActor shipUIActor = new ShipUIActor(ship, gameStage.getViewport(), font, healthBarTexture);
         uiStage.addActor(shipUIActor);
+        if (myShip) {
+            spellBarUI.addListener(new ChangeListener() {
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (!((SpellButton) actor).isOnCooldown() && !((SpellButton) actor).isDisabled()) {
+                        ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
+                        if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
+                            shipActor.triggerPortShoot();
+                        } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
+                            shipActor.triggerStarboardShoot();
+                        }
+                        ship.shoot(targetActor.getShip());
+                    }
+                }
+            });
+        }
     }
 
 
