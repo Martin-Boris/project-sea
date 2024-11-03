@@ -2,9 +2,9 @@ package com.bmrt.projectsea.domain;
 
 public interface RenderPort {
 
-    void initRendering(SeaMap seaMap, Ship myShip);
+    void initRendering(SeaMap seaMap);
 
-    void updateView(Ship myShip, float deltaTime);
+    void updateView(Vector myShipPosition, float deltaTime, boolean canShootTarget);
 
     void triggerPortShoot();
 
@@ -14,5 +14,5 @@ public interface RenderPort {
 
     void setTarget(Ship ship);
 
-    void add(Ship ship);
+    void add(Ship ship, boolean myShip);
 }

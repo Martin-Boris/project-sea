@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.bmrt.projectsea.domain.ActionType;
-import com.bmrt.projectsea.domain.Ship;
 
 import java.util.ArrayList;
 
@@ -52,10 +51,9 @@ public class SpellBarUI extends Table {
         addActor(canonShootStarboardButton);
     }
 
-    public void update(Ship myShip, Ship target) {
-        boolean canShoot = target != null && myShip.canShoot(target);
+    public void update(boolean disableSpell) {
         for (SpellButton spell : spells) {
-            spell.setDisabled(!canShoot);
+            spell.setDisabled(disableSpell);
             spell.update();
         }
     }
