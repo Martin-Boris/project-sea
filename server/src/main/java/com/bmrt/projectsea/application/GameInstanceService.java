@@ -7,6 +7,8 @@ import com.bmrt.projectsea.domain.Ship;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.util.Collection;
+
 @ApplicationScoped
 public class GameInstanceService implements GameActionApi {
 
@@ -44,6 +46,11 @@ public class GameInstanceService implements GameActionApi {
     @Override
     public Ship leave(String name) {
         return gameInstance.leave(name);
+    }
+
+    @Override
+    public Collection<Ship> getShips() {
+        return gameInstance.getShips();
     }
 
 }
