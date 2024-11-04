@@ -48,7 +48,7 @@ public class GameInstance {
     }
 
     public void updateView(float deltaTime) {
-        if (ships.isEmpty()) {
+        if (!ships.containsKey(myShipName)) {
             return;
         }
         boolean canShoot = target != null && getMyShip().canShoot(target);

@@ -1,5 +1,6 @@
 package com.bmrt.projectsea.domain;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class GameInstance implements GameActionApi {
@@ -55,12 +56,20 @@ public class GameInstance implements GameActionApi {
         return ship;
     }
 
+    @Override
+    public Collection<Ship> getShips() {
+        return ships.values();
+    }
+
     public void stopGame() {
         running = false;
     }
 
     @Override
     public Ship join(String name) {
+        if (!running) {
+            startGame();
+        }
         Ship ship = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.put(name, ship);
         return ship;

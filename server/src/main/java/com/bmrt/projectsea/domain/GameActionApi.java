@@ -1,5 +1,7 @@
 package com.bmrt.projectsea.domain;
 
+import java.util.Collection;
+
 public interface GameActionApi {
 
     Ship join(String name);
@@ -13,4 +15,6 @@ public interface GameActionApi {
     void startGame();
 
     Ship leave(String name);
+
+    Collection<Ship> getShips();
 }

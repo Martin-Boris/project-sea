@@ -10,6 +10,8 @@ import io.quarkus.websockets.next.OnTextMessage;
 import io.quarkus.websockets.next.WebSocket;
 import io.quarkus.websockets.next.WebSocketConnection;
 
+import java.util.Collection;
+
 @WebSocket(path = "/")
 public class GameController {
 
@@ -24,7 +26,8 @@ public class GameController {
 
     @OnOpen()
     public void onOpen() {
-        gameInstanceService.startGame();
+        Collection<Ship> ships = gameInstanceService.getShips();
+        ships.forEach(ship -> connection.sendTextAndAwait(mapper.toMessage(ship)));
     }
 
     @OnClose()
