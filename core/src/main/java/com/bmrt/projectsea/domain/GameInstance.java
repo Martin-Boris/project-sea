@@ -1,5 +1,7 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.websocket.Action;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -85,5 +87,15 @@ public class GameInstance {
 
     public String getMyShipName() {
         return myShipName;
+    }
+
+    public void handleAction(ActionCommand command) {
+        if (command.getAction().equals(Action.JOIN)) {
+            addShip(command.getNewShip());
+        } else if (command.getAction().equals(Action.LEAVE)) {
+            ships.remove(command.getName());
+        } else {
+            command.updateShip(ships.get(command.getName()));
+        }
     }
 }

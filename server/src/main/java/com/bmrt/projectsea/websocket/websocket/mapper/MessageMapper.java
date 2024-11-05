@@ -1,11 +1,13 @@
 package com.bmrt.projectsea.websocket.websocket.mapper;
 
 import com.bmrt.projectsea.domain.Ship;
+import com.bmrt.projectsea.websocket.websocket.Action;
 
 public class MessageMapper {
 
-    public String toMessage(Ship ship) {
-        return ship.getPosition().getX() + ";"
+    public String toMessage(Action action, Ship ship) {
+        return action + ";"
+            + ship.getPosition().getX() + ";"
             + ship.getPosition().getY() + ";"
             + ship.getSpeed().getX() + ";"
             + ship.getSpeed().getY() + ";"

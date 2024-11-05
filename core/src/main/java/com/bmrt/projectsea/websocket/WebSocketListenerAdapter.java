@@ -7,11 +7,11 @@ import com.github.czyzby.websocket.WebSocketListener;
 public class WebSocketListenerAdapter implements WebSocketListener {
 
     private final GameInstance gameInstance;
-    private final ShipMapper shipMapper;
+    private final CommandMapper commandMapper;
 
     public WebSocketListenerAdapter(GameInstance gameInstance) {
         this.gameInstance = gameInstance;
-        this.shipMapper = new ShipMapper();
+        this.commandMapper = new CommandMapper();
     }
 
     @Override
@@ -28,12 +28,9 @@ public class WebSocketListenerAdapter implements WebSocketListener {
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-        String[] data = packet.split(";");
-        if (gameInstance.contains(data[5])) {
-            shipMapper.updateShip(data, gameInstance.get(data[5]));
-        } else {
-            gameInstance.addShip(shipMapper.createShip(data));
-        }
+        //TODO refactor : create command for all case LEAVE TURN and JOIN and do logic inside GameInstance (for now
+        // create command each time pool later
+        gameInstance.handleAction(commandMapper.getCommand(packet));
         return FULLY_HANDLED;
     }
 

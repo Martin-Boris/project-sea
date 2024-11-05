@@ -17,4 +17,5 @@ public interface GameActionApi {
     Ship leave(String name);
 
     Collection<Ship> getShips();
+
 }
