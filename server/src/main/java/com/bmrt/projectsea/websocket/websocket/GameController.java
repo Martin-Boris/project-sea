@@ -4,7 +4,6 @@ import com.bmrt.projectsea.application.GameInstanceService;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.websocket.websocket.mapper.MessageMapper;
-import io.quarkus.websockets.next.OnClose;
 import io.quarkus.websockets.next.OnOpen;
 import io.quarkus.websockets.next.OnTextMessage;
 import io.quarkus.websockets.next.WebSocket;
@@ -27,12 +26,7 @@ public class GameController {
     @OnOpen()
     public void onOpen() {
         Collection<Ship> ships = gameInstanceService.getShips();
-        ships.forEach(ship -> connection.sendTextAndAwait(mapper.toMessage(ship)));
-    }
-
-    @OnClose()
-    public void onClose() {
-        gameInstanceService.stopGame();
+        ships.forEach(ship -> connection.sendTextAndAwait(mapper.toMessage(Action.JOIN, ship)));
     }
 
     @OnTextMessage(broadcast = true)
@@ -48,7 +42,7 @@ public class GameController {
         } else {
             ship = gameInstanceService.stop(action[1]);
         }
-        return mapper.toMessage(ship);
+        return mapper.toMessage(Action.valueOf(action[0]), ship);
     }
 
 

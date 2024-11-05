@@ -13,7 +13,6 @@ public class GameInstance implements GameActionApi {
     private final SeaMap map;
     private boolean running;
 
-
     public GameInstance() {
         this.running = false;
         this.ships = new HashMap<>();
