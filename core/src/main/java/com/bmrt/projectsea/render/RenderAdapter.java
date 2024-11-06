@@ -49,7 +49,6 @@ public class RenderAdapter implements RenderPort {
         float width = (graphicsWidth / graphicsHeight) * 10;
         int height = 10;
         camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
-        camera.update(0, 0);
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
 
         /* GAME VIEW */
