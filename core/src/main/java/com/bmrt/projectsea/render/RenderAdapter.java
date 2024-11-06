@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.bmrt.projectsea.GameTime;
@@ -123,6 +124,20 @@ public class RenderAdapter implements RenderPort {
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    public void remove(String shipName) {
+        for (Actor actor : gameStage.getActors()) {
+            if (shipName.equals(actor.getName())) {
+                actor.addAction(Actions.removeActor());
+            }
+        }
+        for (Actor actor : uiStage.getActors()) {
+            if (shipName.equals(actor.getName())) {
+                actor.addAction(Actions.removeActor());
+            }
         }
     }
 
