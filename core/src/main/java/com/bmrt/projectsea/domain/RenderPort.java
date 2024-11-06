@@ -15,4 +15,6 @@ public interface RenderPort {
     void setTarget(Ship ship);
 
     void add(Ship ship, boolean myShip);
+
+    void remove(String shipName);
 }

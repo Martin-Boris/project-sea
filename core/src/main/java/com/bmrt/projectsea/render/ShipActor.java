@@ -33,6 +33,7 @@ public class ShipActor extends Actor {
         setWidth(SHIP_TILES_WIDTH);
         setHeight(SHIP_TILES_HEIGHT);
         setScale(1, 1);
+        setName(ship.getName());
 
         TextureRegion[][] ships = TextureRegion.split(shipTexture, SHIP_PIXEL_WIDTH, SHIP_PIXEL_HEIGHT);
 

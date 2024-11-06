@@ -38,6 +38,7 @@ public class ShipUIActor extends Actor {
         this.healthBarYellow = new NinePatch(healthBars[0][1], 0, 0, 0, 0);
         this.healthBarRed = new NinePatch(healthBars[0][2], 0, 0, 0, 0);
         setTouchable(Touchable.disabled);
+        setName(ship.getName());
     }
 
     @Override

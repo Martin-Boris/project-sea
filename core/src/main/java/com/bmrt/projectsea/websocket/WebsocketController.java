@@ -29,6 +29,7 @@ public class WebsocketController implements WebSocketPort {
     }
 
     public void closeConnection() {
+        socket.send(Action.LEAVE + ";" + shipName);
         WebSockets.closeGracefully(socket);
     }
 

@@ -22,8 +22,7 @@ public class WebSocketListenerAdapter implements WebSocketListener {
 
     @Override
     public boolean onClose(WebSocket webSocket, int closeCode, String reason) {
-        webSocket.send(Action.LEAVE + ";" + gameInstance.getMyShipName());
-        return FULLY_HANDLED;
+        return false;
     }
 
     @Override

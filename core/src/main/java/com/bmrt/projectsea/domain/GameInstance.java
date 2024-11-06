@@ -94,7 +94,8 @@ public class GameInstance {
             addShip(command.getNewShip());
         } else if (command.getAction().equals(Action.LEAVE)) {
             ships.remove(command.getName());
-        } else {
+            renderPort.remove(command.getName());
+        } else if (ships.containsKey(command.getName())) {
             command.updateShip(ships.get(command.getName()));
         }
     }

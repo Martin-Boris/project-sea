@@ -82,6 +82,7 @@ class GameInstanceTest {
         gameInstance.addShip(ship);
         gameInstance.handleAction(cmd);
         Assertions.assertFalse(gameInstance.contains("Test"));
+        Mockito.verify(renderPort, Mockito.times(1)).remove("Test");
     }
 
     @Test
