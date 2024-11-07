@@ -39,6 +39,8 @@ public class GameController {
             ship = gameInstanceService.leave(action[1]);
         } else if (action[0].equals(Action.TURN.name())) {
             ship = gameInstanceService.updateDirection(Direction.valueOf(action[1]), action[2]);
+        } else if (action[0].equals(Action.SHOOT.name())) {
+            ship = gameInstanceService.shoot(action[1], action[2]);
         } else {
             ship = gameInstanceService.stop(action[1]);
         }

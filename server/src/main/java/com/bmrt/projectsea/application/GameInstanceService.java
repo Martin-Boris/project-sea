@@ -53,4 +53,9 @@ public class GameInstanceService implements GameActionApi {
         return gameInstance.getShips();
     }
 
+    @Override
+    public Ship shoot(String shooter, String target) {
+        return gameInstance.shoot(shooter, target);
+    }
+
 }

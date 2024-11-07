@@ -18,4 +18,5 @@ public interface GameActionApi {
 
     Collection<Ship> getShips();
 
+    Ship shoot(String shooter, String target);
 }

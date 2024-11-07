@@ -60,6 +60,11 @@ public class GameInstance implements GameActionApi {
         return ships.values();
     }
 
+    @Override
+    public Ship shoot(String shooter, String target) {
+        return null;
+    }
+
     public void stopGame() {
         running = false;
     }
