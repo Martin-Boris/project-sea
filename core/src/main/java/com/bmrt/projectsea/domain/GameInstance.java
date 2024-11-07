@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class GameInstance {
 
+    private static final float RELOAD_DURATION = 2f;
     private final String myShipName;
     private final HashMap<String, Ship> ships;
     private final RenderPort renderPort;
@@ -58,7 +59,9 @@ public class GameInstance {
     }
 
     public void triggerPortShoot() {
-        renderPort.triggerPortShoot();
+        if (target != null && getMyShip().canShoot(target)) {
+            renderPort.triggerPortShoot();
+        }
     }
 
     public void triggerStarboardShoot() {

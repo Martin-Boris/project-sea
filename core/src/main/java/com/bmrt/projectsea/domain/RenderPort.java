@@ -17,4 +17,5 @@ public interface RenderPort {
     void add(Ship ship, boolean myShip);
 
     void remove(String shipName);
+
 }
