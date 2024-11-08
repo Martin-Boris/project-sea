@@ -188,7 +188,7 @@ class GameInstanceTest {
                 .build();
             gameInstance.addShip(ship);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot();
+            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
         }
 
         @Test
@@ -209,7 +209,7 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot();
+            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
         }
 
         @Test
@@ -230,7 +230,8 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.times(1)).triggerPortShoot();
+            Mockito.verify(renderPort, Mockito.times(1)).triggerPortShoot(myShipName);
+            Mockito.verify(webSocketPort, Mockito.times(1)).shoot(myShipName, "Target");
         }
 
         @Test
@@ -251,7 +252,90 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot();
+            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
+        }
+    }
+
+    @Nested
+    class triggerStarboardShoot {
+
+        @Test
+        void caseNoTarget() {
+            WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
+            RenderPort renderPort = Mockito.mock(RenderPort.class);
+            String myShipName = "Test";
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            Ship ship = ShipBuilder
+                .newShip()
+                .withName(myShipName)
+                .build();
+            gameInstance.addShip(ship);
+            gameInstance.triggerStarboardShoot();
+            Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
+        }
+
+        @Test
+        void caseTargetToFar() {
+            WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
+            RenderPort renderPort = Mockito.mock(RenderPort.class);
+            String myShipName = "Test";
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            Ship ship = ShipBuilder
+                .newShip().withPosition(0, 0)
+                .withName(myShipName)
+                .build();
+            Ship target = ShipBuilder
+                .newShip().withPosition(50, 50)
+                .withName("Target")
+                .build();
+            gameInstance.addShip(ship);
+            gameInstance.addShip(target);
+            gameInstance.setTarget(target);
+            gameInstance.triggerStarboardShoot();
+            Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
+        }
+
+        @Test
+        void caseTargetCloseAndShootReady() {
+            WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
+            RenderPort renderPort = Mockito.mock(RenderPort.class);
+            String myShipName = "Test";
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            Ship ship = ShipBuilder
+                .newShip().withPosition(0, 0)
+                .withName(myShipName)
+                .build();
+            Ship target = ShipBuilder
+                .newShip().withPosition(5f, 3f)
+                .withName("Target")
+                .build();
+            gameInstance.addShip(ship);
+            gameInstance.addShip(target);
+            gameInstance.setTarget(target);
+            gameInstance.triggerStarboardShoot();
+            Mockito.verify(renderPort, Mockito.times(1)).triggerStarboardShoot(myShipName);
+            Mockito.verify(webSocketPort, Mockito.times(1)).shoot(myShipName, "Target");
+        }
+
+        @Test
+        void caseTargetCloseAndShootNotReady() {
+            WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
+            RenderPort renderPort = Mockito.mock(RenderPort.class);
+            String myShipName = "Test";
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            Ship ship = ShipBuilder
+                .newShip().withPosition(0, 0)
+                .withName(myShipName)
+                .build();
+            Ship target = ShipBuilder
+                .newShip().withPosition(5f, 3f)
+                .withName("Target")
+                .build();
+            gameInstance.addShip(ship);
+            gameInstance.addShip(target);
+            gameInstance.setTarget(target);
+            gameInstance.triggerStarboardShoot();
+            Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
         }
     }
 }

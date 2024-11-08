@@ -2,5 +2,5 @@ package com.bmrt.projectsea.websocket;
 
 public enum Action {
 
-    JOIN, TURN, STOP, LEAVE
+    JOIN, TURN, STOP, SHOOT, LEAVE
 }

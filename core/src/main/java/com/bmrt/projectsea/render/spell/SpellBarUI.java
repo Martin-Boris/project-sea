@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.bmrt.projectsea.domain.ActionType;
 
@@ -58,11 +57,4 @@ public class SpellBarUI extends Table {
         }
     }
 
-    public void triggerPortShoot() {
-        spells.get(0).fire(new ChangeListener.ChangeEvent());
-    }
-
-    public void triggerStarboardShoot() {
-        spells.get(1).fire(new ChangeListener.ChangeEvent());
-    }
 }

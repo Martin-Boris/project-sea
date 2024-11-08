@@ -29,7 +29,7 @@ public class GameInstance {
 
     public void addShip(Ship ship) {
         ships.put(ship.getName(), ship);
-        renderPort.add(ship, Objects.equals(ship.getName(), myShipName));
+        renderPort.add(ship);
     }
 
     public Ship get(String name) {
@@ -41,7 +41,7 @@ public class GameInstance {
     }
 
     public void initView(SeaMap seaMap) {
-        renderPort.initRendering(seaMap);
+        renderPort.initRendering(seaMap, this);
     }
 
     public void update(SeaMap seaMap) {
@@ -60,12 +60,16 @@ public class GameInstance {
 
     public void triggerPortShoot() {
         if (target != null && getMyShip().canShoot(target)) {
-            renderPort.triggerPortShoot();
+            renderPort.triggerPortShoot(myShipName);
+            webSocketPort.shoot(myShipName, target.getName());
         }
     }
 
     public void triggerStarboardShoot() {
-        renderPort.triggerStarboardShoot();
+        if (target != null && getMyShip().canShoot(target)) {
+            renderPort.triggerStarboardShoot(myShipName);
+            webSocketPort.shoot(myShipName, target.getName());
+        }
     }
 
     public void removeTarget() {

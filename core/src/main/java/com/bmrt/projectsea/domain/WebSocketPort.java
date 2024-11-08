@@ -9,4 +9,6 @@ public interface WebSocketPort {
     void updateDirection(Direction direction);
 
     void stop();
+
+    void shoot(String shooter, String target);
 }
