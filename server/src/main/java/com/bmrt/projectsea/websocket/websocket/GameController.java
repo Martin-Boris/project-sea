@@ -3,6 +3,8 @@ package com.bmrt.projectsea.websocket.websocket;
 import com.bmrt.projectsea.application.GameInstanceService;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
+import com.bmrt.projectsea.domain.errors.InvalidTarget;
+import com.bmrt.projectsea.domain.errors.TargetToFar;
 import com.bmrt.projectsea.websocket.websocket.mapper.MessageMapper;
 import io.quarkus.websockets.next.OnOpen;
 import io.quarkus.websockets.next.OnTextMessage;
@@ -29,22 +31,30 @@ public class GameController {
         ships.forEach(ship -> connection.sendTextAndAwait(mapper.toMessage(Action.JOIN, ship)));
     }
 
-    @OnTextMessage(broadcast = true)
-    public String onMessage(String message) {
+    @OnTextMessage()
+    public void onMessage(String message) {
         String[] action = message.split(";");
-        Ship ship;
+        //TODO handle invalid index
+        // TODO refactor sendText
         if (action[0].equals(Action.JOIN.name())) {
-            ship = gameInstanceService.join(action[1]);
+            Ship ship = gameInstanceService.join(action[1], 0, 0);
+            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
         } else if (action[0].equals(Action.LEAVE.name())) {
-            ship = gameInstanceService.leave(action[1]);
+            Ship ship = gameInstanceService.leave(action[1]);
+            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
         } else if (action[0].equals(Action.TURN.name())) {
-            ship = gameInstanceService.updateDirection(Direction.valueOf(action[1]), action[2]);
+            Ship ship = gameInstanceService.updateDirection(Direction.valueOf(action[1]), action[2]);
+            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
         } else if (action[0].equals(Action.SHOOT.name())) {
-            ship = gameInstanceService.shoot(action[1], action[2]);
+            try {
+                Ship ship = gameInstanceService.shoot(action[1], action[2]);
+                connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
+            } catch (TargetToFar | InvalidTarget ignored) {
+            }
         } else {
-            ship = gameInstanceService.stop(action[1]);
+            Ship ship = gameInstanceService.stop(action[1]);
+            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
         }
-        return mapper.toMessage(Action.valueOf(action[0]), ship);
     }
 
 

@@ -79,16 +79,13 @@ public class Ship {
         return healthPoint;
     }
 
-    public void shoot(Ship target) {
-        target.applyDamage(DAMAGE);
-    }
-
-    private void applyDamage(float damageAmount) {
+    public Ship applyDamage(float damageAmount) {
         if (healthPoint - damageAmount < 0) {
             healthPoint = 0;
         } else {
             healthPoint -= damageAmount;
         }
+        return this;
     }
 
     public boolean canShoot(Ship target) {
