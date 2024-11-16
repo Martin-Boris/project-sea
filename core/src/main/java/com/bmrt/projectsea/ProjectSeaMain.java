@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.bmrt.projectsea.domain.Cooldown;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameInstance;
 import com.bmrt.projectsea.domain.SeaMap;
@@ -41,7 +42,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
         this.renderAdapter = new RenderAdapter();
         String myShipName = GUID.get();
         this.websocketController = new WebsocketController(myShipName);
-        this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController);
+        this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController, new Cooldown(), new Cooldown());
         seaMap = new SeaMap(25, 25);
         this.gameInstance.initView(seaMap);
 

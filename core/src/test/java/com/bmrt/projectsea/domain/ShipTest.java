@@ -63,38 +63,6 @@ class ShipTest {
     }
 
     @Nested
-    class shoot {
-        @Test
-        void caseShootTarget() {
-            Ship myShip = ShipBuilder
-                .newShip()
-                .build();
-
-            Ship target = ShipBuilder
-                .newShip()
-                .withHealthPoint(10000)
-                .build();
-            myShip.shoot(target);
-            Assertions.assertEquals(target.getHealthPoint(), 7500);
-        }
-
-        @Test
-        void caseShootTargetWithoutHP() {
-            Ship myShip = ShipBuilder
-                .newShip()
-                .build();
-
-            Ship target = ShipBuilder
-                .newShip()
-                .withHealthPoint(0)
-                .build();
-            myShip.shoot(target);
-            Assertions.assertEquals(target.getHealthPoint(), 0);
-        }
-
-    }
-
-    @Nested
     class canShoot {
         @Test
         void caseTrue() {

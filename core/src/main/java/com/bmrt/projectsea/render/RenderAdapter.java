@@ -7,16 +7,17 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.bmrt.projectsea.GameTime;
-import com.bmrt.projectsea.domain.ActionType;
+import com.bmrt.projectsea.domain.GameInstance;
 import com.bmrt.projectsea.domain.RenderPort;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.Vector;
+import com.bmrt.projectsea.render.spell.ChangeSpellButtonListener;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
-import com.bmrt.projectsea.render.spell.SpellButton;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RenderAdapter implements RenderPort {
 
@@ -38,8 +39,10 @@ public class RenderAdapter implements RenderPort {
     private Stage gameStage;
     private Stage uiStage;
 
+    private Map<String, ShipActor> shipActors;
+
     @Override
-    public void initRendering(SeaMap seaMap) {
+    public void initRendering(SeaMap seaMap, GameInstance gameInstance) {
         float graphicsWidth = Gdx.graphics.getWidth();
         float graphicsHeight = Gdx.graphics.getHeight();
 
@@ -52,6 +55,7 @@ public class RenderAdapter implements RenderPort {
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
 
         /* GAME VIEW */
+        shipActors = new HashMap<>();
         gameStage = new Stage(new FitViewport(width, height, camera));
         targetTexture = new Texture(Gdx.files.internal("sprite/target.png"));
         shipTexture = new Texture(Gdx.files.internal("sprite/ship-cruise.png"));
@@ -64,7 +68,8 @@ public class RenderAdapter implements RenderPort {
         canonShotTexture = new Texture(Gdx.files.internal("sprite/canonShoots.png"));
         uiStage = new Stage();
         font = new BitmapFont();
-        spellBarUI = new SpellBarUI(canonShotTexture, font);
+        spellBarUI = new SpellBarUI(canonShotTexture, font, gameInstance.getPortCooldown(), gameInstance.getStarboardCooldown());
+        spellBarUI.addListener(new ChangeSpellButtonListener(gameInstance));
 
         uiStage.addActor(spellBarUI);
     }
@@ -83,13 +88,13 @@ public class RenderAdapter implements RenderPort {
     }
 
     @Override
-    public void triggerPortShoot() {
-        spellBarUI.triggerPortShoot();
+    public void triggerPortShoot(String shipName) {
+        shipActors.get(shipName).triggerPortShoot();
     }
 
     @Override
-    public void triggerStarboardShoot() {
-        spellBarUI.triggerStarboardShoot();
+    public void triggerStarboardShoot(String shipName) {
+        shipActors.get(shipName).triggerStarboardShoot();
     }
 
     @Override
@@ -104,26 +109,12 @@ public class RenderAdapter implements RenderPort {
     }
 
     @Override
-    public void add(Ship ship, boolean myShip) {
+    public void add(Ship ship) {
         ShipActor shipActor = new ShipActor(ship, shipTexture);
         gameStage.addActor(shipActor);
         ShipUIActor shipUIActor = new ShipUIActor(ship, gameStage.getViewport(), font, healthBarTexture);
         uiStage.addActor(shipUIActor);
-        if (myShip) {
-            spellBarUI.addListener(new ChangeListener() {
-                public void changed(ChangeEvent event, Actor actor) {
-                    if (!((SpellButton) actor).isOnCooldown() && !((SpellButton) actor).isDisabled()) {
-                        ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
-                        if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
-                            shipActor.triggerPortShoot();
-                        } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
-                            shipActor.triggerStarboardShoot();
-                        }
-                        ship.shoot(targetActor.getShip());
-                    }
-                }
-            });
-        }
+        shipActors.put(ship.getName(), shipActor);
     }
 
     @Override

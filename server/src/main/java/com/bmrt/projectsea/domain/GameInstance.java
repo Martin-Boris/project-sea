@@ -1,5 +1,8 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.domain.errors.InvalidTarget;
+import com.bmrt.projectsea.domain.errors.TargetToFar;
+
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -60,16 +63,27 @@ public class GameInstance implements GameActionApi {
         return ships.values();
     }
 
+    @Override
+    public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {
+        if (!ships.containsKey(target)) {
+            throw new InvalidTarget();
+        }
+        if (!ships.get(shooter).canShoot(ships.get(target))) {
+            throw new TargetToFar();
+        }
+        return ships.get(target).applyDamage(Ship.DAMAGE);
+    }
+
     public void stopGame() {
         running = false;
     }
 
     @Override
-    public Ship join(String name) {
+    public Ship join(String name, float x, float y) {
         if (!running) {
             startGame();
         }
-        Ship ship = new Ship(Vector.ZERO, Vector.ZERO, Direction.BOT, name, 10000, 10000);
+        Ship ship = new Ship(new Vector(x, y), Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.put(name, ship);
         return ship;
     }

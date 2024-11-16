@@ -11,13 +11,17 @@ public class GameInstance {
     private final HashMap<String, Ship> ships;
     private final RenderPort renderPort;
     private final WebSocketPort webSocketPort;
+    private final Cooldown portCooldown;
+    private final Cooldown starboardCooldown;
     private Ship target;
 
-    public GameInstance(String myShipName, RenderPort renderPort, WebSocketPort websocketPort) {
+    public GameInstance(String myShipName, RenderPort renderPort, WebSocketPort websocketPort, Cooldown portCooldown, Cooldown starboardCooldown) {
         this.ships = new HashMap<>();
         this.myShipName = myShipName;
         this.renderPort = renderPort;
         this.webSocketPort = websocketPort;
+        this.portCooldown = portCooldown;
+        this.starboardCooldown = starboardCooldown;
         webSocketPort.addListener(this);
         websocketPort.startConnection();
     }
@@ -28,7 +32,7 @@ public class GameInstance {
 
     public void addShip(Ship ship) {
         ships.put(ship.getName(), ship);
-        renderPort.add(ship, Objects.equals(ship.getName(), myShipName));
+        renderPort.add(ship);
     }
 
     public Ship get(String name) {
@@ -40,7 +44,7 @@ public class GameInstance {
     }
 
     public void initView(SeaMap seaMap) {
-        renderPort.initRendering(seaMap);
+        renderPort.initRendering(seaMap, this);
     }
 
     public void update(SeaMap seaMap) {
@@ -57,12 +61,21 @@ public class GameInstance {
         renderPort.updateView(getMyShip().getPosition(), deltaTime, canShoot);
     }
 
+
     public void triggerPortShoot() {
-        renderPort.triggerPortShoot();
+        if (target != null && getMyShip().canShoot(target) && portCooldown.isReady()) {
+            portCooldown.trigger();
+            renderPort.triggerPortShoot(myShipName);
+            webSocketPort.shoot(myShipName, target.getName());
+        }
     }
 
     public void triggerStarboardShoot() {
-        renderPort.triggerStarboardShoot();
+        if (target != null && getMyShip().canShoot(target) && starboardCooldown.isReady()) {
+            starboardCooldown.trigger();
+            renderPort.triggerStarboardShoot(myShipName);
+            webSocketPort.shoot(myShipName, target.getName());
+        }
     }
 
     public void removeTarget() {
@@ -98,5 +111,13 @@ public class GameInstance {
         } else if (ships.containsKey(command.getName())) {
             command.updateShip(ships.get(command.getName()));
         }
+    }
+
+    public Cooldown getPortCooldown() {
+        return portCooldown;
+    }
+
+    public Cooldown getStarboardCooldown() {
+        return starboardCooldown;
     }
 }

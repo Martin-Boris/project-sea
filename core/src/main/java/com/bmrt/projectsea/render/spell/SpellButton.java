@@ -4,21 +4,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.bmrt.projectsea.GameTime;
 import com.bmrt.projectsea.domain.ActionType;
-
-import static com.bmrt.projectsea.ProjectSeaMain.EPSILON;
+import com.bmrt.projectsea.domain.Cooldown;
 
 public class SpellButton extends ImageButton {
 
     private final CooldownTimer cooldownTimer;
-    private final float cooldown;
+    private final Cooldown cooldown;
     private final String key;
     private final BitmapFont font;
     private final ActionType actionType;
-    private float cooldownTriggerTime = -Float.MAX_VALUE;
 
-    public SpellButton(ImageButtonStyle style, float cooldown, String key, BitmapFont font, int width, int height,
+    public SpellButton(ImageButtonStyle style, Cooldown cooldown, String key, BitmapFont font, int width, int height,
                        float x, float y, boolean disabled, ActionType actionType) {
         super(style);
         setWidth(width);
@@ -39,33 +36,10 @@ public class SpellButton extends ImageButton {
     }
 
 
-    public boolean isOnCooldown() {
-        return getRemainingCooldownTime() - EPSILON > 0;
-    }
-
-    public float getCooldownTriggerTime() {
-        return cooldownTriggerTime;
-    }
-
-    public void setCooldownTriggerTime(float cooldownTriggerTime) {
-        this.cooldownTriggerTime = cooldownTriggerTime;
-    }
-
-    public float getRemainingCooldownTime() {
-        return Math.max(0, cooldown - (GameTime.getCurrentTime() - cooldownTriggerTime));
-    }
-
-    public float getRemainingCooldownPercentage() {
-        if ((cooldown - (GameTime.getCurrentTime() - cooldownTriggerTime)) <= 0) {
-            return 0.0f;
-        }
-        return (cooldown - (GameTime.getCurrentTime() - cooldownTriggerTime)) / cooldown;
-    }
-
     public void update() {
-        if (getRemainingCooldownPercentage() - EPSILON >= 0.0f) {
+        if (!cooldown.isReady()) {
             cooldownTimer.setVisible(true);
-            cooldownTimer.update(getRemainingCooldownPercentage());
+            cooldownTimer.update(cooldown.getRemainingCooldownPercentage());
         } else {
             cooldownTimer.setVisible(false);
         }

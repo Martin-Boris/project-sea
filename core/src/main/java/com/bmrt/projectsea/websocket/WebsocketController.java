@@ -28,6 +28,11 @@ public class WebsocketController implements WebSocketPort {
         socket.send(Action.STOP + ";" + shipName);
     }
 
+    @Override
+    public void shoot(String shooter, String target) {
+        socket.send(Action.SHOOT + ";" + shooter + ";" + target);
+    }
+
     public void closeConnection() {
         socket.send(Action.LEAVE + ";" + shipName);
         WebSockets.closeGracefully(socket);
