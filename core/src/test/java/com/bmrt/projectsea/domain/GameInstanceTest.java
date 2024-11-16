@@ -20,7 +20,7 @@ class GameInstanceTest {
             .withPosition(10, 10)
             .withSpeed(0, 0)
             .build();
-        GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort);
+        GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort, new Cooldown(), new Cooldown());
         gameInstance.addShip(ship);
         Assertions.assertEquals(gameInstance.get("Test"), ship);
     }
@@ -52,7 +52,7 @@ class GameInstanceTest {
                 .withName("Test")
                 .withDirection(Direction.BOT)
                 .build();
-            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort, new Cooldown(), new Cooldown());
             gameInstance.handleAction(cmd);
             Assertions.assertTrue(gameInstance.contains("Test"));
             Assertions.assertEquals(gameInstance.get("Test"), ship);
@@ -82,7 +82,7 @@ class GameInstanceTest {
                 .withName("Test")
                 .withDirection(Direction.BOT)
                 .build();
-            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort, new Cooldown(), new Cooldown());
             gameInstance.addShip(ship);
             gameInstance.handleAction(cmd);
             Assertions.assertFalse(gameInstance.contains("Test"));
@@ -113,7 +113,7 @@ class GameInstanceTest {
                 .withName("Test")
                 .withDirection(Direction.BOT)
                 .build();
-            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort, new Cooldown(), new Cooldown());
             gameInstance.addShip(ship);
             gameInstance.handleAction(cmd);
 
@@ -154,7 +154,7 @@ class GameInstanceTest {
                 .withName("Test")
                 .withDirection(Direction.TOP)
                 .build();
-            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance("Torred", renderPort, webSocketPort, new Cooldown(), new Cooldown());
             gameInstance.addShip(ship);
             gameInstance.handleAction(cmd);
 
@@ -181,7 +181,7 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), new Cooldown());
             Ship ship = ShipBuilder
                 .newShip()
                 .withName(myShipName)
@@ -196,7 +196,7 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), new Cooldown());
             Ship ship = ShipBuilder
                 .newShip().withPosition(0, 0)
                 .withName(myShipName)
@@ -217,7 +217,7 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), new Cooldown());
             Ship ship = ShipBuilder
                 .newShip().withPosition(0, 0)
                 .withName(myShipName)
@@ -238,8 +238,10 @@ class GameInstanceTest {
         void caseTargetCloseAndShootNotReady() {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
+            Cooldown portCooldown = Mockito.mock(Cooldown.class);
+            Mockito.when(portCooldown.isReady()).thenReturn(false);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, portCooldown, new Cooldown());
             Ship ship = ShipBuilder
                 .newShip().withPosition(0, 0)
                 .withName(myShipName)
@@ -253,6 +255,7 @@ class GameInstanceTest {
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
             Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
+            Mockito.verify(portCooldown, Mockito.times(0)).trigger();
         }
     }
 
@@ -264,7 +267,7 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), new Cooldown());
             Ship ship = ShipBuilder
                 .newShip()
                 .withName(myShipName)
@@ -279,7 +282,7 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), new Cooldown());
             Ship ship = ShipBuilder
                 .newShip().withPosition(0, 0)
                 .withName(myShipName)
@@ -300,7 +303,7 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), new Cooldown());
             Ship ship = ShipBuilder
                 .newShip().withPosition(0, 0)
                 .withName(myShipName)
@@ -322,7 +325,9 @@ class GameInstanceTest {
             WebSocketPort webSocketPort = Mockito.mock(WebSocketPort.class);
             RenderPort renderPort = Mockito.mock(RenderPort.class);
             String myShipName = "Test";
-            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort);
+            Cooldown starboardCooldown = Mockito.mock(Cooldown.class);
+            Mockito.when(starboardCooldown.isReady()).thenReturn(false);
+            GameInstance gameInstance = new GameInstance(myShipName, renderPort, webSocketPort, new Cooldown(), starboardCooldown);
             Ship ship = ShipBuilder
                 .newShip().withPosition(0, 0)
                 .withName(myShipName)
@@ -336,6 +341,7 @@ class GameInstanceTest {
             gameInstance.setTarget(target);
             gameInstance.triggerStarboardShoot();
             Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
+            Mockito.verify(starboardCooldown, Mockito.times(0)).trigger();
         }
     }
 }

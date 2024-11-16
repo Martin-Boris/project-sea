@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.bmrt.projectsea.domain.ActionType;
+import com.bmrt.projectsea.domain.Cooldown;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class SpellBarUI extends Table {
 
     private final ArrayList<SpellButton> spells;
 
-    public SpellBarUI(Texture canonSpell, BitmapFont font) {
+    public SpellBarUI(Texture canonSpell, BitmapFont font, Cooldown portCooldown, Cooldown starboardCooldown) {
         super();
         this.spells = new ArrayList<>();
         TextureRegion[][] spellsIcons = TextureRegion.split(canonSpell, SPELl_SPRITE_WIDTH, SPELL_SPRITE_HEIGHT);
@@ -33,7 +34,7 @@ public class SpellBarUI extends Table {
         portStyle.imageUp = new TextureRegionDrawable(canonSpellPort);
         portStyle.imageDown = new TextureRegionDrawable(canonSpellPortDisable);
         portStyle.imageDisabled = new TextureRegionDrawable(canonSpellPortDisable);
-        SpellButton canonShootPortButton = new SpellButton(portStyle, 2, "Q", font, SPELl_SPRITE_WIDTH,
+        SpellButton canonShootPortButton = new SpellButton(portStyle, portCooldown, "Q", font, SPELl_SPRITE_WIDTH,
             SPELL_SPRITE_HEIGHT, (float) Gdx.graphics.getWidth() / 2 - SPELl_SPRITE_WIDTH - 1, 2, true,
             ActionType.PORT_SHOOT);
         this.spells.add(canonShootPortButton);
@@ -44,7 +45,7 @@ public class SpellBarUI extends Table {
         starboardStyle.imageUp = new TextureRegionDrawable(canonSpellStarboard);
         starboardStyle.imageDown = new TextureRegionDrawable(canonSpellStarboardDisable);
         starboardStyle.imageDisabled = new TextureRegionDrawable(canonSpellStarboardDisable);
-        SpellButton canonShootStarboardButton = new SpellButton(starboardStyle, 2, "E", font, SPELl_SPRITE_WIDTH,
+        SpellButton canonShootStarboardButton = new SpellButton(starboardStyle, starboardCooldown, "E", font, SPELl_SPRITE_WIDTH,
             SPELL_SPRITE_HEIGHT, (float) Gdx.graphics.getWidth() / 2 + 1, 2, true, ActionType.STARBOARD_SHOOT);
         this.spells.add(canonShootStarboardButton);
         addActor(canonShootStarboardButton);

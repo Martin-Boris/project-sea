@@ -68,7 +68,7 @@ public class RenderAdapter implements RenderPort {
         canonShotTexture = new Texture(Gdx.files.internal("sprite/canonShoots.png"));
         uiStage = new Stage();
         font = new BitmapFont();
-        spellBarUI = new SpellBarUI(canonShotTexture, font);
+        spellBarUI = new SpellBarUI(canonShotTexture, font, gameInstance.getPortCooldown(), gameInstance.getStarboardCooldown());
         spellBarUI.addListener(new ChangeSpellButtonListener(gameInstance));
 
         uiStage.addActor(spellBarUI);

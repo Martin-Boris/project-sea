@@ -2,7 +2,6 @@ package com.bmrt.projectsea.render.spell;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.bmrt.projectsea.GameTime;
 import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.GameInstance;
 
@@ -16,13 +15,10 @@ public class ChangeSpellButtonListener extends ChangeListener {
 
     @Override
     public void changed(ChangeEvent event, Actor actor) {
-        if (!((SpellButton) actor).isOnCooldown() && !((SpellButton) actor).isDisabled()) {
-            ((SpellButton) actor).setCooldownTriggerTime(GameTime.getCurrentTime());
-            if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
-                gameInstance.triggerPortShoot();
-            } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
-                gameInstance.triggerStarboardShoot();
-            }
+        if (((SpellButton) actor).getActionType().equals(ActionType.PORT_SHOOT)) {
+            gameInstance.triggerPortShoot();
+        } else if (((SpellButton) actor).getActionType().equals(ActionType.STARBOARD_SHOOT)) {
+            gameInstance.triggerStarboardShoot();
         }
     }
 }

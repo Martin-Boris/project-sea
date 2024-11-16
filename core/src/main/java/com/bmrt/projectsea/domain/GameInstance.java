@@ -7,18 +7,21 @@ import java.util.Objects;
 
 public class GameInstance {
 
-    private static final float RELOAD_DURATION = 2f;
     private final String myShipName;
     private final HashMap<String, Ship> ships;
     private final RenderPort renderPort;
     private final WebSocketPort webSocketPort;
+    private final Cooldown portCooldown;
+    private final Cooldown starboardCooldown;
     private Ship target;
 
-    public GameInstance(String myShipName, RenderPort renderPort, WebSocketPort websocketPort) {
+    public GameInstance(String myShipName, RenderPort renderPort, WebSocketPort websocketPort, Cooldown portCooldown, Cooldown starboardCooldown) {
         this.ships = new HashMap<>();
         this.myShipName = myShipName;
         this.renderPort = renderPort;
         this.webSocketPort = websocketPort;
+        this.portCooldown = portCooldown;
+        this.starboardCooldown = starboardCooldown;
         webSocketPort.addListener(this);
         websocketPort.startConnection();
     }
@@ -58,15 +61,18 @@ public class GameInstance {
         renderPort.updateView(getMyShip().getPosition(), deltaTime, canShoot);
     }
 
+
     public void triggerPortShoot() {
-        if (target != null && getMyShip().canShoot(target)) {
+        if (target != null && getMyShip().canShoot(target) && portCooldown.isReady()) {
+            portCooldown.trigger();
             renderPort.triggerPortShoot(myShipName);
             webSocketPort.shoot(myShipName, target.getName());
         }
     }
 
     public void triggerStarboardShoot() {
-        if (target != null && getMyShip().canShoot(target)) {
+        if (target != null && getMyShip().canShoot(target) && starboardCooldown.isReady()) {
+            starboardCooldown.trigger();
             renderPort.triggerStarboardShoot(myShipName);
             webSocketPort.shoot(myShipName, target.getName());
         }
@@ -105,5 +111,13 @@ public class GameInstance {
         } else if (ships.containsKey(command.getName())) {
             command.updateShip(ships.get(command.getName()));
         }
+    }
+
+    public Cooldown getPortCooldown() {
+        return portCooldown;
+    }
+
+    public Cooldown getStarboardCooldown() {
+        return starboardCooldown;
     }
 }
