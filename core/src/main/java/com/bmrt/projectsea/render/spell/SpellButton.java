@@ -7,8 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.bmrt.projectsea.domain.ActionType;
 import com.bmrt.projectsea.domain.Cooldown;
 
-import static com.bmrt.projectsea.ProjectSeaMain.EPSILON;
-
 public class SpellButton extends ImageButton {
 
     private final CooldownTimer cooldownTimer;
@@ -39,7 +37,7 @@ public class SpellButton extends ImageButton {
 
 
     public void update() {
-        if (cooldown.getRemainingCooldownTime() - EPSILON >= 0.0f) {
+        if (!cooldown.isReady()) {
             cooldownTimer.setVisible(true);
             cooldownTimer.update(cooldown.getRemainingCooldownPercentage());
         } else {

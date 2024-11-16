@@ -2,6 +2,8 @@ package com.bmrt.projectsea.domain;
 
 import com.bmrt.projectsea.GameTime;
 
+import static com.bmrt.projectsea.ProjectSeaMain.EPSILON;
+
 public class Cooldown {
 
     private static final float RELOAD_DURATION = 2f;
@@ -17,7 +19,7 @@ public class Cooldown {
     }
 
     public boolean isReady() {
-        return getRemainingCooldownTime() == 0;
+        return getRemainingCooldownTime() - EPSILON <= 0.0f;
     }
 
     public float getRemainingCooldownPercentage() {
