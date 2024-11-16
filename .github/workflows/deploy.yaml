@@ -3,7 +3,7 @@ name: Deploy application
 
 on:
   push:
-    branches: [ "36-devops-configure-workflow-deployement-client-only" ]
+    branches: [ "main" ]
 
 jobs:
   build:
