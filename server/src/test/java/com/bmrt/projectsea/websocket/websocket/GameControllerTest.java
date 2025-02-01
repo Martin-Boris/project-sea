@@ -20,9 +20,8 @@ class GameControllerTest {
     class onMessage {
         @Test
         void caseJOIN() {
-            WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
+            WebSocketConnectionMock connection = new WebSocketConnectionMock();
             GameInstanceService gameInstanceService = Mockito.mock(GameInstanceService.class);
-            WebSocketConnection.BroadcastSender sender = Mockito.mock(WebSocketConnection.BroadcastSender.class);
             String message = "JOIN;Test";
             Ship ship = ShipBuilder
                 .newShip()
@@ -34,11 +33,11 @@ class GameControllerTest {
                 .withMaxHealthPoint(5)
                 .build();
             Mockito.when(gameInstanceService.join("Test", 0, 0)).thenReturn(ship);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
             GameController gameController = new GameController(connection, gameInstanceService);
             gameController.onMessage(message);
             Mockito.verify(gameInstanceService, Mockito.times(1)).join("Test", 0, 0);
-            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("JOIN;10.0;10.0;0.0;0.0;TOP;Test;5.0;5.0");
+            Mockito.verify(connection.getBroadcastSenderMock(), Mockito.times(1)).sendTextAndAwait("JOIN;10.0;10.0;0" +
+                ".0;0.0;TOP;Test;5.0;5.0");
         }
 
         @Test
