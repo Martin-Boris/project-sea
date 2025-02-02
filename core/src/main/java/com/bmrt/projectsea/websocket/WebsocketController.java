@@ -14,7 +14,7 @@ public class WebsocketController implements WebSocketPort {
 
     public WebsocketController(String shipName) {
         this.shipName = shipName;
-        socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl("project-bmrt.ip-ddns.com", 443));
+        socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl("project-bmrt.ip-ddns.com", 80));
     }
 
     @Override
@@ -45,7 +45,11 @@ public class WebsocketController implements WebSocketPort {
     @Override
     public void startConnection() {
         socket.setSendGracefully(true);
-        socket.connect();
+        try {
+            socket.connect();
+        } catch (Exception e) {
+            String test = "toto";
+        }
     }
 
 }
