@@ -6,7 +6,6 @@ metadata:
     {{- include "project-sea-server.labels" . | nindent 4 }}
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
@@ -14,7 +13,8 @@ spec:
       - project-bmrt.ip-ddns.com
       secretName: letsencrypt-prod
   rules:
-    - http:
+  - host: project-bmrt.ip-ddns.com
+    http:
         paths:
           - path: /
             pathType: Prefix
