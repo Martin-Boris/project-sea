@@ -14,7 +14,8 @@ spec:
         - project-bmrt.ip-ddns.com
       secretName: letsencrypt-prod
   rules:
-    - http:
+    - host: project-bmrt.ip-ddns.com
+      http:
         paths:
           - backend:
               service:
