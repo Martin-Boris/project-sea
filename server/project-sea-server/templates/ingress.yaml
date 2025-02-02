@@ -17,8 +17,8 @@ spec:
   - host: project-bmrt.ip-ddns.com
     http:
         paths:
-          - path: /q/health/live
-            pathType: Exact
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: {{ include "project-sea-server.fullname" . }}
