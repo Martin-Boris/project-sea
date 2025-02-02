@@ -6,8 +6,13 @@ metadata:
     {{- include "project-sea-server.labels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - 159.69.212.196
+      secretName: letsencrypt-prod
   rules:
     - http:
         paths:
