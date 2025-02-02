@@ -14,6 +14,7 @@ public class WebsocketController implements WebSocketPort {
 
     public WebsocketController(String shipName) {
         this.shipName = shipName;
+        
         socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl("project-bmrt.ip-ddns.com", 80));
     }
 
