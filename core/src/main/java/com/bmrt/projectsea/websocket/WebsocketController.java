@@ -14,7 +14,7 @@ public class WebsocketController implements WebSocketPort {
 
     public WebsocketController(String shipName) {
         this.shipName = shipName;
-        socket = WebSockets.newSocket(WebSockets.toWebSocketUrl("159.69.212.196", 80));
+        socket = WebSockets.newSocket(WebSockets.toWebSocketUrl("project-bmrt.ip-ddns.com", 443));
     }
 
     @Override
