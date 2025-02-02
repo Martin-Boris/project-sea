@@ -11,7 +11,7 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - 159.69.212.196
+        - project-bmrt.ip-ddns.com
       secretName: letsencrypt-prod
   rules:
     - http:
