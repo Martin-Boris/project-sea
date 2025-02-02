@@ -5,13 +5,10 @@ metadata:
   labels:
     {{- include "project-sea-server.labels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/hsts: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
       - project-bmrt.ip-ddns.com
@@ -20,10 +17,10 @@ spec:
   - host: project-bmrt.ip-ddns.com
     http:
         paths:
-          - backend:
+          - path: /
+            pathType: Prefix
+            backend:
               service:
                 name: {{ include "project-sea-server.fullname" . }}
                 port:
                   number: 8080
-            path: /
-            pathType: Prefix
