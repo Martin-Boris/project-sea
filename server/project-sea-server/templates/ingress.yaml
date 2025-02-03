@@ -14,7 +14,8 @@ spec:
    #   - project-bmrt.ip-ddns.com
     #  secretName: letsencrypt-prod
   rules:
-    - http:
+    - host: www.project-bmrt.ip-ddns.com
+      http:
         paths:
           - backend:
               service:
@@ -22,4 +23,4 @@ spec:
                 port:
                   number: 80
             path: /
-            pathType: ImplementationSpecific
+            pathType: Prefix
