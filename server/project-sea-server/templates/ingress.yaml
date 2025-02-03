@@ -11,7 +11,7 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - project-bmrt.ip-ddns.com
+      - project-bmrt.ip-ddns.com
       secretName: letsencrypt-prod
   rules:
     - http:
@@ -20,6 +20,6 @@ spec:
               service:
                 name: {{ include "project-sea-server.fullname" . }}
                 port:
-                  number: 8080
+                  number: 80
             path: /
             pathType: ImplementationSpecific
