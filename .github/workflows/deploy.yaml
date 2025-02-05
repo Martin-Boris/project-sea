@@ -127,7 +127,7 @@ jobs:
 
       - name: Create namespace
         run: |
-          kubectl create namespace my-namespace || echo "Namespace already exists"
+          kubectl create namespace project-sea || echo "Namespace already exists"
 
       - name: uninstall chart
         run: helm uninstall project-sea-server --ignore-not-found --namespace project-sea
