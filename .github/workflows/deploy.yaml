@@ -130,3 +130,4 @@ jobs:
 
       - name: helm deploy
         run: helm upgrade project-sea-server ./server/project-sea-server --set image.tag=${{ env.VERSION }} --install
+          --namespace project-sea
