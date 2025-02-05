@@ -125,8 +125,12 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+      - name: Create namespace
+        run: |
+          kubectl create namespace my-namespace || echo "Namespace already exists"
+
       - name: uninstall chart
-        run: helm uninstall project-sea-server --ignore-not-found
+        run: helm uninstall project-sea-server --ignore-not-found --namespace project-sea
 
       - name: helm deploy
         run: helm upgrade project-sea-server ./server/project-sea-server --set image.tag=${{ env.VERSION }} --install
