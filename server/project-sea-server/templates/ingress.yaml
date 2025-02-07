@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
  # tls:
   #  - hosts:
-   #   - project-bmrt.ip-ddns.com
+   #   - project-sea.bmrt.fr
     #  secretName: letsencrypt-prod
   rules:
-    - host: www.project-bmrt.ip-ddns.com
+    - host: project-sea.bmrt.fr
       http:
         paths:
           - backend:
