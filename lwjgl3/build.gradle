@@ -13,7 +13,6 @@ plugins {
   id "application"
 }
 
-
 import io.github.fourlastor.construo.Target
 
 sourceSets.main.resources.srcDirs += [rootProject.file('assets').path]
@@ -46,6 +45,15 @@ run {
   setIgnoreExitValue(true)
 
   if (os.contains('mac')) jvmArgs += "-XstartOnFirstThread"
+  /*systemProperty 'websocketUrl', 'project-sea.bmrt.fr'
+  systemProperty 'websocketPort', '443'
+  systemProperty 'websocketProtocol', 'wss'
+  systemProperty 'websocketContextPath', '/server'*/
+
+  systemProperty 'websocketUrl', '127.0.0.1'
+  systemProperty 'websocketPort', '8080'
+  systemProperty 'websocketProtocol', 'ws'
+  systemProperty 'websocketContextPath', ''
 }
 
 jar {
@@ -64,6 +72,7 @@ jar {
   manifest {
     attributes 'Main-Class': project.mainClassName
   }
+
 // this last step may help on some OSes that need extra instruction to make runnable JARs.
   doLast {
     file(archiveFile).setExecutable(true, false)

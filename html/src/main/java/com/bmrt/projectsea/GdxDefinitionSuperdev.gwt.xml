@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.11.0//EN" "https://www.gwtproject.org/doctype/2.11.0/gwt-module.dtd">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.11.0//EN"
+        "https://www.gwtproject.org/doctype/2.11.0/gwt-module.dtd">
 <module rename-to="html">
-  <inherits name="com.bmrt.projectsea.GdxDefinition" />
-  <collapse-all-properties />
-  <add-linker name="xsiframe"/>
-  <set-configuration-property name="devModeRedirectEnabled" value="true"/>
-  <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+    <inherits name="com.bmrt.projectsea.GdxDefinition"/>
+    <collapse-all-properties/>
+    <add-linker name="xsiframe"/>
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+    <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+    <set-configuration-property name="app.environment" value="dev"/>
+    <set-configuration-property name="websocketUrl" value="127.0.0.1"/>
+    <set-configuration-property name="websocketPort" value="8080"/>
+    <set-configuration-property name="websocketProtocol" value="ws"/>
+    <set-configuration-property name="websocketContextPath" value=""/>
 </module>

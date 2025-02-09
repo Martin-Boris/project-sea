@@ -27,6 +27,11 @@
     <!-- You usually won't need to make changes to the rest of this. -->
     <set-configuration-property name="gdx.assetpath" value="../assets"/>
     <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+    <set-configuration-property name="app.environment" value="prod"/>
+    <set-configuration-property name="websocketUrl" value="project-sea.bmrt.fr"/>
+    <set-configuration-property name="websocketPort" value="443"/>
+    <set-configuration-property name="websocketProtocol" value="wss"/>
+    <set-configuration-property name="websocketContextPath" value="/server"/>
     <!-- These two lines reduce the work GWT has to do during compilation and also shrink output size. -->
     <set-property name="user.agent" value="gecko1_8, safari"/>
     <collapse-property name="user.agent" values="*"/>

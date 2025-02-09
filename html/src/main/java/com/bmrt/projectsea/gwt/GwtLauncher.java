@@ -21,6 +21,7 @@ public class GwtLauncher extends GwtApplication {
 
         // If you want a fixed size application, comment out the above resizable section,
         // and uncomment below:
+
         GwtWebSockets.initiate();
         return new GwtApplicationConfiguration(1280, 720);
     }
