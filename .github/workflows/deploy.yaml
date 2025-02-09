@@ -3,7 +3,7 @@ name: Deploy application
 
 on:
   push:
-    branches: [ "main", "40-devops-server-deploiement-on-github-workflow" ]
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
@@ -156,7 +156,7 @@ jobs:
 
       - name: helm deploy
         run: helm upgrade project-sea-client ./html/project-sea-client --set image.tag=${{ env.VERSION }} --install
-          --namespace ${{ env.NAMESPACE }}
+          --namespace ${{ env.NAMESPACE }} --set image.tag=${{ env.VERSION }}
 
   delpoy-server:
     needs: [ build-server, init-namespace ]
@@ -188,4 +188,4 @@ jobs:
 
       - name: helm deploy
         run: helm upgrade project-sea-server ./server/project-sea-server --set image.tag=${{ env.VERSION }} --install
-          --namespace ${{ env.NAMESPACE }}
+          --namespace ${{ env.NAMESPACE }} --set image.tag=${{ env.VERSION }}
