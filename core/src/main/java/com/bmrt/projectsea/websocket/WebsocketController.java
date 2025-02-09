@@ -14,7 +14,8 @@ public class WebsocketController implements WebSocketPort {
 
     public WebsocketController(String shipName) {
         this.shipName = shipName;
-        socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl("project-sea.bmrt.fr", 443, "/server"));
+        String websocketUrl = System.getProperty("websocketUrl");
+        socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl(websocketUrl, 443, "/server"));
     }
 
     @Override

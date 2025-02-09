@@ -13,6 +13,14 @@ plugins {
   id "application"
 }
 
+task runApp(type: JavaExec) {
+  main = 'com.bmrt.projectsea.lwjgl3.Lwjgl3Launcher'  // Replace with your main class
+  classpath = sourceSets.main.runtimeClasspath
+
+  // Optionally set system properties
+  systemProperty 'websocketUrl', websocketUrl
+}
+
 
 import io.github.fourlastor.construo.Target
 
