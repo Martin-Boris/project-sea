@@ -127,7 +127,7 @@ jobs:
 
 
   delpoy-client:
-    needs: [ build-client ]
+    needs: [ build-client, init-namespace ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -159,7 +159,7 @@ jobs:
           --namespace ${{ env.NAMESPACE }}
 
   delpoy-server:
-    needs: [ build-server ]
+    needs: [ build-server, init-namespace ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
