@@ -14,7 +14,7 @@ public class WebsocketController implements WebSocketPort {
 
     public WebsocketController(String shipName) {
         this.shipName = shipName;
-        socket = WebSockets.newSocket(WebSockets.toWebSocketUrl("127.0.0.1", 8080));
+        socket = WebSockets.newSocket(WebSockets.toSecureWebSocketUrl("project-sea.bmrt.fr", 443, "/server"));
     }
 
     @Override
@@ -45,7 +45,11 @@ public class WebsocketController implements WebSocketPort {
     @Override
     public void startConnection() {
         socket.setSendGracefully(true);
-        socket.connect();
+        try {
+            socket.connect();
+        } catch (Exception e) {
+            String test = "toto";
+        }
     }
 
 }
