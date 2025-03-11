@@ -52,9 +52,9 @@ class GameInstanceTest {
 
     @Test
     void caseUpdateDirection() {
-        ClientCommunicationPort mockCommunication = Mockito.mock(ClientCommunicationPort.class);
+        ClientCommunicationPort clientCommunicationPort = Mockito.mock(ClientCommunicationPort.class);
         GameInstance gameInstance = new GameInstance();
-        Ship ship = gameInstance.join("Name", 0, 0, mockCommunication);
+        Ship ship = gameInstance.join("Name", 0, 0, clientCommunicationPort);
         Ship expectedShip = ShipBuilder
             .newShip()
             .withDirection(Direction.LEFT)
@@ -64,8 +64,9 @@ class GameInstanceTest {
             .withPosition(0, 0)
             .withSpeed(-0.06666667f, 0.0f)
             .build();
-        gameInstance.updateDirection(Direction.LEFT, "Name");
+        gameInstance.updateDirection(Direction.LEFT, "Name", clientCommunicationPort);
         Assertions.assertEquals(ship, expectedShip);
+        Mockito.verify(clientCommunicationPort, Mockito.times(1)).sendToAllPLayer(Action.TURN, ship);
     }
 
     @Nested

@@ -9,7 +9,7 @@ public interface GameActionApi {
 
     Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort);
 
-    Ship updateDirection(Direction direction, String name);
+    Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort);
 
     Ship stop(String name);
 

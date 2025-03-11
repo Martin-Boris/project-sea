@@ -57,8 +57,7 @@ public class GameController implements ClientCommunicationPort {
         } else if (action[0].equals(Action.LEAVE.name())) {
             gameInstanceService.leave(action[1], this);
         } else if (action[0].equals(Action.TURN.name())) {
-            Ship ship = gameInstanceService.updateDirection(Direction.valueOf(action[1]), action[2]);
-            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
+            gameInstanceService.updateDirection(Direction.valueOf(action[1]), action[2], this);
         } else if (action[0].equals(Action.SHOOT.name())) {
             try {
                 Ship ship = gameInstanceService.shoot(action[1], action[2]);

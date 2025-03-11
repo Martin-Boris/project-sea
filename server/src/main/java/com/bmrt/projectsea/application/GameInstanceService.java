@@ -28,8 +28,8 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship updateDirection(Direction direction, String name) {
-        return gameInstance.updateDirection(direction, name);
+    public Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.updateDirection(direction, name, clientCommunicationPort);
     }
 
     public Ship stop(String name) {
