@@ -78,11 +78,13 @@ class GameInstanceTest {
             GameInstance gameInstance = new GameInstance();
             Ship ship = gameInstance.join("Name", 0, 0, mockCommunication);
             try {
-                gameInstance.shoot("Name", "");
+                gameInstance.shoot("Name", "", mockCommunication);
                 Assertions.fail();
             } catch (InvalidTarget | TargetToFar e) {
                 Assertions.assertTrue(true);
             }
+            Mockito.verify(mockCommunication, Mockito.never()).sendToAllPLayer(Mockito.eq(Action.SHOOT),
+                Mockito.any(Ship.class));
         }
 
         @Test
@@ -92,11 +94,13 @@ class GameInstanceTest {
             Ship ship = gameInstance.join("Name", 0, 0, mockCommunication);
             Ship targetShip = gameInstance.join("Target", 50, 50, mockCommunication);
             try {
-                gameInstance.shoot("Name", "Target");
+                gameInstance.shoot("Name", "Target", mockCommunication);
                 Assertions.fail();
             } catch (TargetToFar | InvalidTarget e) {
                 Assertions.assertTrue(true);
             }
+            Mockito.verify(mockCommunication, Mockito.never()).sendToAllPLayer(Mockito.eq(Action.SHOOT),
+                Mockito.any(Ship.class));
         }
 
         @Test
@@ -106,7 +110,7 @@ class GameInstanceTest {
             Ship ship = gameInstance.join("Name", 0, 0, mockCommunication);
             Ship targetShip = gameInstance.join("Target", 2, 2, mockCommunication);
             try {
-                Ship target = gameInstance.shoot("Name", "Target");
+                Ship target = gameInstance.shoot("Name", "Target", mockCommunication);
                 Ship expectedShip = ShipBuilder
                     .newShip()
                     .withDirection(Direction.BOT)
@@ -117,6 +121,7 @@ class GameInstanceTest {
                     .withSpeed(0, 0)
                     .build();
                 Assertions.assertEquals(target, expectedShip);
+                Mockito.verify(mockCommunication, Mockito.times(1)).sendToAllPLayer(Action.SHOOT, ship);
             } catch (TargetToFar | InvalidTarget e) {
                 Assertions.fail();
             }

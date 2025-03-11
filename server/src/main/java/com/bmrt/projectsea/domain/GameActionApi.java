@@ -21,5 +21,6 @@ public interface GameActionApi {
 
     Collection<Ship> getShips();
 
-    Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar;
+    Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget,
+        TargetToFar;
 }

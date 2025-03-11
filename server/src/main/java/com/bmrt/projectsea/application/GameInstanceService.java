@@ -57,8 +57,8 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {
-        return gameInstance.shoot(shooter, target);
+    public Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget, TargetToFar {
+        return gameInstance.shoot(shooter, target, clientCommunicationPort);
     }
 
 }

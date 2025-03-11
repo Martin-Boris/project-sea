@@ -60,8 +60,7 @@ public class GameController implements ClientCommunicationPort {
             gameInstanceService.updateDirection(Direction.valueOf(action[1]), action[2], this);
         } else if (action[0].equals(Action.SHOOT.name())) {
             try {
-                Ship ship = gameInstanceService.shoot(action[1], action[2]);
-                connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
+                gameInstanceService.shoot(action[1], action[2], this);
             } catch (TargetToFar | InvalidTarget ignored) {
             }
         } else {

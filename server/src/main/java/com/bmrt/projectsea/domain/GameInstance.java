@@ -65,14 +65,16 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {
+    public Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget, TargetToFar {
         if (!ships.containsKey(target)) {
             throw new InvalidTarget();
         }
         if (!ships.get(shooter).canShoot(ships.get(target))) {
             throw new TargetToFar();
         }
-        return ships.get(target).applyDamage(Ship.DAMAGE);
+        ships.get(target).applyDamage(Ship.DAMAGE);
+        clientCommunicationPort.sendToAllPLayer(Action.SHOOT, ships.get(shooter));
+        return ships.get(target);
     }
 
     public void stopGame() {
