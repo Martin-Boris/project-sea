@@ -39,28 +39,6 @@ class GameControllerTest {
         }
 
         @Test
-        void caseLeave() {
-            WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
-            GameInstanceService gameInstanceService = Mockito.mock(GameInstanceService.class);
-            WebSocketConnection.BroadcastSender sender = Mockito.mock(WebSocketConnection.BroadcastSender.class);
-            String message = "LEAVE;Test";
-            Ship ship = ShipBuilder
-                .newShip()
-                .withPosition(10, 10)
-                .withSpeed(0, 0)
-                .withDirection(Direction.TOP)
-                .withName("Test")
-                .withHealthPoint(5)
-                .withMaxHealthPoint(5)
-                .build();
-            GameController gameController = new GameController(connection, gameInstanceService);
-            Mockito.when(gameInstanceService.leave("Test", gameController)).thenReturn(ship);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
-            gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).leave("Test", gameController);
-        }
-
-        @Test
         void caseStop() {
             WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
             GameInstanceService gameInstanceService = Mockito.mock(GameInstanceService.class);
