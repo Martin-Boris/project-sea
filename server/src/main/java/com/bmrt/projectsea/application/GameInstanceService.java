@@ -47,8 +47,8 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship leave(String name) {
-        return gameInstance.leave(name);
+    public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.leave(name, clientCommunicationPort);
     }
 
     @Override

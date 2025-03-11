@@ -17,7 +17,7 @@ public interface GameActionApi {
 
     void startGame();
 
-    Ship leave(String name);
+    Ship leave(String name, ClientCommunicationPort clientCommunicationPort);
 
     Collection<Ship> getShips();
 

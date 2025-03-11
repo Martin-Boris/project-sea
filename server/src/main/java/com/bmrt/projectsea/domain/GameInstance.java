@@ -50,11 +50,12 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship leave(String name) {
+    public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
         Ship ship = ships.remove(name);
         if (this.running && ships.isEmpty()) {
             running = false;
         }
+        clientCommunicationPort.sendToAllPLayer(Action.LEAVE, ship);
         return ship;
     }
 

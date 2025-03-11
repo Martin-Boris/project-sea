@@ -33,9 +33,10 @@ class GameInstanceTest {
         ClientCommunicationPort mockCommunication = Mockito.mock(ClientCommunicationPort.class);
         GameInstance gameInstance = new GameInstance();
         Ship ship = gameInstance.join("Name", 0, 0, mockCommunication);
-        Ship leaveShip = gameInstance.leave("Name");
+        Ship leaveShip = gameInstance.leave("Name", mockCommunication);
         Assertions.assertEquals(ship, leaveShip);
         Assertions.assertFalse(gameInstance.contains(ship));
+        Mockito.verify(mockCommunication, Mockito.times(1)).sendToAllPLayer(Action.LEAVE, ship);
     }
 
     @Test
