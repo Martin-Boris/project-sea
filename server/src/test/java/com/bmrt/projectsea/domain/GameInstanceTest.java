@@ -44,10 +44,11 @@ class GameInstanceTest {
         ClientCommunicationPort mockCommunication = Mockito.mock(ClientCommunicationPort.class);
         GameInstance gameInstance = new GameInstance();
         Ship ship = gameInstance.join("Name", 0, 0, mockCommunication);
-        Ship stopShip = gameInstance.stop("Name");
+        Ship stopShip = gameInstance.stop("Name", mockCommunication);
         Assertions.assertEquals(ship, stopShip);
         Assertions.assertEquals(stopShip.getSpeed(), new Vector(0, 0));
         Assertions.assertTrue(gameInstance.contains(ship));
+        Mockito.verify(mockCommunication, Mockito.times(1)).sendToAllPLayer(Action.STOP, ship);
     }
 
     @Test

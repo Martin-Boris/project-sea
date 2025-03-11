@@ -11,7 +11,7 @@ public interface GameActionApi {
 
     Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort);
 
-    Ship stop(String name);
+    Ship stop(String name, ClientCommunicationPort clientCommunicationPort);
 
     void stopGame();
 

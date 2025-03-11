@@ -75,12 +75,11 @@ class GameControllerTest {
                 .withHealthPoint(5)
                 .withMaxHealthPoint(5)
                 .build();
-            Mockito.when(gameInstanceService.stop("Test")).thenReturn(ship);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
             GameController gameController = new GameController(connection, gameInstanceService);
+            Mockito.when(gameInstanceService.stop("Test", gameController)).thenReturn(ship);
+            Mockito.when(connection.broadcast()).thenReturn(sender);
             gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).stop("Test");
-            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("STOP;10.0;10.0;0.0;0.0;TOP;Test;5.0;5.0");
+            Mockito.verify(gameInstanceService, Mockito.times(1)).stop("Test", gameController);
         }
 
         @Test

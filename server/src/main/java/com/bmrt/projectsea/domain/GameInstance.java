@@ -100,8 +100,10 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship stop(String name) {
-        return ships.get(name).stop();
+    public Ship stop(String name, ClientCommunicationPort clientCommunicationPort) {
+        ships.get(name).stop();
+        clientCommunicationPort.sendToAllPLayer(Action.STOP, ships.get(name));
+        return ships.get(name);
     }
 
     public boolean contains(Ship ship) {

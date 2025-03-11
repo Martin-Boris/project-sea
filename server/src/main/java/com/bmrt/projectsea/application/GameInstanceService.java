@@ -32,8 +32,8 @@ public class GameInstanceService implements GameActionApi {
         return gameInstance.updateDirection(direction, name, clientCommunicationPort);
     }
 
-    public Ship stop(String name) {
-        return gameInstance.stop(name);
+    public Ship stop(String name, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.stop(name, clientCommunicationPort);
     }
 
     @Override

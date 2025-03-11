@@ -46,11 +46,9 @@ public class GameController implements ClientCommunicationPort {
 
     @OnTextMessage()
     public void onMessage(String message) {
-        // TODO refactor message broadcast to be domain responsibility + custom message following action (only leave
-        //  simple)
-        String[] action = message.split(";");
         //TODO handle invalid index
-        // TODO refactor sendText
+        // custom message following action (only leave simple)
+        String[] action = message.split(";");
         if (action[0].equals(Action.JOIN.name())) {
             gameInstanceService.join(action[1], 0, 0, this);
             connection.userData().put(SHIP_ID, action[1]);
@@ -64,8 +62,7 @@ public class GameController implements ClientCommunicationPort {
             } catch (TargetToFar | InvalidTarget ignored) {
             }
         } else {
-            Ship ship = gameInstanceService.stop(action[1]);
-            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
+            gameInstanceService.stop(action[1], this);
         }
     }
 
