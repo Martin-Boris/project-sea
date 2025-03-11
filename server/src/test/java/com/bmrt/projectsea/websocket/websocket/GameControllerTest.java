@@ -32,12 +32,10 @@ class GameControllerTest {
                 .withHealthPoint(5)
                 .withMaxHealthPoint(5)
                 .build();
-            Mockito.when(gameInstanceService.join("Test", 0, 0)).thenReturn(ship);
             GameController gameController = new GameController(connection, gameInstanceService);
+            Mockito.when(gameInstanceService.join("Test", 0, 0, gameController)).thenReturn(ship);
             gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).join("Test", 0, 0);
-            Mockito.verify(connection.getBroadcastSenderMock(), Mockito.times(1)).sendTextAndAwait("JOIN;10.0;10.0;0" +
-                ".0;0.0;TOP;Test;5.0;5.0");
+            Mockito.verify(gameInstanceService, Mockito.times(1)).join("Test", 0, 0, gameController);
         }
 
         @Test

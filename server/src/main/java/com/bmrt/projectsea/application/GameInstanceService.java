@@ -1,5 +1,6 @@
 package com.bmrt.projectsea.application;
 
+import com.bmrt.projectsea.domain.ClientCommunicationPort;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameActionApi;
 import com.bmrt.projectsea.domain.GameInstance;
@@ -22,8 +23,8 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship join(String name, float x, float y) {
-        return gameInstance.join(name, 0, 0);
+    public Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.join(name, 0, 0, clientCommunicationPort);
     }
 
     @Override

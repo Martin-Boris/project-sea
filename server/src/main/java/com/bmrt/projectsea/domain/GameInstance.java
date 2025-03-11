@@ -79,12 +79,13 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship join(String name, float x, float y) {
+    public Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort) {
         if (!running) {
             startGame();
         }
         Ship ship = new Ship(new Vector(x, y), Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.put(name, ship);
+        clientCommunicationPort.sendToAllPLayer(Action.JOIN, ship);
         return ship;
     }
 

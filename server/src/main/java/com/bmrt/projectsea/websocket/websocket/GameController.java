@@ -1,6 +1,8 @@
 package com.bmrt.projectsea.websocket.websocket;
 
 import com.bmrt.projectsea.application.GameInstanceService;
+import com.bmrt.projectsea.domain.Action;
+import com.bmrt.projectsea.domain.ClientCommunicationPort;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.Vector;
@@ -17,7 +19,7 @@ import io.quarkus.websockets.next.WebSocketConnection;
 import java.util.Collection;
 
 @WebSocket(path = "/")
-public class GameController {
+public class GameController implements ClientCommunicationPort {
 
     public static final UserData.TypedKey<String> SHIP_ID = UserData.TypedKey.forString("shipId");
     private final MessageMapper mapper = new MessageMapper();
@@ -50,8 +52,7 @@ public class GameController {
         //TODO handle invalid index
         // TODO refactor sendText
         if (action[0].equals(Action.JOIN.name())) {
-            Ship ship = gameInstanceService.join(action[1], 0, 0);
-            connection.broadcast().sendTextAndAwait(mapper.toMessage(Action.valueOf(action[0]), ship));
+            gameInstanceService.join(action[1], 0, 0, this);
             connection.userData().put(SHIP_ID, action[1]);
         } else if (action[0].equals(Action.LEAVE.name())) {
             Ship ship = gameInstanceService.leave(action[1]);
@@ -72,4 +73,8 @@ public class GameController {
     }
 
 
+    @Override
+    public void sendToAllPLayer(Action action, Ship ship) {
+        connection.broadcast().sendTextAndAwait(mapper.toMessage(action, ship));
+    }
 }

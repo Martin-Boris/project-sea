@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface GameActionApi {
 
-    Ship join(String name, float x, float y);
+    Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort);
 
     Ship updateDirection(Direction direction, String name);
 
