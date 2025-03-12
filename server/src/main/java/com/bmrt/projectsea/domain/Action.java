@@ -1,4 +1,4 @@
-package com.bmrt.projectsea.websocket.websocket;
+package com.bmrt.projectsea.domain;
 
 public enum Action {
 

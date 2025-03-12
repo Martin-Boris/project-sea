@@ -61,8 +61,7 @@ public class WebsocketController implements WebSocketPort {
         socket.setSendGracefully(true);
         try {
             socket.connect();
-        } catch (Exception e) {
-            String test = "toto";
+        } catch (Exception ignored) {
         }
     }
 

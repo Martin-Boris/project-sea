@@ -7,19 +7,20 @@ import java.util.Collection;
 
 public interface GameActionApi {
 
-    Ship join(String name, float x, float y);
+    Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort);
 
-    Ship updateDirection(Direction direction, String name);
+    Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort);
 
-    Ship stop(String name);
+    Ship stop(String name, ClientCommunicationPort clientCommunicationPort);
 
     void stopGame();
 
     void startGame();
 
-    Ship leave(String name);
+    Ship leave(String name, ClientCommunicationPort clientCommunicationPort);
 
     Collection<Ship> getShips();
 
-    Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar;
+    Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget,
+        TargetToFar;
 }

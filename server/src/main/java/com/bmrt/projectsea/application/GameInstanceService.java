@@ -1,5 +1,6 @@
 package com.bmrt.projectsea.application;
 
+import com.bmrt.projectsea.domain.ClientCommunicationPort;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameActionApi;
 import com.bmrt.projectsea.domain.GameInstance;
@@ -22,17 +23,17 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship join(String name, float x, float y) {
-        return gameInstance.join(name, 0, 0);
+    public Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.join(name, 0, 0, clientCommunicationPort);
     }
 
     @Override
-    public Ship updateDirection(Direction direction, String name) {
-        return gameInstance.updateDirection(direction, name);
+    public Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.updateDirection(direction, name, clientCommunicationPort);
     }
 
-    public Ship stop(String name) {
-        return gameInstance.stop(name);
+    public Ship stop(String name, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.stop(name, clientCommunicationPort);
     }
 
     @Override
@@ -46,8 +47,8 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship leave(String name) {
-        return gameInstance.leave(name);
+    public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
+        return gameInstance.leave(name, clientCommunicationPort);
     }
 
     @Override
@@ -56,8 +57,8 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {
-        return gameInstance.shoot(shooter, target);
+    public Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget, TargetToFar {
+        return gameInstance.shoot(shooter, target, clientCommunicationPort);
     }
 
 }

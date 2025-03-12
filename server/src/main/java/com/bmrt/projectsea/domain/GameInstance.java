@@ -50,11 +50,12 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship leave(String name) {
+    public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
         Ship ship = ships.remove(name);
         if (this.running && ships.isEmpty()) {
             running = false;
         }
+        clientCommunicationPort.sendToAllPLayer(Action.LEAVE, ship);
         return ship;
     }
 
@@ -64,14 +65,16 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {
+    public Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget, TargetToFar {
         if (!ships.containsKey(target)) {
             throw new InvalidTarget();
         }
         if (!ships.get(shooter).canShoot(ships.get(target))) {
             throw new TargetToFar();
         }
-        return ships.get(target).applyDamage(Ship.DAMAGE);
+        ships.get(target).applyDamage(Ship.DAMAGE);
+        clientCommunicationPort.sendToAllPLayer(Action.SHOOT, ships.get(target));
+        return ships.get(target);
     }
 
     public void stopGame() {
@@ -79,23 +82,28 @@ public class GameInstance implements GameActionApi {
     }
 
     @Override
-    public Ship join(String name, float x, float y) {
+    public Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort) {
         if (!running) {
             startGame();
         }
         Ship ship = new Ship(new Vector(x, y), Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.put(name, ship);
+        clientCommunicationPort.sendToAllPLayer(Action.JOIN, ship);
         return ship;
     }
 
     @Override
-    public Ship updateDirection(Direction direction, String name) {
-        return ships.get(name).updateDirection(GAME_TICK, direction);
+    public Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort) {
+        Ship ship = ships.get(name).updateDirection(GAME_TICK, direction);
+        clientCommunicationPort.sendToAllPLayer(Action.TURN, ship);
+        return ship;
     }
 
     @Override
-    public Ship stop(String name) {
-        return ships.get(name).stop();
+    public Ship stop(String name, ClientCommunicationPort clientCommunicationPort) {
+        ships.get(name).stop();
+        clientCommunicationPort.sendToAllPLayer(Action.STOP, ships.get(name));
+        return ships.get(name);
     }
 
     public boolean contains(Ship ship) {

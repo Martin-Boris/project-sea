@@ -1,6 +1,7 @@
 package com.bmrt.projectsea.websocket.websocket;
 
 import com.bmrt.projectsea.application.GameInstanceService;
+import com.bmrt.projectsea.domain.Action;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.ShipBuilder;
@@ -14,7 +15,103 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 class GameControllerTest {
+    @Nested
+    class sendToAllPLayer {
 
+        @Test
+        void caseTURN() {
+            WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
+            WebSocketConnection.BroadcastSender sender = Mockito.mock(WebSocketConnection.BroadcastSender.class);
+            Ship ship = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.LEFT)
+                .withName("Test")
+                .withHealthPoint(5)
+                .withMaxHealthPoint(5)
+                .build();
+            Mockito.when(connection.broadcast()).thenReturn(sender);
+            GameController gameController = new GameController(connection, null);
+            gameController.sendToAllPLayer(Action.TURN, ship);
+            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("TURN;10.0;10.0;0.0;0.0;LEFT;Test;5.0;5.0");
+        }
+
+        @Test
+        void caseSTOP() {
+            WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
+            WebSocketConnection.BroadcastSender sender = Mockito.mock(WebSocketConnection.BroadcastSender.class);
+            Ship ship = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.TOP)
+                .withName("Test")
+                .withHealthPoint(5)
+                .withMaxHealthPoint(5)
+                .build();
+            Mockito.when(connection.broadcast()).thenReturn(sender);
+            GameController gameController = new GameController(connection, null);
+            gameController.sendToAllPLayer(Action.STOP, ship);
+            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("STOP;10.0;10.0;0.0;0.0;TOP;Test;5.0;5.0");
+        }
+
+        @Test
+        void caseLEAVE() {
+            WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
+            WebSocketConnection.BroadcastSender sender = Mockito.mock(WebSocketConnection.BroadcastSender.class);
+            Ship ship = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.TOP)
+                .withName("Test")
+                .withHealthPoint(5)
+                .withMaxHealthPoint(5)
+                .build();
+            Mockito.when(connection.broadcast()).thenReturn(sender);
+            GameController gameController = new GameController(connection, null);
+            gameController.sendToAllPLayer(Action.LEAVE, ship);
+            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("LEAVE;10.0;10.0;0.0;0.0;TOP;Test;5.0;5.0");
+        }
+
+        @Test
+        void caseJOIN() {
+            WebSocketConnectionMock connection = new WebSocketConnectionMock();
+            Ship ship = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.TOP)
+                .withName("Test")
+                .withHealthPoint(5)
+                .withMaxHealthPoint(5)
+                .build();
+            GameController gameController = new GameController(connection, null);
+            gameController.sendToAllPLayer(Action.JOIN, ship);
+            Mockito.verify(connection.getBroadcastSenderMock(), Mockito.times(1)).sendTextAndAwait("JOIN;10.0;10.0;0" +
+                ".0;0.0;TOP;Test;5.0;5.0");
+        }
+
+        @Test
+        void caseSHOOT() {
+            WebSocketConnectionMock connection = new WebSocketConnectionMock();
+            Ship ship = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.LEFT)
+                .withName("Target")
+                .withHealthPoint(4)
+                .withMaxHealthPoint(5)
+                .build();
+            GameController gameController = new GameController(connection, null);
+            gameController.sendToAllPLayer(Action.SHOOT, ship);
+            Mockito.verify(connection.getBroadcastSenderMock(), Mockito.times(1)).sendTextAndAwait("SHOOT;10.0;10.0;0" +
+                ".0;0.0;LEFT;Target;4.0;5.0");
+        }
+
+    }
 
     @Nested
     class onMessage {
@@ -32,35 +129,10 @@ class GameControllerTest {
                 .withHealthPoint(5)
                 .withMaxHealthPoint(5)
                 .build();
-            Mockito.when(gameInstanceService.join("Test", 0, 0)).thenReturn(ship);
             GameController gameController = new GameController(connection, gameInstanceService);
+            Mockito.when(gameInstanceService.join("Test", 0, 0, gameController)).thenReturn(ship);
             gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).join("Test", 0, 0);
-            Mockito.verify(connection.getBroadcastSenderMock(), Mockito.times(1)).sendTextAndAwait("JOIN;10.0;10.0;0" +
-                ".0;0.0;TOP;Test;5.0;5.0");
-        }
-
-        @Test
-        void caseLeave() {
-            WebSocketConnection connection = Mockito.mock(WebSocketConnection.class);
-            GameInstanceService gameInstanceService = Mockito.mock(GameInstanceService.class);
-            WebSocketConnection.BroadcastSender sender = Mockito.mock(WebSocketConnection.BroadcastSender.class);
-            String message = "LEAVE;Test";
-            Ship ship = ShipBuilder
-                .newShip()
-                .withPosition(10, 10)
-                .withSpeed(0, 0)
-                .withDirection(Direction.TOP)
-                .withName("Test")
-                .withHealthPoint(5)
-                .withMaxHealthPoint(5)
-                .build();
-            Mockito.when(gameInstanceService.leave("Test")).thenReturn(ship);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
-            GameController gameController = new GameController(connection, gameInstanceService);
-            gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).leave("Test");
-            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("LEAVE;10.0;10.0;0.0;0.0;TOP;Test;5.0;5.0");
+            Mockito.verify(gameInstanceService, Mockito.times(1)).join("Test", 0, 0, gameController);
         }
 
         @Test
@@ -78,12 +150,11 @@ class GameControllerTest {
                 .withHealthPoint(5)
                 .withMaxHealthPoint(5)
                 .build();
-            Mockito.when(gameInstanceService.stop("Test")).thenReturn(ship);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
             GameController gameController = new GameController(connection, gameInstanceService);
+            Mockito.when(gameInstanceService.stop("Test", gameController)).thenReturn(ship);
+            Mockito.when(connection.broadcast()).thenReturn(sender);
             gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).stop("Test");
-            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("STOP;10.0;10.0;0.0;0.0;TOP;Test;5.0;5.0");
+            Mockito.verify(gameInstanceService, Mockito.times(1)).stop("Test", gameController);
         }
 
         @Test
@@ -101,12 +172,12 @@ class GameControllerTest {
                 .withHealthPoint(5)
                 .withMaxHealthPoint(5)
                 .build();
-            Mockito.when(gameInstanceService.updateDirection(Direction.LEFT, "Test")).thenReturn(ship);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
             GameController gameController = new GameController(connection, gameInstanceService);
+            Mockito.when(gameInstanceService.updateDirection(Direction.LEFT, "Test", gameController)).thenReturn(ship);
+            Mockito.when(connection.broadcast()).thenReturn(sender);
             gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).updateDirection(Direction.LEFT, "Test");
-            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("TURN;10.0;10.0;0.0;0.0;LEFT;Test;5.0;5.0");
+            Mockito.verify(gameInstanceService, Mockito.times(1)).updateDirection(Direction.LEFT, "Test",
+                gameController);
         }
 
         @Test
@@ -124,12 +195,11 @@ class GameControllerTest {
                 .withHealthPoint(4)
                 .withMaxHealthPoint(5)
                 .build();
-            Mockito.when(gameInstanceService.shoot("Test", "Target")).thenReturn(shipTargeted);
-            Mockito.when(connection.broadcast()).thenReturn(sender);
             GameController gameController = new GameController(connection, gameInstanceService);
+            Mockito.when(gameInstanceService.shoot("Test", "Target", gameController)).thenReturn(shipTargeted);
+            Mockito.when(connection.broadcast()).thenReturn(sender);
             gameController.onMessage(message);
-            Mockito.verify(gameInstanceService, Mockito.times(1)).shoot("Test", "Target");
-            Mockito.verify(sender, Mockito.times(1)).sendTextAndAwait("SHOOT;10.0;10.0;0.0;0.0;LEFT;Target;4.0;5.0");
+            Mockito.verify(gameInstanceService, Mockito.times(1)).shoot("Test", "Target", gameController);
         }
 
     }

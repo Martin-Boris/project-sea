@@ -1,9 +1,9 @@
 package com.bmrt.projectsea.websocket.websocket.mapper;
 
+import com.bmrt.projectsea.domain.Action;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.ShipBuilder;
-import com.bmrt.projectsea.websocket.websocket.Action;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
