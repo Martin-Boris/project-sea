@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project-sea</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta id="gameViewport" name="viewport" content="width=device-width, initial-scale=1">
+    <link href="styles.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div align="center" id="embed-html">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="app.js"></script>
+
+    <script>
+        // Prevent context menu on right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Handle mouse events for the canvas
+        var canvas = document.getElementById('canvas');
+        if (canvas) {
+            canvas.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.focus();
+            }, false);
+
+            canvas.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        }
+    </script>
+</body>
+</html>
