@@ -16,8 +16,9 @@ dependencies {
     // libGDX core
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 
-    // gdx-websockets core (same as other modules)
+    // gdx-websockets - need both core and common for WebSocket factory
     implementation "com.github.MrStahlfelge.gdx-websockets:core:$websocketVersion"
+    implementation "com.github.MrStahlfelge.gdx-websockets:common:$websocketVersion"
 
     // ShapeDrawer
     implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"

@@ -1,8 +1,8 @@
 package com.bmrt.projectsea.teavm;
 
+import com.github.xpenatan.gdx.backends.teavm.config.AssetFileHandle;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuildConfiguration;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuilder;
-import com.github.xpenatan.gdx.backends.teavm.config.plugins.TeaReflectionSupplier;
 import java.io.File;
 
 /**
@@ -15,21 +15,19 @@ public class TeaVMBuilder {
         TeaBuildConfiguration config = new TeaBuildConfiguration();
 
         // Main application class
-        config.mainClass = TeaVMLauncher.class.getName();
+        config.setApplicationClass(TeaVMLauncher.class);
 
-        // Asset path
-        config.assetsPath.add(new File("../assets"));
+        // Asset path - use AssetFileHandle
+        config.assetsPath.add(new AssetFileHandle("../assets"));
 
         // Output directory
-        config.webappPath = new File("build/dist/webapp").getAbsolutePath();
+        config.setWebAppPath(new File("build/dist/webapp"));
 
         // Add reflection classes if needed (e.g., for tiled maps)
-        TeaReflectionSupplier reflectionSupplier = config.getReflectionSupplier();
-        reflectionSupplier.addReflectionClass("com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile");
+        config.additionalReflectionClasses.add("com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile");
 
         // Build configuration options
-        config.obfuscate = true;
-        config.logClasses = false;
+        config.setObfuscate(true);
 
         // Check if running in dev mode
         boolean runServer = false;
@@ -42,11 +40,10 @@ public class TeaVMBuilder {
 
         if (runServer) {
             // Run development server
-            String[] serverArgs = {String.valueOf(TeaBuilder.getDefaultServerPort())};
-            TeaBuilder.serve(config, serverArgs);
+            new TeaBuilder(config).build().run();
         } else {
             // Build for production
-            TeaBuilder.build(config);
+            new TeaBuilder(config).build();
         }
     }
 }

@@ -2,8 +2,8 @@ package com.bmrt.projectsea.teavm.websocket;
 
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketListener;
-import com.github.czyzby.websocket.data.WebSocketCloseCode;
 import com.github.czyzby.websocket.data.WebSocketState;
+import com.github.czyzby.websocket.serialization.Serializer;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.events.MessageEvent;
@@ -21,6 +21,7 @@ public class TeaVMWebSocket implements WebSocket {
     private JSWebSocket jsWebSocket;
     private final List<WebSocketListener> listeners = new ArrayList<>();
     private boolean sendGracefully = false;
+    private Serializer serializer;
 
     public TeaVMWebSocket(String url) {
         this.url = url;
@@ -75,10 +76,9 @@ public class TeaVMWebSocket implements WebSocket {
     }
 
     @Override
-    public WebSocket connect() {
+    public void connect() {
         jsWebSocket = JSWebSocket.create(url);
         setupListeners();
-        return this;
     }
 
     private void setupListeners() {
@@ -132,67 +132,61 @@ public class TeaVMWebSocket implements WebSocket {
     }
 
     @Override
-    public WebSocket close() {
+    public void close() {
         if (jsWebSocket != null) {
             jsWebSocket.close();
         }
-        return this;
     }
 
     @Override
-    public WebSocket close(WebSocketCloseCode code) {
+    public void close(int code, String reason) {
         if (jsWebSocket != null) {
-            jsWebSocket.close(code.getCode(), code.name());
+            jsWebSocket.close(code, reason);
         }
-        return this;
     }
 
     @Override
-    public WebSocket close(WebSocketCloseCode code, String reason) {
-        if (jsWebSocket != null) {
-            jsWebSocket.close(code.getCode(), reason);
-        }
-        return this;
-    }
-
-    @Override
-    public boolean send(String message) {
+    public void send(String message) {
         if (isOpen()) {
             jsWebSocket.send(message);
-            return true;
-        } else if (sendGracefully) {
-            return false;
+        } else if (!sendGracefully) {
+            throw new IllegalStateException("WebSocket is not open. State: " + getState());
         }
-        throw new IllegalStateException("WebSocket is not open. State: " + getState());
     }
 
     @Override
-    public boolean send(byte[] message) {
+    public void send(byte[] message) {
         if (isOpen()) {
             jsWebSocket.send(message);
-            return true;
-        } else if (sendGracefully) {
-            return false;
+        } else if (!sendGracefully) {
+            throw new IllegalStateException("WebSocket is not open. State: " + getState());
         }
-        throw new IllegalStateException("WebSocket is not open. State: " + getState());
     }
 
     @Override
-    public WebSocket addListener(WebSocketListener listener) {
+    public void send(Object packet) {
+        if (packet instanceof String) {
+            send((String) packet);
+        } else if (packet instanceof byte[]) {
+            send((byte[]) packet);
+        } else {
+            send(packet.toString());
+        }
+    }
+
+    @Override
+    public void addListener(WebSocketListener listener) {
         listeners.add(listener);
-        return this;
     }
 
     @Override
-    public WebSocket removeListener(WebSocketListener listener) {
+    public void removeListener(WebSocketListener listener) {
         listeners.remove(listener);
-        return this;
     }
 
     @Override
-    public WebSocket setSendGracefully(boolean sendGracefully) {
+    public void setSendGracefully(boolean sendGracefully) {
         this.sendGracefully = sendGracefully;
-        return this;
     }
 
     @Override
@@ -201,9 +195,8 @@ public class TeaVMWebSocket implements WebSocket {
     }
 
     @Override
-    public WebSocket setUseTcpNoDelay(boolean useTcpNoDelay) {
+    public void setUseTcpNoDelay(boolean useTcpNoDelay) {
         // Not applicable for browser WebSockets
-        return this;
     }
 
     @Override
@@ -212,23 +205,12 @@ public class TeaVMWebSocket implements WebSocket {
     }
 
     @Override
-    public WebSocket setSerializer(com.github.czyzby.websocket.serialization.Serializer serializer) {
-        // Not implemented - using raw string messages
-        return this;
+    public void setSerializer(Serializer serializer) {
+        this.serializer = serializer;
     }
 
     @Override
-    public com.github.czyzby.websocket.serialization.Serializer getSerializer() {
-        return null;
-    }
-
-    @Override
-    public boolean send(Object packet) {
-        if (packet instanceof String) {
-            return send((String) packet);
-        } else if (packet instanceof byte[]) {
-            return send((byte[]) packet);
-        }
-        return send(packet.toString());
+    public Serializer getSerializer() {
+        return serializer;
     }
 }
