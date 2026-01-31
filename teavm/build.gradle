@@ -11,7 +11,7 @@ java {
 
 dependencies {
     // gdx-teavm backend from xpenatan
-    implementation "com.github.xpenatan.gdx-teavm:backend-web:$gdxTeaVMVersion"
+    implementation "com.github.xpenatan.gdx-teavm:backend-teavm:$gdxTeaVMVersion"
 
     // libGDX core
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
