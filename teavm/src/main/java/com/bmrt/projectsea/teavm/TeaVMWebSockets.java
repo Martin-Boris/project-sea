@@ -1,15 +1,15 @@
 package com.bmrt.projectsea.teavm;
 
 import com.bmrt.projectsea.teavm.websocket.TeaVMWebSocket;
-import com.github.czyzby.websocket.CommonWebSockets;
 import com.github.czyzby.websocket.WebSocket;
-import com.github.czyzby.websocket.WebSocketFactory;
+import com.github.czyzby.websocket.WebSockets;
 
 /**
  * TeaVM WebSocket initialization.
+ * Extends WebSockets to set the protected FACTORY field.
  * Call initiate() before using WebSockets in the application.
  */
-public class TeaVMWebSockets {
+public class TeaVMWebSockets extends WebSockets {
 
     private static boolean initiated = false;
 
@@ -22,11 +22,12 @@ public class TeaVMWebSockets {
             return;
         }
         initiated = true;
-        CommonWebSockets.initiate(new WebSocketFactory() {
+        // Set the protected FACTORY field from parent WebSockets class
+        WebSockets.FACTORY = new WebSocketFactory() {
             @Override
             public WebSocket newWebSocket(String url) {
                 return new TeaVMWebSocket(url);
             }
-        });
+        };
     }
 }

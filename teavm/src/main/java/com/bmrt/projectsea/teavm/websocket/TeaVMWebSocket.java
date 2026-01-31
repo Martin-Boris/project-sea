@@ -139,6 +139,13 @@ public class TeaVMWebSocket implements WebSocket {
     }
 
     @Override
+    public void close(int code) {
+        if (jsWebSocket != null) {
+            jsWebSocket.close(code, "");
+        }
+    }
+
+    @Override
     public void close(int code, String reason) {
         if (jsWebSocket != null) {
             jsWebSocket.close(code, reason);
@@ -194,12 +201,10 @@ public class TeaVMWebSocket implements WebSocket {
         return sendGracefully;
     }
 
-    @Override
     public void setUseTcpNoDelay(boolean useTcpNoDelay) {
         // Not applicable for browser WebSockets
     }
 
-    @Override
     public boolean isUseTcpNoDelay() {
         return false;
     }

@@ -14,20 +14,14 @@ public class TeaVMBuilder {
     public static void main(String[] args) {
         TeaBuildConfiguration config = new TeaBuildConfiguration();
 
-        // Main application class
-        config.setApplicationClass(TeaVMLauncher.class);
+        // Main application class - use public field
+        config.mainApplicationClass = TeaVMLauncher.class.getName();
 
         // Asset path - use AssetFileHandle
         config.assetsPath.add(new AssetFileHandle("../assets"));
 
-        // Output directory
-        config.setWebAppPath(new File("build/dist/webapp"));
-
-        // Add reflection classes if needed (e.g., for tiled maps)
-        config.additionalReflectionClasses.add("com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile");
-
-        // Build configuration options
-        config.setObfuscate(true);
+        // Output directory - use public field
+        config.webappPath = new File("build/dist/webapp").getAbsolutePath();
 
         // Check if running in dev mode
         boolean runServer = false;
@@ -38,12 +32,12 @@ public class TeaVMBuilder {
             }
         }
 
+        // Build using static method
+        TeaBuilder.build(config);
+
         if (runServer) {
-            // Run development server
-            new TeaBuilder(config).build().run();
-        } else {
-            // Build for production
-            new TeaBuilder(config).build();
+            // Start local server for development
+            System.out.println("Build complete. Run a local HTTP server in build/dist/webapp to test.");
         }
     }
 }

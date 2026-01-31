@@ -16,9 +16,8 @@ dependencies {
     // libGDX core
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
 
-    // gdx-websockets - need both core and common for WebSocket factory
+    // gdx-websockets core only - TeaVM uses its own browser-native WebSocket implementation
     implementation "com.github.MrStahlfelge.gdx-websockets:core:$websocketVersion"
-    implementation "com.github.MrStahlfelge.gdx-websockets:common:$websocketVersion"
 
     // ShapeDrawer
     implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
