@@ -51,7 +51,7 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
             configProvider.getProperty("websocketContextPath"));
         this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController, new Cooldown(),
             new Cooldown());
-        seaMap = new SeaMap(25, 25);
+        seaMap = new SeaMap(50, 50);
         this.gameInstance.initView(seaMap);
 
         InputMultiplexer multiplexer = new InputMultiplexer();
