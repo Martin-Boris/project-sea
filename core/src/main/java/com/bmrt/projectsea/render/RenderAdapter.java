@@ -45,12 +45,11 @@ public class RenderAdapter implements RenderPort {
     public void initRendering(SeaMap seaMap, GameInstance gameInstance) {
         float graphicsWidth = Gdx.graphics.getWidth();
         float graphicsHeight = Gdx.graphics.getHeight();
-
         tiledMap = new TiledMap(seaMap);
 
         /* GAME CAMERA */
-        float width = (graphicsWidth / graphicsHeight) * 10;
-        int height = 10;
+        float width = (graphicsWidth / graphicsHeight) * 15;
+        int height = 15;
         camera = new GameCamera(width, height, seaMap.getWidth(), seaMap.getHeight());
         renderer = new OrthogonalTiledMapRenderer(tiledMap.get(), UNIT);
 
@@ -68,7 +67,8 @@ public class RenderAdapter implements RenderPort {
         canonShotTexture = new Texture(Gdx.files.internal("sprite/canonShoots.png"));
         uiStage = new Stage();
         font = new BitmapFont();
-        spellBarUI = new SpellBarUI(canonShotTexture, font, gameInstance.getPortCooldown(), gameInstance.getStarboardCooldown());
+        spellBarUI = new SpellBarUI(canonShotTexture, font, gameInstance.getPortCooldown(),
+            gameInstance.getStarboardCooldown());
         spellBarUI.addListener(new ChangeSpellButtonListener(gameInstance));
 
         uiStage.addActor(spellBarUI);
