@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.bmrt.projectsea.domain.ConfigProvider;
 import com.bmrt.projectsea.domain.Cooldown;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameInstance;
@@ -25,24 +26,31 @@ public class ProjectSeaMain extends ApplicationAdapter implements InputProcessor
     public static final float GAME_TICK = 1 / 60f;
 
     public static final float EPSILON = 0.00001f;
-
+    private final ConfigProvider configProvider;
     private Actor tmpShipActor;
-
     private float accumulator = 0f;
     private SeaMap seaMap;
     private GameInstance gameInstance;
-
     private RenderAdapter renderAdapter;
-
     private float deltaTime;
     private WebsocketController websocketController;
+
+    public ProjectSeaMain(ConfigProvider configProvider) {
+        this.configProvider = configProvider;
+    }
 
     @Override
     public void create() {
         this.renderAdapter = new RenderAdapter();
         String myShipName = GUID.get();
-        this.websocketController = new WebsocketController(myShipName);
-        this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController, new Cooldown(), new Cooldown());
+        this.websocketController = new WebsocketController(
+            myShipName,
+            configProvider.getProperty("websocketUrl"),
+            Integer.parseInt(configProvider.getProperty("websocketPort")),
+            configProvider.getProperty("websocketProtocol"),
+            configProvider.getProperty("websocketContextPath"));
+        this.gameInstance = new GameInstance(myShipName, renderAdapter, websocketController, new Cooldown(),
+            new Cooldown());
         seaMap = new SeaMap(25, 25);
         this.gameInstance.initView(seaMap);
 

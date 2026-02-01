@@ -36,7 +36,7 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Generate dist file
-        run: chmod +x gradlew && ./gradlew html:dist
+        run: chmod +x gradlew && ./gradlew -Penv=prod teavm:build
 
       # Uses the `docker/login-action` action to log in to the Container registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
@@ -58,8 +58,8 @@ jobs:
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: ./html
-          file: ./html/src/main/docker/Dockerfile
+          context: ./teavm
+          file: ./teavm/src/main/docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -155,7 +155,7 @@ jobs:
         run: helm uninstall project-sea-client --ignore-not-found --namespace ${{ env.NAMESPACE }}
 
       - name: helm deploy
-        run: helm upgrade project-sea-client ./html/project-sea-client --set image.tag=${{ env.VERSION }} --install
+        run: helm upgrade project-sea-client ./teavm/project-sea-client --set image.tag=${{ env.VERSION }} --install
           --namespace ${{ env.NAMESPACE }} --set image.tag=${{ env.VERSION }}
 
   delpoy-server:

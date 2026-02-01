@@ -1,0 +1,69 @@
+plugins {
+  id 'java'
+  id 'org.gretty' version "3.1.8"
+}
+
+// Load config based on -Penv flag (defaults to 'dev')
+def envName = project.hasProperty('env') ? project.property('env') : 'dev'
+def configFile = rootProject.file("config-${envName}.properties")
+if (!configFile.exists()) {
+  throw new GradleException("Config file not found: ${configFile.absolutePath}")
+}
+def appConfig = new Properties()
+configFile.withInputStream { appConfig.load(it) }
+
+gretty {
+  contextPath = '/'
+  extraResourceBase 'build/dist/webapp'
+  httpPort = 9090
+}
+
+sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
+project.ext.mainClassName = "com.bmrt.projectsea.teavm.TeaVMBuilder"
+eclipse.project.name = appName + "-teavm"
+
+// This must be at least 11, and no higher than the JDK version this project is built with.
+java.targetCompatibility = "17"
+// This should probably be equal to targetCompatibility, above. This only affects the TeaVM module.
+java.sourceCompatibility = "17"
+
+
+dependencies {
+  implementation "com.github.xpenatan.gdx-teavm:backend-teavm:$gdxTeaVMVersion"
+  implementation project(':core')
+
+}
+
+tasks.register("buildJavaScript", JavaExec) {
+  dependsOn classes
+  setDescription("Transpile bytecode to JavaScript via TeaVM")
+  mainClass.set(project.mainClassName)
+  setClasspath(sourceSets.main.runtimeClasspath)
+}
+
+tasks.register("injectConfig") {
+  dependsOn buildJavaScript
+  setDescription("Inject APP_CONFIG into index.html")
+  doLast {
+    def indexFile = file("build/dist/webapp/index.html")
+    def content = indexFile.text
+    def configScript = """        <script>
+            window.APP_CONFIG = {
+                "websocketUrl": "${appConfig.getProperty('websocketUrl')}",
+                "websocketPort": "${appConfig.getProperty('websocketPort')}",
+                "websocketProtocol": "${appConfig.getProperty('websocketProtocol')}",
+                "websocketContextPath": "${appConfig.getProperty('websocketContextPath', '')}"
+            };
+        </script>
+        <script>"""
+    content = content.replaceFirst("<script>", configScript)
+    indexFile.text = content
+  }
+}
+
+build.dependsOn injectConfig
+
+tasks.register("run") {
+  description = "Run the JavaScript application hosted via a local Jetty server at http://localhost:9090/"
+  dependsOn(injectConfig, tasks.named("jettyRun"))
+}
