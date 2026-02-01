@@ -12,22 +12,24 @@ public class WebsocketController implements WebSocketPort {
     private final WebSocket socket;
 
 
-    public WebsocketController(String shipName) {
+    public WebsocketController(String shipName, String url, int port, String protocol, String path) {
         this.shipName = shipName;
-        String websocketUrl = System.getProperty("websocketUrl");
+        /**String websocketUrl = System.getProperty("websocketUrl");
         int websocketPort = Integer.parseInt(System.getProperty("websocketPort"));
         String url;
-        String path = System.getProperty("websocketContextPath");
-        if ("wss".equals(System.getProperty("websocketProtocol"))) {
-            url = WebSockets.toSecureWebSocketUrl(websocketUrl,
-                websocketPort,
+        String path = System.getProperty("websocketContextPath");**/
+
+        String fullUrl;
+        if ("wss".equals(protocol)) {
+            fullUrl = WebSockets.toSecureWebSocketUrl(url,
+                port,
                 path);
         } else {
-            url = WebSockets.toWebSocketUrl(websocketUrl,
-                websocketPort,
+            fullUrl = WebSockets.toWebSocketUrl(url,
+                port,
                 path);
         }
-        socket = WebSockets.newSocket(url);
+        socket = WebSockets.newSocket(fullUrl);
 
     }
 

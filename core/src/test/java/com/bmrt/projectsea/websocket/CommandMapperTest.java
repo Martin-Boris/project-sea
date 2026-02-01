@@ -3,6 +3,8 @@ package com.bmrt.projectsea.websocket;
 import com.bmrt.projectsea.domain.ActionCommand;
 import com.bmrt.projectsea.domain.ActionCommandBuilder;
 import com.bmrt.projectsea.domain.Direction;
+import com.bmrt.projectsea.websocket.Action;
+import com.bmrt.projectsea.websocket.CommandMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

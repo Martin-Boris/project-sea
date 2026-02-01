@@ -1,5 +1,6 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.domain.Cooldown;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

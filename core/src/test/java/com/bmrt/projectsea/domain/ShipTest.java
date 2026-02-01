@@ -1,5 +1,9 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.domain.SeaMap;
+import com.bmrt.projectsea.domain.Ship;
+import com.bmrt.projectsea.domain.ShipBuilder;
+import com.bmrt.projectsea.domain.Vector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
