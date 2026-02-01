@@ -14,11 +14,6 @@ public class WebsocketController implements WebSocketPort {
 
     public WebsocketController(String shipName, String url, int port, String protocol, String path) {
         this.shipName = shipName;
-        /**String websocketUrl = System.getProperty("websocketUrl");
-        int websocketPort = Integer.parseInt(System.getProperty("websocketPort"));
-        String url;
-        String path = System.getProperty("websocketContextPath");**/
-
         String fullUrl;
         if ("wss".equals(protocol)) {
             fullUrl = WebSockets.toSecureWebSocketUrl(url,
@@ -30,7 +25,6 @@ public class WebsocketController implements WebSocketPort {
                 path);
         }
         socket = WebSockets.newSocket(fullUrl);
-
     }
 
     @Override
