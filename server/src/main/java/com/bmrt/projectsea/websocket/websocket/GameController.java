@@ -66,4 +66,9 @@ public class GameController implements ClientCommunicationPort {
     public void sendToAllPLayer(Action action, Ship ship) {
         connection.broadcast().sendTextAndAwait(mapper.toMessage(action, ship));
     }
+
+    @Override
+    public void sendShootToAllPLayer(Action action, Ship target, Ship shooter) {
+        connection.broadcast().sendTextAndAwait(mapper.toShootMessage(action, target, shooter));
+    }
 }

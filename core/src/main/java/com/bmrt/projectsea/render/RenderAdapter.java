@@ -13,6 +13,7 @@ import com.bmrt.projectsea.domain.RenderPort;
 import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.Vector;
+import com.bmrt.projectsea.domain.command.ShootCommand;
 import com.bmrt.projectsea.render.spell.ChangeSpellButtonListener;
 import com.bmrt.projectsea.render.spell.SpellBarUI;
 
@@ -88,8 +89,9 @@ public class RenderAdapter implements RenderPort {
     }
 
     @Override
-    public void triggerPortShoot(String shipName) {
-        shipActors.get(shipName).triggerPortShoot();
+    public void renderPortShoot(ShootCommand cmd) {
+        shipActors.get(cmd.getShooterName()).triggerPortShoot();
+        shipActors.get(cmd.getTargetName()).getShip().setHealthPoint(cmd.getHealthPoint());
     }
 
     @Override

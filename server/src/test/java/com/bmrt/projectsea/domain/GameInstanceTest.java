@@ -122,7 +122,7 @@ class GameInstanceTest {
                     .withSpeed(0, 0)
                     .build();
                 Assertions.assertEquals(target, expectedShip);
-                Mockito.verify(mockCommunication, Mockito.times(1)).sendToAllPLayer(Action.SHOOT, targetShip);
+                Mockito.verify(mockCommunication, Mockito.times(1)).sendShootToAllPLayer(Action.SHOOT, targetShip, ship);
             } catch (TargetToFar | InvalidTarget e) {
                 Assertions.fail();
             }

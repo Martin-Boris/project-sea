@@ -5,6 +5,7 @@ import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.ShipBuilder;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class MessageMapperTest {
@@ -69,4 +70,25 @@ class MessageMapperTest {
         Assertions.assertEquals(message, "STOP;10.0;10.0;0.0;0.0;BOT;Test;10000.0;10000.0");
     }
 
+    @Nested
+    class toShootMessage {
+        @Test
+        void caseSHOOT() {
+            Ship target = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.LEFT)
+                .withName("Target")
+                .withHealthPoint(4)
+                .withMaxHealthPoint(5)
+                .build();
+            Ship shooter = ShipBuilder
+                .newShip()
+                .withName("shooter")
+                .build();
+            String message = new MessageMapper().toShootMessage(Action.SHOOT, target, shooter);
+            Assertions.assertEquals(message, "SHOOT;Target;4.0;5.0;shooter");
+        }
+    }
 }

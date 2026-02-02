@@ -9,9 +9,9 @@ public class WebSocketListenerAdapter implements WebSocketListener {
     private final GameInstance gameInstance;
     private final CommandMapper commandMapper;
 
-    public WebSocketListenerAdapter(GameInstance gameInstance) {
+    public WebSocketListenerAdapter(GameInstance gameInstance, CommandMapper commandMapper) {
         this.gameInstance = gameInstance;
-        this.commandMapper = new CommandMapper();
+        this.commandMapper = commandMapper;
     }
 
     @Override
@@ -29,7 +29,12 @@ public class WebSocketListenerAdapter implements WebSocketListener {
     public boolean onMessage(WebSocket webSocket, String packet) {
         //TODO refactor : create command for all case LEAVE TURN and JOIN and do logic inside GameInstance (for now
         // create command each time pool later
-        gameInstance.handleAction(commandMapper.getCommand(packet));
+        String[] data = packet.split(";");
+        if (Action.SHOOT.name().equals(data[0])) {
+            gameInstance.renderShoot(commandMapper.getShootCommand(data));
+        } else {
+            gameInstance.handleAction(commandMapper.getCommand(data));
+        }
         return FULLY_HANDLED;
     }
 

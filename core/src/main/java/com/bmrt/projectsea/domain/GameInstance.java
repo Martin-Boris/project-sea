@@ -1,5 +1,7 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.domain.command.ActionCommand;
+import com.bmrt.projectsea.domain.command.ShootCommand;
 import com.bmrt.projectsea.websocket.Action;
 
 import java.util.HashMap;
@@ -65,7 +67,6 @@ public class GameInstance {
     public void triggerPortShoot() {
         if (target != null && getMyShip().canShoot(target) && portCooldown.isReady()) {
             portCooldown.trigger();
-            renderPort.triggerPortShoot(myShipName);
             webSocketPort.shoot(myShipName, target.getName());
         }
     }
@@ -73,9 +74,12 @@ public class GameInstance {
     public void triggerStarboardShoot() {
         if (target != null && getMyShip().canShoot(target) && starboardCooldown.isReady()) {
             starboardCooldown.trigger();
-            renderPort.triggerStarboardShoot(myShipName);
             webSocketPort.shoot(myShipName, target.getName());
         }
+    }
+
+    public void renderShoot(ShootCommand command) {
+        renderPort.renderPortShoot(command);
     }
 
     public void removeTarget() {

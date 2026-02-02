@@ -53,7 +53,7 @@ public class WebsocketController implements WebSocketPort {
 
     @Override
     public void addListener(GameInstance gameInstance) {
-        socket.addListener(new WebSocketListenerAdapter(gameInstance));
+        socket.addListener(new WebSocketListenerAdapter(gameInstance, new CommandMapper()));
     }
 
     @Override

@@ -73,7 +73,7 @@ public class GameInstance implements GameActionApi {
             throw new TargetToFar();
         }
         ships.get(target).applyDamage(Ship.DAMAGE);
-        clientCommunicationPort.sendToAllPLayer(Action.SHOOT, ships.get(target));
+        clientCommunicationPort.sendShootToAllPLayer(Action.SHOOT, ships.get(target), ships.get(shooter));
         return ships.get(target);
     }
 

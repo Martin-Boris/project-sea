@@ -1,12 +1,14 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.domain.command.ShootCommand;
+
 public interface RenderPort {
 
     void initRendering(SeaMap seaMap, GameInstance gameInstance);
 
     void updateView(Vector myShipPosition, float deltaTime, boolean canShootTarget);
 
-    void triggerPortShoot(String shipName);
+    void renderPortShoot(ShootCommand cmd);
 
     void triggerStarboardShoot(String shipName);
 

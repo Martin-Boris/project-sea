@@ -16,4 +16,12 @@ public class MessageMapper {
             + ship.getHealthPoint() + ";"
             + ship.getMaxHealthPoint();
     }
+
+    public String toShootMessage(Action action, Ship target, Ship shooter) {
+        return action + ";"
+            + target.getName() + ";"
+            + target.getHealthPoint() + ";"
+            + target.getMaxHealthPoint() + ";"
+            + shooter.getName();
+    }
 }

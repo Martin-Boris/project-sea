@@ -1,5 +1,6 @@
-package com.bmrt.projectsea.domain;
+package com.bmrt.projectsea.domain.command;
 
+import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.websocket.Action;
 
 public final class ActionCommandBuilder {

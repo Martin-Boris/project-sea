@@ -1,10 +1,19 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.domain.command.ActionCommand;
+import com.bmrt.projectsea.domain.command.ActionCommandBuilder;
+import com.bmrt.projectsea.domain.command.ShootCommand;
+import com.bmrt.projectsea.domain.command.ShootCommandBuilder;
 import com.bmrt.projectsea.websocket.Action;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class GameInstanceTest {
 
@@ -86,7 +95,7 @@ class GameInstanceTest {
             gameInstance.addShip(ship);
             gameInstance.handleAction(cmd);
             Assertions.assertFalse(gameInstance.contains("Test"));
-            Mockito.verify(renderPort, Mockito.times(1)).remove("Test");
+            verify(renderPort, times(1)).remove("Test");
         }
 
         @Test
@@ -188,7 +197,7 @@ class GameInstanceTest {
                 .build();
             gameInstance.addShip(ship);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
+            verify(webSocketPort, never()).shoot(anyString(), anyString());
         }
 
         @Test
@@ -209,7 +218,7 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
+            verify(webSocketPort, never()).shoot(anyString(), anyString());
         }
 
         @Test
@@ -230,8 +239,7 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.times(1)).triggerPortShoot(myShipName);
-            Mockito.verify(webSocketPort, Mockito.times(1)).shoot(myShipName, "Target");
+            verify(webSocketPort, times(1)).shoot(myShipName, "Target");
         }
 
         @Test
@@ -254,8 +262,8 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerPortShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerPortShoot(Mockito.anyString());
-            Mockito.verify(portCooldown, Mockito.times(0)).trigger();
+            verify(portCooldown, times(0)).trigger();
+            verify(webSocketPort, never()).shoot(anyString(), anyString());
         }
     }
 
@@ -274,7 +282,7 @@ class GameInstanceTest {
                 .build();
             gameInstance.addShip(ship);
             gameInstance.triggerStarboardShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
+            verify(webSocketPort, never()).shoot(anyString(), anyString());
         }
 
         @Test
@@ -295,7 +303,7 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerStarboardShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
+            verify(webSocketPort, never()).shoot(anyString(), anyString());
         }
 
         @Test
@@ -316,8 +324,7 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerStarboardShoot();
-            Mockito.verify(renderPort, Mockito.times(1)).triggerStarboardShoot(myShipName);
-            Mockito.verify(webSocketPort, Mockito.times(1)).shoot(myShipName, "Target");
+            verify(webSocketPort, times(1)).shoot(myShipName, "Target");
         }
 
         @Test
@@ -340,8 +347,27 @@ class GameInstanceTest {
             gameInstance.addShip(target);
             gameInstance.setTarget(target);
             gameInstance.triggerStarboardShoot();
-            Mockito.verify(renderPort, Mockito.never()).triggerStarboardShoot(Mockito.anyString());
-            Mockito.verify(starboardCooldown, Mockito.times(0)).trigger();
+            verify(webSocketPort, never()).shoot(anyString(), anyString());
+            verify(starboardCooldown, times(0)).trigger();
+        }
+    }
+
+    @Nested
+    class RenderShoot {
+        @Test
+        void shouldRenderShoot() {
+            GameInstanceProvider gameInstanceProvider = new GameInstanceProvider();
+            ShootCommand cmd = ShootCommandBuilder.aShootCommand()
+                .withHealthPoint(7500.0f)
+                .withMaxHealthPoint(10000.0f)
+                .withTargetName("target")
+                .withShooterName("shooter")
+                .build();
+
+            gameInstanceProvider.get("shooter").renderShoot(cmd);
+
+            verify(gameInstanceProvider.getRenderPort(), times(1)).renderPortShoot(cmd);
+
         }
     }
 }

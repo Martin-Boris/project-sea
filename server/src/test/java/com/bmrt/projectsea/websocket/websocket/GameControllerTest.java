@@ -15,6 +15,31 @@ import org.mockito.Mockito;
 
 @QuarkusTest
 class GameControllerTest {
+
+    @Nested
+    class sendShootToAllPlayer {
+        @Test
+        void caseSHOOT() {
+            WebSocketConnectionMock connection = new WebSocketConnectionMock();
+            Ship target = ShipBuilder
+                .newShip()
+                .withPosition(10, 10)
+                .withSpeed(0, 0)
+                .withDirection(Direction.LEFT)
+                .withName("Target")
+                .withHealthPoint(4)
+                .withMaxHealthPoint(5)
+                .build();
+            Ship shooter = ShipBuilder
+                .newShip()
+                .withName("shooter")
+                .build();
+            GameController gameController = new GameController(connection, null);
+            gameController.sendShootToAllPLayer(Action.SHOOT, target, shooter);
+            Mockito.verify(connection.getBroadcastSenderMock(), Mockito.times(1)).sendTextAndAwait("SHOOT;Target;4.0;5.0;shooter");
+        }
+    }
+
     @Nested
     class sendToAllPLayer {
 
