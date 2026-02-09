@@ -13,10 +13,6 @@ public interface GameActionApi {
 
     Ship stop(String name, ClientCommunicationPort clientCommunicationPort);
 
-    void stopGame();
-
-    void startGame();
-
     Ship leave(String name, ClientCommunicationPort clientCommunicationPort);
 
     Collection<Ship> getShips();

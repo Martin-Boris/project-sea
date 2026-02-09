@@ -1,0 +1,171 @@
+package com.bmrt.projectsea.application;
+
+import com.bmrt.projectsea.domain.*;
+import com.bmrt.projectsea.domain.errors.InvalidTarget;
+import com.bmrt.projectsea.domain.errors.TargetToFar;
+import com.bmrt.projectsea.infrastructure.GameLoop;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.lang.reflect.Field;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+class GameInstanceServiceTest {
+
+    private GameInstanceService service;
+    private GameInstance gameInstance;
+    private GameLoop gameLoop;
+    private ClientCommunicationPort clientCommunicationPort;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        service = new GameInstanceService();
+        gameInstance = new GameInstance(new SeaMap(20, 20));
+        gameLoop = mock(GameLoop.class);
+        clientCommunicationPort = mock(ClientCommunicationPort.class);
+
+        Field gameInstanceField = GameInstanceService.class.getDeclaredField("gameInstance");
+        gameInstanceField.setAccessible(true);
+        gameInstanceField.set(service, gameInstance);
+
+        Field gameLoopField = GameInstanceService.class.getDeclaredField("gameLoop");
+        gameLoopField.setAccessible(true);
+        gameLoopField.set(service, gameLoop);
+    }
+
+    @Test
+    void join_startsGameLoopIfNotRunning() {
+        when(gameLoop.isRunning()).thenReturn(false);
+
+        service.join("Player1", 0, 0, clientCommunicationPort);
+
+        verify(gameLoop, times(1)).start();
+    }
+
+    @Test
+    void join_doesNotStartGameLoopIfAlreadyRunning() {
+        when(gameLoop.isRunning()).thenReturn(true);
+
+        service.join("Player1", 0, 0, clientCommunicationPort);
+
+        verify(gameLoop, Mockito.never()).start();
+    }
+
+    @Test
+    void join_broadcastsJoinAction() {
+        when(gameLoop.isRunning()).thenReturn(true);
+        Ship expectedShip = ShipBuilder.newShip()
+            .withName("Player1")
+            .withPosition(5, 10)
+            .withSpeed(0, 0)
+            .withDirection(Direction.BOT)
+            .withHealthPoint(10000)
+            .withMaxHealthPoint(10000)
+            .build();
+
+        Ship ship = service.join("Player1", 5, 10, clientCommunicationPort);
+
+        assertEquals(expectedShip, ship);
+        verify(clientCommunicationPort, times(1)).sendToAllPLayer(Action.JOIN, ship);
+    }
+
+    @Test
+    void leave_broadcastsLeaveAction() {
+        when(gameLoop.isRunning()).thenReturn(true);
+        gameInstance.join("Player1", 0, 0);
+
+        Ship ship = service.leave("Player1", clientCommunicationPort);
+
+        verify(clientCommunicationPort, times(1)).sendToAllPLayer(Action.LEAVE, ship);
+    }
+
+    @Test
+    void leave_stopsGameLoopWhenLastPlayerLeaves() {
+        when(gameLoop.isRunning()).thenReturn(true);
+        gameInstance.join("Player1", 0, 0);
+
+        service.leave("Player1", clientCommunicationPort);
+
+        verify(gameLoop, times(1)).stop();
+    }
+
+    @Test
+    void leave_doesNotStopGameLoopWhenOtherPlayersRemain() {
+        when(gameLoop.isRunning()).thenReturn(true);
+        gameInstance.join("Player1", 0, 0);
+        gameInstance.join("Player2", 5, 5);
+
+        service.leave("Player1", clientCommunicationPort);
+
+        verify(gameLoop, Mockito.never()).stop();
+    }
+
+    @Test
+    void updateDirection_broadcastsTurnAction() {
+        when(gameLoop.isRunning()).thenReturn(true);
+        gameInstance.join("Player1", 0, 0);
+
+        Ship ship = service.updateDirection(Direction.LEFT, "Player1", clientCommunicationPort);
+
+        verify(clientCommunicationPort, times(1)).sendToAllPLayer(Action.TURN, ship);
+    }
+
+    @Test
+    void stop_broadcastsStopAction() {
+        when(gameLoop.isRunning()).thenReturn(true);
+        gameInstance.join("Player1", 0, 0);
+
+        Ship ship = service.stop("Player1", clientCommunicationPort);
+
+        verify(clientCommunicationPort, times(1)).sendToAllPLayer(Action.STOP, ship);
+    }
+
+    @Test
+    void getShips_returnsAllShips() {
+        gameInstance.join("Player1", 0, 0);
+        gameInstance.join("Player2", 5, 5);
+
+        assertEquals(2, service.getShips().size());
+    }
+
+    @Nested
+    class shoot {
+
+        @Test
+        void shoot_broadcastsShootAction() throws InvalidTarget, TargetToFar {
+            when(gameLoop.isRunning()).thenReturn(true);
+            gameInstance.join("Shooter", 0, 0);
+            gameInstance.join("Target", 2, 2);
+
+            Ship target = service.shoot("Shooter", "Target", clientCommunicationPort);
+
+            verify(clientCommunicationPort, times(1)).sendToAllPLayer(Action.SHOOT, target);
+        }
+
+        @Test
+        void shoot_throwsInvalidTargetWhenTargetDoesNotExist() {
+            when(gameLoop.isRunning()).thenReturn(true);
+            gameInstance.join("Shooter", 0, 0);
+
+            assertThrows(InvalidTarget.class, () ->
+                service.shoot("Shooter", "NonExistent", clientCommunicationPort)
+            );
+        }
+
+        @Test
+        void shoot_throwsTargetToFarWhenTargetOutOfRange() {
+            when(gameLoop.isRunning()).thenReturn(true);
+            gameInstance.join("Shooter", 0, 0);
+            gameInstance.join("Target", 50, 50);
+
+            assertThrows(TargetToFar.class, () ->
+                service.shoot("Shooter", "Target", clientCommunicationPort)
+            );
+        }
+    }
+}
