@@ -53,7 +53,7 @@ public class GameInstanceService implements GameActionApi {
     @Override
     public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
         Ship ship = gameInstance.leave(name);
-        if (gameLoop.isRunning() && gameInstance.isEmpty()) {
+        if (gameLoop.isRunning() && gameInstance.hasNoPlayers()) {
             gameLoop.stop();
         }
         clientCommunicationPort.sendToAllPLayer(Action.LEAVE, ship);

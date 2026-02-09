@@ -22,7 +22,7 @@ class GameInstanceServiceTest {
 
     @BeforeEach
     void setUp() {
-        gameInstance = new GameInstance(new SeaMap(20, 20), GameLoop.GAME_TICK);
+        gameInstance = new GameInstance(new SeaMap(20, 20), GameLoop.GAME_TICK, java.util.Collections.emptyList());
         gameLoop = mock(GameLoop.class);
         clientCommunicationPort = mock(ClientCommunicationPort.class);
         service = new GameInstanceService(gameInstance, gameLoop);

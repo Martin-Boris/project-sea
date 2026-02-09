@@ -7,13 +7,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 class GameInstanceTest {
 
     private GameInstance gameInstance;
 
     @BeforeEach
     void setUp() {
-        gameInstance = new GameInstance(new SeaMap(20, 20), 1 / 60f);
+        gameInstance = new GameInstance(new SeaMap(20, 20), 1 / 60f, Collections.emptyList());
     }
 
     @Test
@@ -74,14 +81,71 @@ class GameInstanceTest {
     }
 
     @Test
-    void caseIsEmpty() {
-        Assertions.assertTrue(gameInstance.isEmpty());
+    void caseHasNoPlayers() {
+        Assertions.assertTrue(gameInstance.hasNoPlayers());
 
         gameInstance.join("Name", 0, 0);
-        Assertions.assertFalse(gameInstance.isEmpty());
+        Assertions.assertFalse(gameInstance.hasNoPlayers());
 
         gameInstance.leave("Name");
-        Assertions.assertTrue(gameInstance.isEmpty());
+        Assertions.assertTrue(gameInstance.hasNoPlayers());
+    }
+
+    @Test
+    void caseHasNoPlayers_withNpcsOnly() {
+        Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+        NpcController npc = new NpcController(npcShip, behavior);
+
+        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), 1 / 60f,
+            Collections.singletonList(npc));
+
+        Assertions.assertTrue(instanceWithNpcs.hasNoPlayers());
+    }
+
+    @Test
+    void caseHasNoPlayers_withNpcsAndPlayer() {
+        Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+        NpcController npc = new NpcController(npcShip, behavior);
+
+        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), 1 / 60f,
+            Collections.singletonList(npc));
+        instanceWithNpcs.join("Player", 10, 10);
+
+        Assertions.assertFalse(instanceWithNpcs.hasNoPlayers());
+    }
+
+    @Test
+    void caseTick_callsNpcControllerAct() {
+        Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+        NpcController npc = new NpcController(npcShip, behavior);
+        SeaMap map = new SeaMap(20, 20);
+        float gameTick = 1 / 60f;
+
+        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+
+        instanceWithNpcs.tick();
+
+        Collection<Ship> allShips = instanceWithNpcs.getShips();
+        verify(behavior).decideTick(npcShip, allShips, map, gameTick);
+    }
+
+    @Test
+    void caseNpcShips_appearInGetShips() {
+        Ship npcShip1 = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC1", 10000, 10000);
+        Ship npcShip2 = new Ship(new Vector(15, 10), Vector.ZERO, Direction.BOT, "NPC2", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+
+        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), 1 / 60f, Arrays.asList(
+            new NpcController(npcShip1, behavior),
+            new NpcController(npcShip2, behavior)
+        ));
+
+        Assertions.assertEquals(2, instanceWithNpcs.getShips().size());
+        Assertions.assertTrue(instanceWithNpcs.contains(npcShip1));
+        Assertions.assertTrue(instanceWithNpcs.contains(npcShip2));
     }
 
     @Nested
