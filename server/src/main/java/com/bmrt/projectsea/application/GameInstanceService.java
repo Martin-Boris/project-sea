@@ -5,26 +5,25 @@ import com.bmrt.projectsea.domain.ClientCommunicationPort;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.GameActionApi;
 import com.bmrt.projectsea.domain.GameInstance;
-import com.bmrt.projectsea.domain.SeaMap;
 import com.bmrt.projectsea.domain.Ship;
 import com.bmrt.projectsea.domain.errors.InvalidTarget;
 import com.bmrt.projectsea.domain.errors.TargetToFar;
 import com.bmrt.projectsea.infrastructure.GameLoop;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.util.Collection;
 
 @ApplicationScoped
 public class GameInstanceService implements GameActionApi {
 
-    private GameInstance gameInstance;
-    private GameLoop gameLoop;
+    private final GameInstance gameInstance;
+    private final GameLoop gameLoop;
 
-    @PostConstruct
-    void init() {
-        this.gameInstance = new GameInstance(new SeaMap(20, 20));
-        this.gameLoop = new GameLoop(gameInstance);
+    @Inject
+    public GameInstanceService(GameInstance gameInstance, GameLoop gameLoop) {
+        this.gameInstance = gameInstance;
+        this.gameLoop = gameLoop;
     }
 
     @Override

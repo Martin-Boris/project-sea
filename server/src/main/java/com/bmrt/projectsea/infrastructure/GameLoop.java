@@ -1,17 +1,18 @@
 package com.bmrt.projectsea.infrastructure;
 
-import com.bmrt.projectsea.domain.GameInstance;
+import com.bmrt.projectsea.domain.Tickable;
 
 public class GameLoop {
 
-    private static final float GAME_TICK_NANO = 1 / 60f * 1_000_000_000;
+    public static final float GAME_TICK = 1 / 60f;
+    private static final float GAME_TICK_NANO = GAME_TICK * 1_000_000_000;
 
-    private final GameInstance gameInstance;
+    private final Tickable tickable;
     private volatile boolean running;
     private Thread gameThread;
 
-    public GameLoop(GameInstance gameInstance) {
-        this.gameInstance = gameInstance;
+    public GameLoop(Tickable tickable) {
+        this.tickable = tickable;
         this.running = false;
     }
 
@@ -43,7 +44,7 @@ public class GameLoop {
 
             if (accumulator >= GAME_TICK_NANO) {
                 accumulator -= GAME_TICK_NANO;
-                gameInstance.tick();
+                tickable.tick();
             }
         }
     }

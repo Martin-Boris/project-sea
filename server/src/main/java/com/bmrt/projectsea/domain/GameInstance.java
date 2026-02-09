@@ -4,21 +4,22 @@ import com.bmrt.projectsea.domain.errors.InvalidTarget;
 import com.bmrt.projectsea.domain.errors.TargetToFar;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class GameInstance {
-
-    public static final float GAME_TICK = 1 / 60f;
+public class GameInstance implements Tickable {
 
     private final Map<String, Ship> ships;
     private final SeaMap map;
+    private final float gameTick;
 
-    public GameInstance(SeaMap map) {
-        this.ships = new HashMap<>();
+    public GameInstance(SeaMap map, float gameTick) {
+        this.ships = new ConcurrentHashMap<>();
         this.map = map;
+        this.gameTick = gameTick;
     }
 
+    @Override
     public void tick() {
         ships.values().forEach(ship -> ship.update(map));
     }
@@ -55,7 +56,7 @@ public class GameInstance {
     }
 
     public Ship updateDirection(Direction direction, String name) {
-        return ships.get(name).updateDirection(GAME_TICK, direction);
+        return ships.get(name).updateDirection(gameTick, direction);
     }
 
     public Ship stop(String name) {

@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.lang.reflect.Field;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -23,19 +21,11 @@ class GameInstanceServiceTest {
     private ClientCommunicationPort clientCommunicationPort;
 
     @BeforeEach
-    void setUp() throws Exception {
-        service = new GameInstanceService();
-        gameInstance = new GameInstance(new SeaMap(20, 20));
+    void setUp() {
+        gameInstance = new GameInstance(new SeaMap(20, 20), GameLoop.GAME_TICK);
         gameLoop = mock(GameLoop.class);
         clientCommunicationPort = mock(ClientCommunicationPort.class);
-
-        Field gameInstanceField = GameInstanceService.class.getDeclaredField("gameInstance");
-        gameInstanceField.setAccessible(true);
-        gameInstanceField.set(service, gameInstance);
-
-        Field gameLoopField = GameInstanceService.class.getDeclaredField("gameLoop");
-        gameLoopField.setAccessible(true);
-        gameLoopField.set(service, gameLoop);
+        service = new GameInstanceService(gameInstance, gameLoop);
     }
 
     @Test

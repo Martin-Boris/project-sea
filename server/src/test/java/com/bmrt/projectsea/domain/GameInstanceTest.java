@@ -13,7 +13,7 @@ class GameInstanceTest {
 
     @BeforeEach
     void setUp() {
-        gameInstance = new GameInstance(new SeaMap(20, 20));
+        gameInstance = new GameInstance(new SeaMap(20, 20), 1 / 60f);
     }
 
     @Test
