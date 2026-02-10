@@ -2,6 +2,7 @@ package com.bmrt.projectsea.application;
 
 import com.bmrt.projectsea.domain.*;
 import com.bmrt.projectsea.infrastructure.GameLoop;
+import com.bmrt.projectsea.infrastructure.JavaRandomProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
@@ -14,7 +15,7 @@ public class GameConfiguration {
     @Produces
     @ApplicationScoped
     public GameInstance gameInstance() {
-        PatrolNpcBehavior patrolBehavior = new PatrolNpcBehavior();
+        PatrolNpcBehavior patrolBehavior = new PatrolNpcBehavior(new JavaRandomProvider());
 
         List<NpcController> npcControllers = Arrays.asList(
             new NpcController(

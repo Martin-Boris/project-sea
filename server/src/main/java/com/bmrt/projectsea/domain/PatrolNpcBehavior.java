@@ -4,6 +4,13 @@ import java.util.Collection;
 
 public class PatrolNpcBehavior implements NpcBehavior {
 
+    private static final float RANDOM_TURN_CHANCE = 0.005f;
+    private final RandomProvider random;
+
+    public PatrolNpcBehavior(RandomProvider random) {
+        this.random = random;
+    }
+
     @Override
     public boolean decideTick(Ship npc, Collection<Ship> allShips, SeaMap map, float gameTick) {
         if (npc.getSpeed().equals(Vector.ZERO)) {
@@ -14,6 +21,11 @@ public class PatrolNpcBehavior implements NpcBehavior {
         if (npc.isOutNextTick(map)) {
             Direction reversed = reverse(npc.getDirection());
             npc.updateDirection(gameTick, reversed);
+            return true;
+        }
+
+        if (random.nextFloat() <= RANDOM_TURN_CHANCE) {
+            npc.updateDirection(gameTick, random.nextDirection());
             return true;
         }
 
