@@ -19,29 +19,15 @@ public class PatrolNpcBehavior implements NpcBehavior {
         }
 
         if (npc.isOutNextTick(map)) {
-            Direction reversed = reverse(npc.getDirection());
-            npc.updateDirection(gameTick, reversed);
+            npc.updateDirection(gameTick, npc.getDirection().opposite());
             return true;
         }
 
         if (random.nextFloat() <= RANDOM_TURN_CHANCE) {
-            npc.updateDirection(gameTick, random.nextDirection());
+            npc.updateDirection(gameTick, random.nextAmong(Direction.nonOppositeOf(npc.getDirection())));
             return true;
         }
 
         return false;
-    }
-
-    private Direction reverse(Direction direction) {
-        switch (direction) {
-            case RIGHT:
-                return Direction.LEFT;
-            case LEFT:
-                return Direction.RIGHT;
-            case TOP:
-                return Direction.BOT;
-            default:
-                return Direction.TOP;
-        }
     }
 }

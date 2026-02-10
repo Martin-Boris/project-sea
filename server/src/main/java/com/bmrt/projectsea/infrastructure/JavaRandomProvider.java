@@ -3,6 +3,7 @@ package com.bmrt.projectsea.infrastructure;
 import com.bmrt.projectsea.domain.Direction;
 import com.bmrt.projectsea.domain.RandomProvider;
 
+import java.util.List;
 import java.util.Random;
 
 public class JavaRandomProvider implements RandomProvider {
@@ -18,5 +19,10 @@ public class JavaRandomProvider implements RandomProvider {
     public Direction nextDirection() {
         Direction[] directions = Direction.values();
         return directions[random.nextInt(directions.length)];
+    }
+
+    @Override
+    public Direction nextAmong(List<Direction> directions) {
+        return directions.get(random.nextInt(directions.size()));
     }
 }
