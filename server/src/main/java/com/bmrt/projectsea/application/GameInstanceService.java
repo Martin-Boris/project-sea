@@ -1,11 +1,6 @@
 package com.bmrt.projectsea.application;
 
-import com.bmrt.projectsea.domain.Action;
-import com.bmrt.projectsea.domain.ClientCommunicationPort;
-import com.bmrt.projectsea.domain.Direction;
-import com.bmrt.projectsea.domain.GameActionApi;
-import com.bmrt.projectsea.domain.GameInstance;
-import com.bmrt.projectsea.domain.Ship;
+import com.bmrt.projectsea.domain.*;
 import com.bmrt.projectsea.domain.errors.InvalidTarget;
 import com.bmrt.projectsea.domain.errors.TargetToFar;
 import com.bmrt.projectsea.infrastructure.GameLoop;
@@ -19,15 +14,17 @@ public class GameInstanceService implements GameActionApi {
 
     private final GameInstance gameInstance;
     private final GameLoop gameLoop;
+    private final ClientCommunicationPort clientCommunicationPort;
 
     @Inject
-    public GameInstanceService(GameInstance gameInstance, GameLoop gameLoop) {
+    public GameInstanceService(GameInstance gameInstance, GameLoop gameLoop, ClientCommunicationPort clientCommunicationPort) {
         this.gameInstance = gameInstance;
         this.gameLoop = gameLoop;
+        this.clientCommunicationPort = clientCommunicationPort;
     }
 
     @Override
-    public Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort) {
+    public Ship join(String name, float x, float y) {
         if (!gameLoop.isRunning()) {
             gameLoop.start();
         }
@@ -37,21 +34,21 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort) {
+    public Ship updateDirection(Direction direction, String name) {
         Ship ship = gameInstance.updateDirection(direction, name);
         clientCommunicationPort.sendToAllPLayer(Action.TURN, ship);
         return ship;
     }
 
     @Override
-    public Ship stop(String name, ClientCommunicationPort clientCommunicationPort) {
+    public Ship stop(String name) {
         Ship ship = gameInstance.stop(name);
         clientCommunicationPort.sendToAllPLayer(Action.STOP, ship);
         return ship;
     }
 
     @Override
-    public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
+    public Ship leave(String name) {
         Ship ship = gameInstance.leave(name);
         if (gameLoop.isRunning() && gameInstance.hasNoPlayers()) {
             gameLoop.stop();
@@ -66,7 +63,7 @@ public class GameInstanceService implements GameActionApi {
     }
 
     @Override
-    public Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort)
+    public Ship shoot(String shooter, String target)
         throws InvalidTarget, TargetToFar {
         Ship ship = gameInstance.shoot(shooter, target);
         clientCommunicationPort.sendToAllPLayer(Action.SHOOT, ship);

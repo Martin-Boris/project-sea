@@ -1,6 +1,7 @@
 package com.bmrt.projectsea.domain;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class NpcController {
 
@@ -12,8 +13,9 @@ public class NpcController {
         this.behavior = behavior;
     }
 
-    public void act(Collection<Ship> allShips, SeaMap map, float gameTick) {
-        behavior.decideTick(ship, allShips, map, gameTick);
+    public Optional<Ship> act(Collection<Ship> allShips, SeaMap map, float gameTick) {
+        boolean changed = behavior.decideTick(ship, allShips, map, gameTick);
+        return changed ? Optional.of(ship) : Optional.empty();
     }
 
     public Ship getShip() {

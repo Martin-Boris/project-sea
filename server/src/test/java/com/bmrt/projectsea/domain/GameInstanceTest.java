@@ -10,9 +10,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class GameInstanceTest {
 
@@ -130,6 +132,56 @@ class GameInstanceTest {
 
         Collection<Ship> allShips = instanceWithNpcs.getShips();
         verify(behavior).decideTick(npcShip, allShips, map, gameTick);
+    }
+
+    @Test
+    void caseTick_collectsNpcUpdatesWhenDirectionChanged() {
+        Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+        SeaMap map = new SeaMap(20, 20);
+        float gameTick = 1 / 60f;
+        NpcController npc = new NpcController(npcShip, behavior);
+        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(true);
+
+        instanceWithNpcs.tick();
+        List<Ship> updates = instanceWithNpcs.drainNpcUpdates();
+
+        Assertions.assertEquals(1, updates.size());
+        Assertions.assertSame(npcShip, updates.get(0));
+    }
+
+    @Test
+    void caseTick_noNpcUpdatesWhenDirectionUnchanged() {
+        Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+        SeaMap map = new SeaMap(20, 20);
+        float gameTick = 1 / 60f;
+        NpcController npc = new NpcController(npcShip, behavior);
+        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(false);
+
+        instanceWithNpcs.tick();
+        List<Ship> updates = instanceWithNpcs.drainNpcUpdates();
+
+        Assertions.assertTrue(updates.isEmpty());
+    }
+
+    @Test
+    void caseDrainNpcUpdates_clearsAfterDrain() {
+        Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
+        NpcBehavior behavior = mock(NpcBehavior.class);
+        SeaMap map = new SeaMap(20, 20);
+        float gameTick = 1 / 60f;
+        NpcController npc = new NpcController(npcShip, behavior);
+        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(true);
+
+        instanceWithNpcs.tick();
+        instanceWithNpcs.drainNpcUpdates();
+        List<Ship> secondDrain = instanceWithNpcs.drainNpcUpdates();
+
+        Assertions.assertTrue(secondDrain.isEmpty());
     }
 
     @Test

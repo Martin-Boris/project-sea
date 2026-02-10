@@ -3,33 +3,43 @@ package com.bmrt.projectsea.domain;
 import com.bmrt.projectsea.domain.errors.InvalidTarget;
 import com.bmrt.projectsea.domain.errors.TargetToFar;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GameInstance implements Tickable {
+public class GameInstance {
 
     private final Map<String, Ship> ships;
     private final SeaMap map;
     private final float gameTick;
     private final List<NpcController> npcControllers;
+    private final List<Ship> npcUpdates;
 
     public GameInstance(SeaMap map, float gameTick, List<NpcController> npcControllers) {
         this.ships = new ConcurrentHashMap<>();
         this.map = map;
         this.gameTick = gameTick;
         this.npcControllers = npcControllers;
+        this.npcUpdates = new ArrayList<>();
         for (NpcController npc : npcControllers) {
             Ship npcShip = npc.getShip();
             ships.put(npcShip.getName(), npcShip);
         }
     }
 
-    @Override
     public void tick() {
-        npcControllers.forEach(npc -> npc.act(ships.values(), map, gameTick));
+        npcControllers.forEach(npc ->
+            npc.act(ships.values(), map, gameTick).ifPresent(npcUpdates::add)
+        );
         ships.values().forEach(ship -> ship.update(map));
+    }
+
+    public List<Ship> drainNpcUpdates() {
+        List<Ship> updates = new ArrayList<>(npcUpdates);
+        npcUpdates.clear();
+        return updates;
     }
 
     public Ship join(String name, float x, float y) {

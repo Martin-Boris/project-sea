@@ -5,17 +5,20 @@ import java.util.Collection;
 public class PatrolNpcBehavior implements NpcBehavior {
 
     @Override
-    public void decideTick(Ship npc, Collection<Ship> allShips, SeaMap map, float gameTick) {
+    public boolean decideTick(Ship npc, Collection<Ship> allShips, SeaMap map, float gameTick) {
         if (npc.getSpeed().equals(Vector.ZERO)) {
             npc.updateDirection(gameTick, Direction.RIGHT);
-            return;
+            return true;
         }
 
         Vector nextPosition = npc.getPosition().add(npc.getSpeed());
         if (map.isOut(nextPosition)) {
             Direction reversed = reverse(npc.getDirection());
             npc.updateDirection(gameTick, reversed);
+            return true;
         }
+
+        return false;
     }
 
     private Direction reverse(Direction direction) {

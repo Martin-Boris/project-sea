@@ -1,14 +1,7 @@
 package com.bmrt.projectsea.application;
 
-import com.bmrt.projectsea.domain.Direction;
-import com.bmrt.projectsea.domain.GameInstance;
-import com.bmrt.projectsea.domain.NpcController;
-import com.bmrt.projectsea.domain.SeaMap;
-import com.bmrt.projectsea.domain.Ship;
-import com.bmrt.projectsea.domain.Tickable;
-import com.bmrt.projectsea.domain.Vector;
+import com.bmrt.projectsea.domain.*;
 import com.bmrt.projectsea.infrastructure.GameLoop;
-import com.bmrt.projectsea.domain.PatrolNpcBehavior;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
@@ -42,4 +35,11 @@ public class GameConfiguration {
     public GameLoop gameLoop(Tickable tickable) {
         return new GameLoop(tickable);
     }
+
+    @Produces
+    @ApplicationScoped
+    public Tickable tickable(GameInstance gameInstance, ClientCommunicationPort broadcastPort) {
+        return new GameTickBroadcaster(gameInstance, broadcastPort);
+    }
+
 }

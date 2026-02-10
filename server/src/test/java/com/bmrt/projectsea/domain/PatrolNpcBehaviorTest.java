@@ -15,8 +15,9 @@ class PatrolNpcBehaviorTest {
     void stoppedNpc_startsMovingRight() {
         Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
 
-        behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
 
+        Assertions.assertTrue(changed);
         Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
         Assertions.assertNotEquals(Vector.ZERO, npc.getSpeed());
     }
@@ -24,13 +25,12 @@ class PatrolNpcBehaviorTest {
     @Test
     void movingNpc_reversesAtRightBoundary() {
         Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
-        // Start moving right
         npc.updateDirection(gameTick, Direction.RIGHT);
-        // Place near right boundary
         Ship nearBoundary = new Ship(new Vector(20, 10), npc.getSpeed(), Direction.RIGHT, "NPC", 10000, 10000);
 
-        behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
+        boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
 
+        Assertions.assertTrue(changed);
         Assertions.assertEquals(Direction.LEFT, nearBoundary.getDirection());
     }
 
@@ -40,8 +40,9 @@ class PatrolNpcBehaviorTest {
         npc.updateDirection(gameTick, Direction.LEFT);
         Ship nearBoundary = new Ship(new Vector(0, 10), npc.getSpeed(), Direction.LEFT, "NPC", 10000, 10000);
 
-        behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
+        boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
 
+        Assertions.assertTrue(changed);
         Assertions.assertEquals(Direction.RIGHT, nearBoundary.getDirection());
     }
 
@@ -50,8 +51,9 @@ class PatrolNpcBehaviorTest {
         Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
         npc.updateDirection(gameTick, Direction.RIGHT);
 
-        behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
 
+        Assertions.assertFalse(changed);
         Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
     }
 }
