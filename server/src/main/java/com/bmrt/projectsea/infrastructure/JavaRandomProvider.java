@@ -25,4 +25,9 @@ public class JavaRandomProvider implements RandomProvider {
     public Direction nextAmong(List<Direction> directions) {
         return directions.get(random.nextInt(directions.size()));
     }
+
+    @Override
+    public float nextFloat(int maxValue) {
+        return random.nextFloat(maxValue);
+    }
 }

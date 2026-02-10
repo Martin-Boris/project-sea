@@ -6,7 +6,6 @@ import com.bmrt.projectsea.infrastructure.JavaRandomProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
-import java.util.Arrays;
 import java.util.List;
 
 @ApplicationScoped
@@ -15,20 +14,10 @@ public class GameConfiguration {
     @Produces
     @ApplicationScoped
     public GameInstance gameInstance() {
-        PatrolNpcBehavior patrolBehavior = new PatrolNpcBehavior(new JavaRandomProvider());
-
-        List<NpcController> npcControllers = Arrays.asList(
-            new NpcController(
-                new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC-Guard1", Ship.MAX_HP, Ship.MAX_HP),
-                patrolBehavior
-            ),
-            new NpcController(
-                new Ship(new Vector(15, 10), Vector.ZERO, Direction.BOT, "NPC-Guard2", Ship.MAX_HP, Ship.MAX_HP),
-                patrolBehavior
-            )
-        );
-
-        return new GameInstance(new SeaMap(50, 50), GameLoop.GAME_TICK, npcControllers);
+        JavaRandomProvider random = new JavaRandomProvider();
+        SeaMap map = new SeaMap(50, 50);
+        List<NpcController> npcControllers = Ship.generateNpc(100, map.getWidth(), map.getHeight(), random);
+        return new GameInstance(map, GameLoop.GAME_TICK, npcControllers);
     }
 
     @Produces

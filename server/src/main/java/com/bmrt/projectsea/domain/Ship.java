@@ -1,5 +1,9 @@
 package com.bmrt.projectsea.domain;
 
+import com.bmrt.projectsea.infrastructure.JavaRandomProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Ship {
@@ -9,8 +13,6 @@ public class Ship {
     public static final float DAMAGE = 2500;
     private static final float SPEED_TILE_PER_SEC = 4;
     private static final float RANGE = 8;
-
-
     private final String name;
     private final float maxHealthPoint;
     private float healthPoint;
@@ -26,6 +28,18 @@ public class Ship {
         this.name = name;
         this.healthPoint = healthPoint;
         this.maxHealthPoint = maxHealthPoint;
+    }
+
+    public static List<NpcController> generateNpc(int amount, int mapWidth, int mapHeight, RandomProvider randomProvider) {
+        List<NpcController> ships = new ArrayList<>();
+        PatrolNpcBehavior patrolBehavior = new PatrolNpcBehavior(new JavaRandomProvider());
+        for (int i = 0; i < amount; i++) {
+            ships.add(new NpcController(
+                new Ship(new Vector(randomProvider.nextFloat(mapWidth), randomProvider.nextFloat(mapHeight)), Vector.ZERO, Direction.BOT, "NPC-Guard" + i, Ship.MAX_HP, Ship.MAX_HP),
+                patrolBehavior
+            ));
+        }
+        return ships;
     }
 
     public Ship updateDirection(float dt, Direction direction) {
