@@ -24,9 +24,7 @@ class PatrolNpcBehaviorTest {
 
     @Test
     void movingNpc_reversesAtRightBoundary() {
-        Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
-        npc.updateDirection(gameTick, Direction.RIGHT);
-        Ship nearBoundary = new Ship(new Vector(20, 10), npc.getSpeed(), Direction.RIGHT, "NPC", 10000, 10000);
+        Ship nearBoundary = new Ship(new Vector(20, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
         boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
 
@@ -36,9 +34,7 @@ class PatrolNpcBehaviorTest {
 
     @Test
     void movingNpc_reversesAtLeftBoundary() {
-        Ship npc = new Ship(new Vector(0, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
-        npc.updateDirection(gameTick, Direction.LEFT);
-        Ship nearBoundary = new Ship(new Vector(0, 10), npc.getSpeed(), Direction.LEFT, "NPC", 10000, 10000);
+        Ship nearBoundary = new Ship(new Vector(0, 10), new Vector(-1, 0), Direction.LEFT, "NPC", 10000, 10000);
 
         boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
 
@@ -48,8 +44,7 @@ class PatrolNpcBehaviorTest {
 
     @Test
     void movingNpc_continuesWhenNotAtBoundary() {
-        Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
-        npc.updateDirection(gameTick, Direction.RIGHT);
+        Ship npc = new Ship(new Vector(10, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
         boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
 
