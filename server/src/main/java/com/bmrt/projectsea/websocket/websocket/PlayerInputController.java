@@ -26,8 +26,15 @@ public class PlayerInputController {
 
     @OnOpen()
     public void onOpen() {
-        gameInstanceService.initGameInstance();
         Collection<Ship> ships = gameInstanceService.getShips();
+        for (Ship ship : ships) {
+            connection.sendText(mapper.toMessage(Action.JOIN, ship)).subscribe().with(
+                unused -> {
+                },
+                failure -> System.out.println("Failed to send ship " + ship.getName())
+            );
+        }
+
         ships.forEach(ship -> connection.sendTextAndAwait(mapper.toMessage(Action.JOIN, ship)));
     }
 
