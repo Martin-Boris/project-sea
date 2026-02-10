@@ -56,4 +56,5 @@ class PatrolNpcBehaviorTest {
         Assertions.assertFalse(changed);
         Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
     }
+
 }

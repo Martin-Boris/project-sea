@@ -129,4 +129,9 @@ public class Ship {
             ", direction=" + direction +
             '}';
     }
+
+    public boolean isOutNextTick(SeaMap map) {
+        Vector newPosition = position.add(speed);
+        return map.isOut(newPosition);
+    }
 }

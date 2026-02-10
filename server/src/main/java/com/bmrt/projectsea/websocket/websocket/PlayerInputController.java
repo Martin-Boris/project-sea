@@ -34,8 +34,6 @@ public class PlayerInputController {
                 failure -> System.out.println("Failed to send ship " + ship.getName())
             );
         }
-
-        ships.forEach(ship -> connection.sendTextAndAwait(mapper.toMessage(Action.JOIN, ship)));
     }
 
     @OnClose()

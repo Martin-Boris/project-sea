@@ -11,8 +11,7 @@ public class PatrolNpcBehavior implements NpcBehavior {
             return true;
         }
 
-        Vector nextPosition = npc.getPosition().add(npc.getSpeed());
-        if (map.isOut(nextPosition)) {
+        if (npc.isOutNextTick(map)) {
             Direction reversed = reverse(npc.getDirection());
             npc.updateDirection(gameTick, reversed);
             return true;

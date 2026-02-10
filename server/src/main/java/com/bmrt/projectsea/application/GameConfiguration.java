@@ -27,7 +27,7 @@ public class GameConfiguration {
             )
         );
 
-        return new GameInstance(new SeaMap(20, 20), GameLoop.GAME_TICK, npcControllers);
+        return new GameInstance(new SeaMap(50, 50), GameLoop.GAME_TICK, npcControllers);
     }
 
     @Produces
