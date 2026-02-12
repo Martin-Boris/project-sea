@@ -19,9 +19,8 @@ public class GameTickBroadcaster implements Tickable {
     }
 
     @Override
-    public void tick() {
-        gameInstance.tick();
-        List<Ship> npcUpdates = gameInstance.drainNpcUpdates();
+    public void tick(float deltaTime) {
+        List<Ship> npcUpdates = gameInstance.tick(deltaTime);
         for (Ship ship : npcUpdates) {
             broadcastPort.sendToAllPLayer(Action.TURN, ship);
         }

@@ -15,10 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 class GameTickBroadcasterTest {
@@ -34,12 +32,12 @@ class GameTickBroadcasterTest {
         Ship npcShip = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
         PatrolNpcBehavior patrolBehavior = new PatrolNpcBehavior(neverTriggerRandom());
         NpcController npc = new NpcController(npcShip, patrolBehavior);
-        GameInstance gameInstance = new GameInstance(new SeaMap(20, 20), 1 / 60f,
+        GameInstance gameInstance = new GameInstance(new SeaMap(20, 20),
             Collections.singletonList(npc));
         ClientCommunicationPort broadcastPort = mock(ClientCommunicationPort.class);
 
         GameTickBroadcaster broadcaster = new GameTickBroadcaster(gameInstance, broadcastPort);
-        broadcaster.tick();
+        broadcaster.tick(1 / 60f);
 
         verify(broadcastPort).sendToAllPLayer(eq(Action.TURN), eq(npcShip));
     }
@@ -49,19 +47,19 @@ class GameTickBroadcasterTest {
         Ship npcShip = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
         PatrolNpcBehavior patrolBehavior = new PatrolNpcBehavior(neverTriggerRandom());
         NpcController npc = new NpcController(npcShip, patrolBehavior);
-        GameInstance gameInstance = new GameInstance(new SeaMap(20, 20), 1 / 60f,
+        GameInstance gameInstance = new GameInstance(new SeaMap(20, 20),
             Collections.singletonList(npc));
         ClientCommunicationPort broadcastPort = mock(ClientCommunicationPort.class);
 
         GameTickBroadcaster broadcaster = new GameTickBroadcaster(gameInstance, broadcastPort);
         // First tick: NPC is stopped, so PatrolBehavior starts it → broadcast
-        broadcaster.tick();
+        broadcaster.tick(1 / 60f);
 
         // Second tick: NPC is moving in the middle of the map → no direction change
         verify(broadcastPort).sendToAllPLayer(eq(Action.TURN), eq(npcShip));
 
         // Reset and tick again — NPC is now moving, not at boundary
-        broadcaster.tick();
+        broadcaster.tick(1 / 60f);
         // Still only 1 invocation total (no second broadcast)
         verify(broadcastPort).sendToAllPLayer(eq(Action.TURN), eq(npcShip));
     }

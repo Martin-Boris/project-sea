@@ -1,5 +1,5 @@
 package com.bmrt.projectsea.domain;
 
 public interface Tickable {
-    void tick();
+    void tick(float deltaTime);
 }

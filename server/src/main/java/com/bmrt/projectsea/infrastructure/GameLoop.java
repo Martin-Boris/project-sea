@@ -44,7 +44,7 @@ public class GameLoop {
 
             if (accumulator >= GAME_TICK_NANO) {
                 accumulator -= GAME_TICK_NANO;
-                tickable.tick();
+                tickable.tick(GAME_TICK);
             }
         }
     }

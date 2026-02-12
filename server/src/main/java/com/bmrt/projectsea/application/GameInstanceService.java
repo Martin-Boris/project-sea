@@ -35,7 +35,7 @@ public class GameInstanceService implements GameActionApi {
 
     @Override
     public Ship updateDirection(Direction direction, String name) {
-        Ship ship = gameInstance.updateDirection(direction, name);
+        Ship ship = gameInstance.updateDirection(direction, name, GameLoop.GAME_TICK);
         clientCommunicationPort.sendToAllPLayer(Action.TURN, ship);
         return ship;
     }

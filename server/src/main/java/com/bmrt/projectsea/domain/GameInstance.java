@@ -13,32 +13,24 @@ public class GameInstance {
 
     private final Map<String, Ship> ships;
     private final SeaMap map;
-    private final float gameTick;
     private final List<NpcController> npcControllers;
-    private final List<Ship> npcUpdates;
 
-    public GameInstance(SeaMap map, float gameTick, List<NpcController> npcControllers) {
+    public GameInstance(SeaMap map, List<NpcController> npcControllers) {
         this.ships = new ConcurrentHashMap<>();
         this.map = map;
-        this.gameTick = gameTick;
         this.npcControllers = npcControllers;
-        this.npcUpdates = new ArrayList<>();
         for (NpcController npc : npcControllers) {
             Ship npcShip = npc.getShip();
             ships.put(npcShip.getName(), npcShip);
         }
     }
 
-    public void tick() {
+    public List<Ship> tick(float deltaTime) {
+        List<Ship> updates = new ArrayList<>();
         npcControllers.forEach(npc ->
-            npc.act(ships.values(), map, gameTick).ifPresent(npcUpdates::add)
+            npc.act(ships.values(), map, deltaTime).ifPresent(updates::add)
         );
         ships.values().forEach(ship -> ship.update(map));
-    }
-
-    public List<Ship> drainNpcUpdates() {
-        List<Ship> updates = new ArrayList<>(npcUpdates);
-        npcUpdates.clear();
         return updates;
     }
 
@@ -73,8 +65,8 @@ public class GameInstance {
         return targetShip;
     }
 
-    public Ship updateDirection(Direction direction, String name) {
-        return ships.get(name).updateDirection(gameTick, direction);
+    public Ship updateDirection(Direction direction, String name, float deltaTime) {
+        return ships.get(name).updateDirection(deltaTime, direction);
     }
 
     public Ship stop(String name) {

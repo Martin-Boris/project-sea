@@ -22,7 +22,7 @@ class GameInstanceTest {
 
     @BeforeEach
     void setUp() {
-        gameInstance = new GameInstance(new SeaMap(20, 20), 1 / 60f, Collections.emptyList());
+        gameInstance = new GameInstance(new SeaMap(20, 20), Collections.emptyList());
     }
 
     @Test
@@ -77,7 +77,7 @@ class GameInstanceTest {
             .withSpeed(-0.06666667f, 0.0f)
             .build();
 
-        Ship ship = gameInstance.updateDirection(Direction.LEFT, "Name");
+        Ship ship = gameInstance.updateDirection(Direction.LEFT, "Name", 1 / 60f);
 
         Assertions.assertEquals(expectedShip, ship);
     }
@@ -99,7 +99,7 @@ class GameInstanceTest {
         NpcBehavior behavior = mock(NpcBehavior.class);
         NpcController npc = new NpcController(npcShip, behavior);
 
-        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), 1 / 60f,
+        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20),
             Collections.singletonList(npc));
 
         Assertions.assertTrue(instanceWithNpcs.hasNoPlayers());
@@ -111,7 +111,7 @@ class GameInstanceTest {
         NpcBehavior behavior = mock(NpcBehavior.class);
         NpcController npc = new NpcController(npcShip, behavior);
 
-        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), 1 / 60f,
+        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20),
             Collections.singletonList(npc));
         instanceWithNpcs.join("Player", 10, 10);
 
@@ -126,9 +126,9 @@ class GameInstanceTest {
         SeaMap map = new SeaMap(20, 20);
         float gameTick = 1 / 60f;
 
-        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+        GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
 
-        instanceWithNpcs.tick();
+        instanceWithNpcs.tick(gameTick);
 
         Collection<Ship> allShips = instanceWithNpcs.getShips();
         verify(behavior).decideTick(npcShip, allShips, map, gameTick);
@@ -141,11 +141,10 @@ class GameInstanceTest {
         SeaMap map = new SeaMap(20, 20);
         float gameTick = 1 / 60f;
         NpcController npc = new NpcController(npcShip, behavior);
-        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+        GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
         when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(true);
 
-        instanceWithNpcs.tick();
-        List<Ship> updates = instanceWithNpcs.drainNpcUpdates();
+        List<Ship> updates = instanceWithNpcs.tick(gameTick);
 
         Assertions.assertEquals(1, updates.size());
         Assertions.assertSame(npcShip, updates.get(0));
@@ -158,30 +157,31 @@ class GameInstanceTest {
         SeaMap map = new SeaMap(20, 20);
         float gameTick = 1 / 60f;
         NpcController npc = new NpcController(npcShip, behavior);
-        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
+        GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
         when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(false);
 
-        instanceWithNpcs.tick();
-        List<Ship> updates = instanceWithNpcs.drainNpcUpdates();
+        List<Ship> updates = instanceWithNpcs.tick(gameTick);
 
         Assertions.assertTrue(updates.isEmpty());
     }
 
     @Test
-    void caseDrainNpcUpdates_clearsAfterDrain() {
+    void caseTick_returnsIndependentListsPerTick() {
         Ship npcShip = new Ship(new Vector(5, 5), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
         NpcBehavior behavior = mock(NpcBehavior.class);
         SeaMap map = new SeaMap(20, 20);
         float gameTick = 1 / 60f;
         NpcController npc = new NpcController(npcShip, behavior);
-        GameInstance instanceWithNpcs = new GameInstance(map, gameTick, Collections.singletonList(npc));
-        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(true);
+        GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
+        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick))
+            .thenReturn(true)
+            .thenReturn(false);
 
-        instanceWithNpcs.tick();
-        instanceWithNpcs.drainNpcUpdates();
-        List<Ship> secondDrain = instanceWithNpcs.drainNpcUpdates();
+        List<Ship> firstUpdates = instanceWithNpcs.tick(gameTick);
+        List<Ship> secondUpdates = instanceWithNpcs.tick(gameTick);
 
-        Assertions.assertTrue(secondDrain.isEmpty());
+        Assertions.assertEquals(1, firstUpdates.size());
+        Assertions.assertTrue(secondUpdates.isEmpty());
     }
 
     @Test
@@ -190,7 +190,7 @@ class GameInstanceTest {
         Ship npcShip2 = new Ship(new Vector(15, 10), Vector.ZERO, Direction.BOT, "NPC2", 10000, 10000);
         NpcBehavior behavior = mock(NpcBehavior.class);
 
-        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), 1 / 60f, Arrays.asList(
+        GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20), Arrays.asList(
             new NpcController(npcShip1, behavior),
             new NpcController(npcShip2, behavior)
         ));
