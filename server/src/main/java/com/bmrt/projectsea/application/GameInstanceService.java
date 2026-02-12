@@ -28,7 +28,7 @@ public class GameInstanceService implements GameActionApi {
         if (!gameLoop.isRunning()) {
             gameLoop.start();
         }
-        Ship ship = gameInstance.join(name, x, y);
+        Ship ship = gameInstance.playerJoin(name, x, y);
         clientCommunicationPort.sendToAllPLayer(Action.JOIN, ship);
         return ship;
     }
@@ -49,7 +49,7 @@ public class GameInstanceService implements GameActionApi {
 
     @Override
     public Ship leave(String name) {
-        Ship ship = gameInstance.leave(name);
+        Ship ship = gameInstance.playerLeave(name);
         if (gameLoop.isRunning() && gameInstance.hasNoPlayers()) {
             gameLoop.stop();
         }

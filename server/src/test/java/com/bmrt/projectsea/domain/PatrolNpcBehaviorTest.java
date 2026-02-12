@@ -3,8 +3,10 @@ package com.bmrt.projectsea.domain;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,15 +19,14 @@ class PatrolNpcBehaviorTest {
     private final float gameTick = 1 / 60f;
 
     @Test
-    void stoppedNpc_startsMovingRight() {
+    void stoppedNpc_thenDirectionToRight() {
         when(randomProvider.nextFloat()).thenReturn(1.0f);
         Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(npc, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
-        Assertions.assertNotEquals(Vector.ZERO, npc.getSpeed());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.RIGHT, changed.get());
     }
 
     @Test
@@ -33,10 +34,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextFloat()).thenReturn(1.0f);
         Ship nearBoundary = new Ship(new Vector(20, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(nearBoundary, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.LEFT, nearBoundary.getDirection());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.LEFT, changed.get());
     }
 
     @Test
@@ -44,10 +45,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextFloat()).thenReturn(1.0f);
         Ship nearBoundary = new Ship(new Vector(0, 10), new Vector(-1, 0), Direction.LEFT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(nearBoundary, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.RIGHT, nearBoundary.getDirection());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.RIGHT, changed.get());
     }
 
     @Test
@@ -55,10 +56,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextFloat()).thenReturn(1.0f);
         Ship npc = new Ship(new Vector(10, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(npc, map);
 
-        Assertions.assertFalse(changed);
-        Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
+        assertFalse(changed.isPresent());
+        assertEquals(Direction.RIGHT, npc.getDirection());
     }
 
     @Test
@@ -67,10 +68,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextAmong(anyList())).thenReturn(Direction.TOP);
         Ship npc = new Ship(new Vector(10, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(npc, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.TOP, npc.getDirection());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.TOP, changed.get());
     }
 
     @Test
@@ -78,10 +79,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextFloat()).thenReturn(0.06f);
         Ship npc = new Ship(new Vector(10, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(npc, map);
 
-        Assertions.assertFalse(changed);
-        Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
+        assertFalse(changed.isPresent());
+        assertEquals(Direction.RIGHT, npc.getDirection());
     }
 
     @Test
@@ -90,10 +91,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextAmong(anyList())).thenReturn(Direction.TOP);
         Ship nearBoundary = new Ship(new Vector(20, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(nearBoundary, Collections.singletonList(nearBoundary), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(nearBoundary, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.LEFT, nearBoundary.getDirection());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.LEFT, changed.get());
     }
 
     @Test
@@ -102,10 +103,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextAmong(anyList())).thenReturn(Direction.TOP);
         Ship npc = new Ship(new Vector(10, 10), Vector.ZERO, Direction.BOT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(npc, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.RIGHT, npc.getDirection());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.RIGHT, changed.get());
     }
 
     @Test
@@ -114,10 +115,10 @@ class PatrolNpcBehaviorTest {
         when(randomProvider.nextAmong(anyList())).thenReturn(Direction.BOT);
         Ship npc = new Ship(new Vector(10, 10), new Vector(1, 0), Direction.RIGHT, "NPC", 10000, 10000);
 
-        boolean changed = behavior.decideTick(npc, Collections.singletonList(npc), map, gameTick);
+        Optional<Direction> changed = behavior.getNewDirection(npc, map);
 
-        Assertions.assertTrue(changed);
-        Assertions.assertEquals(Direction.BOT, npc.getDirection());
+        Assertions.assertTrue(changed.isPresent());
+        assertEquals(Direction.BOT, changed.get());
     }
 
 }

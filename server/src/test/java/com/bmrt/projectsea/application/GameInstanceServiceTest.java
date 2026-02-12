@@ -67,7 +67,7 @@ class GameInstanceServiceTest {
     @Test
     void leave_broadcastsLeaveAction() {
         when(gameLoop.isRunning()).thenReturn(true);
-        gameInstance.join("Player1", 0, 0);
+        gameInstance.playerJoin("Player1", 0, 0);
 
         Ship ship = service.leave("Player1");
 
@@ -77,7 +77,7 @@ class GameInstanceServiceTest {
     @Test
     void leave_stopsGameLoopWhenLastPlayerLeaves() {
         when(gameLoop.isRunning()).thenReturn(true);
-        gameInstance.join("Player1", 0, 0);
+        gameInstance.playerJoin("Player1", 0, 0);
 
         service.leave("Player1");
 
@@ -87,8 +87,8 @@ class GameInstanceServiceTest {
     @Test
     void leave_doesNotStopGameLoopWhenOtherPlayersRemain() {
         when(gameLoop.isRunning()).thenReturn(true);
-        gameInstance.join("Player1", 0, 0);
-        gameInstance.join("Player2", 5, 5);
+        gameInstance.playerJoin("Player1", 0, 0);
+        gameInstance.playerJoin("Player2", 5, 5);
 
         service.leave("Player1");
 
@@ -98,7 +98,7 @@ class GameInstanceServiceTest {
     @Test
     void updateDirection_broadcastsTurnAction() {
         when(gameLoop.isRunning()).thenReturn(true);
-        gameInstance.join("Player1", 0, 0);
+        gameInstance.playerJoin("Player1", 0, 0);
 
         Ship ship = service.updateDirection(Direction.LEFT, "Player1");
 
@@ -108,7 +108,7 @@ class GameInstanceServiceTest {
     @Test
     void stop_broadcastsStopAction() {
         when(gameLoop.isRunning()).thenReturn(true);
-        gameInstance.join("Player1", 0, 0);
+        gameInstance.playerJoin("Player1", 0, 0);
 
         Ship ship = service.stop("Player1");
 
@@ -117,8 +117,8 @@ class GameInstanceServiceTest {
 
     @Test
     void getShips_returnsAllShips() {
-        gameInstance.join("Player1", 0, 0);
-        gameInstance.join("Player2", 5, 5);
+        gameInstance.playerJoin("Player1", 0, 0);
+        gameInstance.playerJoin("Player2", 5, 5);
 
         assertEquals(2, service.getShips().size());
     }
@@ -129,8 +129,8 @@ class GameInstanceServiceTest {
         @Test
         void shoot_broadcastsShootAction() throws InvalidTarget, TargetToFar {
             when(gameLoop.isRunning()).thenReturn(true);
-            gameInstance.join("Shooter", 0, 0);
-            gameInstance.join("Target", 2, 2);
+            gameInstance.playerJoin("Shooter", 0, 0);
+            gameInstance.playerJoin("Target", 2, 2);
 
             Ship target = service.shoot("Shooter", "Target");
 
@@ -140,7 +140,7 @@ class GameInstanceServiceTest {
         @Test
         void shoot_throwsInvalidTargetWhenTargetDoesNotExist() {
             when(gameLoop.isRunning()).thenReturn(true);
-            gameInstance.join("Shooter", 0, 0);
+            gameInstance.playerJoin("Shooter", 0, 0);
 
             assertThrows(InvalidTarget.class, () ->
                 service.shoot("Shooter", "NonExistent")
@@ -150,8 +150,8 @@ class GameInstanceServiceTest {
         @Test
         void shoot_throwsTargetToFarWhenTargetOutOfRange() {
             when(gameLoop.isRunning()).thenReturn(true);
-            gameInstance.join("Shooter", 0, 0);
-            gameInstance.join("Target", 50, 50);
+            gameInstance.playerJoin("Shooter", 0, 0);
+            gameInstance.playerJoin("Target", 50, 50);
 
             assertThrows(TargetToFar.class, () ->
                 service.shoot("Shooter", "Target")

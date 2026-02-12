@@ -7,14 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static org.mockito.Mockito.*;
 
 class GameInstanceTest {
 
@@ -26,7 +23,7 @@ class GameInstanceTest {
     }
 
     @Test
-    void caseJoin() {
+    void casePlayerJoin() {
         Ship expectedShip = ShipBuilder
             .newShip()
             .withDirection(Direction.BOT)
@@ -37,25 +34,27 @@ class GameInstanceTest {
             .withSpeed(0, 0)
             .build();
 
-        Ship ship = gameInstance.join("Name", 0, 0);
+        Ship ship = gameInstance.playerJoin("Name", 0, 0);
 
         Assertions.assertEquals(expectedShip, ship);
         Assertions.assertTrue(gameInstance.contains(expectedShip));
+        Assertions.assertTrue(gameInstance.getPlayerShips().contains(expectedShip));
     }
 
     @Test
-    void caseLeave() {
-        Ship ship = gameInstance.join("Name", 0, 0);
+    void casePlayerLeave() {
+        Ship ship = gameInstance.playerJoin("Name", 0, 0);
 
-        Ship leaveShip = gameInstance.leave("Name");
+        Ship leaveShip = gameInstance.playerLeave("Name");
 
         Assertions.assertEquals(ship, leaveShip);
         Assertions.assertFalse(gameInstance.contains(ship));
+        Assertions.assertFalse(gameInstance.getPlayerShips().contains(ship));
     }
 
     @Test
     void caseStop() {
-        Ship ship = gameInstance.join("Name", 0, 0);
+        Ship ship = gameInstance.playerJoin("Name", 0, 0);
 
         Ship stopShip = gameInstance.stop("Name");
 
@@ -66,7 +65,7 @@ class GameInstanceTest {
 
     @Test
     void caseUpdateDirection() {
-        gameInstance.join("Name", 0, 0);
+        gameInstance.playerJoin("Name", 0, 0);
         Ship expectedShip = ShipBuilder
             .newShip()
             .withDirection(Direction.LEFT)
@@ -86,10 +85,10 @@ class GameInstanceTest {
     void caseHasNoPlayers() {
         Assertions.assertTrue(gameInstance.hasNoPlayers());
 
-        gameInstance.join("Name", 0, 0);
+        gameInstance.playerJoin("Name", 0, 0);
         Assertions.assertFalse(gameInstance.hasNoPlayers());
 
-        gameInstance.leave("Name");
+        gameInstance.playerLeave("Name");
         Assertions.assertTrue(gameInstance.hasNoPlayers());
     }
 
@@ -113,7 +112,7 @@ class GameInstanceTest {
 
         GameInstance instanceWithNpcs = new GameInstance(new SeaMap(20, 20),
             Collections.singletonList(npc));
-        instanceWithNpcs.join("Player", 10, 10);
+        instanceWithNpcs.playerJoin("Player", 10, 10);
 
         Assertions.assertFalse(instanceWithNpcs.hasNoPlayers());
     }
@@ -131,7 +130,7 @@ class GameInstanceTest {
         instanceWithNpcs.tick(gameTick);
 
         Collection<Ship> allShips = instanceWithNpcs.getShips();
-        verify(behavior).decideTick(npcShip, allShips, map, gameTick);
+        verify(behavior).getNewDirection(npcShip, map);
     }
 
     @Test
@@ -142,7 +141,7 @@ class GameInstanceTest {
         float gameTick = 1 / 60f;
         NpcController npc = new NpcController(npcShip, behavior);
         GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
-        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(true);
+        when(behavior.getNewDirection(npcShip, map)).thenReturn(of(Direction.RIGHT));
 
         List<Ship> updates = instanceWithNpcs.tick(gameTick);
 
@@ -158,7 +157,7 @@ class GameInstanceTest {
         float gameTick = 1 / 60f;
         NpcController npc = new NpcController(npcShip, behavior);
         GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
-        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick)).thenReturn(false);
+        when(behavior.getNewDirection(npcShip, map)).thenReturn(Optional.empty());
 
         List<Ship> updates = instanceWithNpcs.tick(gameTick);
 
@@ -173,9 +172,9 @@ class GameInstanceTest {
         float gameTick = 1 / 60f;
         NpcController npc = new NpcController(npcShip, behavior);
         GameInstance instanceWithNpcs = new GameInstance(map, Collections.singletonList(npc));
-        when(behavior.decideTick(npcShip, instanceWithNpcs.getShips(), map, gameTick))
-            .thenReturn(true)
-            .thenReturn(false);
+        when(behavior.getNewDirection(npcShip, map))
+            .thenReturn(of(Direction.RIGHT))
+            .thenReturn(empty());
 
         List<Ship> firstUpdates = instanceWithNpcs.tick(gameTick);
         List<Ship> secondUpdates = instanceWithNpcs.tick(gameTick);
@@ -205,7 +204,7 @@ class GameInstanceTest {
 
         @Test
         void caseNoValidTarget() {
-            gameInstance.join("Name", 0, 0);
+            gameInstance.playerJoin("Name", 0, 0);
 
             Assertions.assertThrows(InvalidTarget.class, () ->
                 gameInstance.shoot("Name", "")
@@ -214,8 +213,8 @@ class GameInstanceTest {
 
         @Test
         void caseTargetToFar() {
-            gameInstance.join("Name", 0, 0);
-            gameInstance.join("Target", 50, 50);
+            gameInstance.playerJoin("Name", 0, 0);
+            gameInstance.playerJoin("Target", 50, 50);
 
             Assertions.assertThrows(TargetToFar.class, () ->
                 gameInstance.shoot("Name", "Target")
@@ -224,8 +223,8 @@ class GameInstanceTest {
 
         @Test
         void caseShootTriggered() throws TargetToFar, InvalidTarget {
-            gameInstance.join("Name", 0, 0);
-            gameInstance.join("Target", 2, 2);
+            gameInstance.playerJoin("Name", 0, 0);
+            gameInstance.playerJoin("Target", 2, 2);
             Ship expectedShip = ShipBuilder
                 .newShip()
                 .withDirection(Direction.BOT)

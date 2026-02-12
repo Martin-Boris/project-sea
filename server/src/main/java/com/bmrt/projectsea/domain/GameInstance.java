@@ -14,6 +14,7 @@ public class GameInstance {
     private final Map<String, Ship> ships;
     private final SeaMap map;
     private final List<NpcController> npcControllers;
+    private final List<Ship> playerShips;
 
     public GameInstance(SeaMap map, List<NpcController> npcControllers) {
         this.ships = new ConcurrentHashMap<>();
@@ -23,24 +24,27 @@ public class GameInstance {
             Ship npcShip = npc.getShip();
             ships.put(npcShip.getName(), npcShip);
         }
+        this.playerShips = new ArrayList<>();
     }
 
     public List<Ship> tick(float deltaTime) {
-        List<Ship> updates = new ArrayList<>();
+        List<Ship> npcUpdates = new ArrayList<>();
         npcControllers.forEach(npc ->
-            npc.act(ships.values(), map, deltaTime).ifPresent(updates::add)
+            npc.update(map, deltaTime).ifPresent(npcUpdates::add)
         );
-        ships.values().forEach(ship -> ship.update(map));
-        return updates;
+        playerShips.forEach(ship -> ship.update(map));
+        return npcUpdates;
     }
 
-    public Ship join(String name, float x, float y) {
+    public Ship playerJoin(String name, float x, float y) {
         Ship ship = new Ship(new Vector(x, y), Vector.ZERO, Direction.BOT, name, 10000, 10000);
         this.ships.put(name, ship);
+        this.playerShips.add(ship);
         return ship;
     }
 
-    public Ship leave(String name) {
+    public Ship playerLeave(String name) {
+        this.playerShips.removeIf(ship -> ship.getName().equals(name));
         return ships.remove(name);
     }
 
@@ -48,8 +52,12 @@ public class GameInstance {
         return ships.values();
     }
 
+    public Collection<Ship> getPlayerShips() {
+        return playerShips;
+    }
+
     public boolean hasNoPlayers() {
-        return ships.size() == npcControllers.size();
+        return this.playerShips.isEmpty();
     }
 
     public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {

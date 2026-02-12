@@ -1,6 +1,6 @@
 package com.bmrt.projectsea.domain;
 
-import java.util.Collection;
+import java.util.Optional;
 
 public class PatrolNpcBehavior implements NpcBehavior {
 
@@ -12,22 +12,19 @@ public class PatrolNpcBehavior implements NpcBehavior {
     }
 
     @Override
-    public boolean decideTick(Ship npc, Collection<Ship> allShips, SeaMap map, float gameTick) {
+    public Optional<Direction> getNewDirection(Ship npc, SeaMap map) {
         if (npc.getSpeed().equals(Vector.ZERO)) {
-            npc.updateDirection(gameTick, Direction.RIGHT);
-            return true;
+            return Optional.of(Direction.RIGHT);
         }
 
         if (npc.isOutNextTick(map)) {
-            npc.updateDirection(gameTick, npc.getDirection().opposite());
-            return true;
+            return Optional.of(npc.getDirection().opposite());
         }
 
         if (random.nextFloat() <= RANDOM_TURN_CHANCE) {
-            npc.updateDirection(gameTick, random.nextAmong(Direction.nonOppositeOf(npc.getDirection())));
-            return true;
+            return Optional.of(random.nextAmong(Direction.nonOppositeOf(npc.getDirection())));
         }
 
-        return false;
+        return Optional.empty();
     }
 }

@@ -1,7 +1,7 @@
 package com.bmrt.projectsea.domain;
 
-import java.util.Collection;
+import java.util.Optional;
 
 public interface NpcBehavior {
-    boolean decideTick(Ship npc, Collection<Ship> allShips, SeaMap map, float gameTick);
+    Optional<Direction> getNewDirection(Ship npc, SeaMap map);
 }

@@ -16,7 +16,7 @@ public class GameConfiguration {
     public GameInstance gameInstance() {
         JavaRandomProvider random = new JavaRandomProvider();
         SeaMap map = new SeaMap(50, 50);
-        List<NpcController> npcControllers = Ship.generateNpc(40, map.getWidth(), map.getHeight(), random);
+        List<NpcController> npcControllers = Ship.generateNpc(10, map.getWidth(), map.getHeight(), random);
         return new GameInstance(map, npcControllers);
     }
 

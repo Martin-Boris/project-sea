@@ -1,6 +1,5 @@
 package com.bmrt.projectsea.domain;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public class NpcController {
@@ -13,9 +12,15 @@ public class NpcController {
         this.behavior = behavior;
     }
 
-    public Optional<Ship> act(Collection<Ship> allShips, SeaMap map, float gameTick) {
-        boolean changed = behavior.decideTick(ship, allShips, map, gameTick);
-        return changed ? Optional.of(ship) : Optional.empty();
+    public Optional<Ship> update(SeaMap map, float gameTick) {
+        Optional<Direction> newDirection = behavior.getNewDirection(ship, map);
+        if (newDirection.isPresent()) {
+            ship.updateDirection(gameTick, newDirection.get());
+            ship.update(map);
+            return Optional.of(ship);
+        }
+        ship.update(map);
+        return Optional.empty();
     }
 
     public Ship getShip() {
