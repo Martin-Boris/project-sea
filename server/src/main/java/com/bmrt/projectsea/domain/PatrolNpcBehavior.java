@@ -2,14 +2,9 @@ package com.bmrt.projectsea.domain;
 
 import java.util.Optional;
 
-public class PatrolNpcBehavior implements NpcBehavior {
+public record PatrolNpcBehavior(RandomProvider random) implements NpcBehavior {
 
     private static final float RANDOM_TURN_CHANCE = 0.005f;
-    private final RandomProvider random;
-
-    public PatrolNpcBehavior(RandomProvider random) {
-        this.random = random;
-    }
 
     @Override
     public Optional<Direction> getNewDirection(Ship npc, SeaMap map) {
