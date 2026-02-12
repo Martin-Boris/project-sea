@@ -3,106 +3,82 @@ package com.bmrt.projectsea.domain;
 import com.bmrt.projectsea.domain.errors.InvalidTarget;
 import com.bmrt.projectsea.domain.errors.TargetToFar;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class GameInstance implements GameActionApi {
+public class GameInstance {
 
-    public static final float GAME_TICK = 1 / 60f;
-    public static final float GAME_TICK_NANO = 1 / 60f * 1000000000;
-
-
-    private final HashMap<String, Ship> ships;
+    private final Map<String, Ship> ships;
     private final SeaMap map;
-    private boolean running;
+    private final List<NpcController> npcControllers;
+    private final List<Ship> playerShips;
 
-    public GameInstance() {
-        this.running = false;
-        this.ships = new HashMap<>();
-        this.map = new SeaMap(20, 20);
+    public GameInstance(SeaMap map, List<NpcController> npcControllers) {
+        this.ships = new ConcurrentHashMap<>();
+        this.map = map;
+        this.npcControllers = npcControllers;
+        for (NpcController npc : npcControllers) {
+            Ship npcShip = npc.getShip();
+            ships.put(npcShip.getName(), npcShip);
+        }
+        this.playerShips = new ArrayList<>();
     }
 
-    private void processGameLoop() {
-        long currentTime;
-        long dt;
-        long previousTickTime = System.nanoTime();
-        float accumulator = 0;
-        while (running) {
-            currentTime = System.nanoTime();
-            dt = (currentTime - previousTickTime);
-            previousTickTime = currentTime;
-            accumulator += dt;
-            if (accumulator >= GAME_TICK_NANO) {
-                accumulator -= GAME_TICK_NANO;
-                ships.values().forEach(ship -> ship.update(map));
-            }
-        }
-
+    public List<Ship> tick(float deltaTime) {
+        List<Ship> npcUpdates = new ArrayList<>();
+        npcControllers.forEach(npc ->
+            npc.update(map, deltaTime).ifPresent(npcUpdates::add)
+        );
+        playerShips.forEach(ship -> ship.update(map));
+        return npcUpdates;
     }
 
-    @Override
-    public void startGame() {
-        if (!this.running) {
-            this.running = true;
-            Thread gameInstanceThread = new Thread(this::processGameLoop);
-            gameInstanceThread.start();
-        }
-    }
-
-    @Override
-    public Ship leave(String name, ClientCommunicationPort clientCommunicationPort) {
-        Ship ship = ships.remove(name);
-        if (this.running && ships.isEmpty()) {
-            running = false;
-        }
-        clientCommunicationPort.sendToAllPLayer(Action.LEAVE, ship);
+    public Ship playerJoin(String name, float x, float y) {
+        Ship ship = new Ship(new Vector(x, y), Vector.ZERO, Direction.BOT, name, 10000, 10000);
+        this.ships.put(name, ship);
+        this.playerShips.add(ship);
         return ship;
     }
 
-    @Override
+    public Ship playerLeave(String name) {
+        this.playerShips.removeIf(ship -> ship.getName().equals(name));
+        return ships.remove(name);
+    }
+
     public Collection<Ship> getShips() {
         return ships.values();
     }
 
-    @Override
-    public Ship shoot(String shooter, String target, ClientCommunicationPort clientCommunicationPort) throws InvalidTarget, TargetToFar {
+    public Collection<Ship> getPlayerShips() {
+        return playerShips;
+    }
+
+    public boolean hasNoPlayers() {
+        return this.playerShips.isEmpty();
+    }
+
+    public Ship shoot(String shooter, String target) throws InvalidTarget, TargetToFar {
         if (!ships.containsKey(target)) {
             throw new InvalidTarget();
         }
-        if (!ships.get(shooter).canShoot(ships.get(target))) {
+        Ship shooterShip = ships.get(shooter);
+        Ship targetShip = ships.get(target);
+        if (!shooterShip.canShoot(targetShip)) {
             throw new TargetToFar();
         }
-        ships.get(target).applyDamage(Ship.DAMAGE);
-        clientCommunicationPort.sendToAllPLayer(Action.SHOOT, ships.get(target));
-        return ships.get(target);
+        targetShip.applyDamage(Ship.DAMAGE);
+        return targetShip;
     }
 
-    public void stopGame() {
-        running = false;
+    public Ship updateDirection(Direction direction, String name, float deltaTime) {
+        return ships.get(name).updateDirection(deltaTime, direction);
     }
 
-    @Override
-    public Ship join(String name, float x, float y, ClientCommunicationPort clientCommunicationPort) {
-        if (!running) {
-            startGame();
-        }
-        Ship ship = new Ship(new Vector(x, y), Vector.ZERO, Direction.BOT, name, 10000, 10000);
-        this.ships.put(name, ship);
-        clientCommunicationPort.sendToAllPLayer(Action.JOIN, ship);
-        return ship;
-    }
-
-    @Override
-    public Ship updateDirection(Direction direction, String name, ClientCommunicationPort clientCommunicationPort) {
-        Ship ship = ships.get(name).updateDirection(GAME_TICK, direction);
-        clientCommunicationPort.sendToAllPLayer(Action.TURN, ship);
-        return ship;
-    }
-
-    @Override
-    public Ship stop(String name, ClientCommunicationPort clientCommunicationPort) {
+    public Ship stop(String name) {
         ships.get(name).stop();
-        clientCommunicationPort.sendToAllPLayer(Action.STOP, ships.get(name));
         return ships.get(name);
     }
 
